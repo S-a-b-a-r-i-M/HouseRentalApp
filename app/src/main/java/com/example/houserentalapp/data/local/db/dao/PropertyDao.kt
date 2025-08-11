@@ -18,7 +18,6 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             put(PropertyTable.COLUMN_STREET_NAME, "Test Street")
             put(PropertyTable.COLUMN_LOCALITY, "Locality1")
             put(PropertyTable.COLUMN_CITY, "TestCity")
-            put(PropertyTable.COLUMN_PINCODE, "123456")
             put(PropertyTable.COLUMN_NAME, "Test Property")
             put(PropertyTable.COLUMN_KIND, "Apartment")
             put(PropertyTable.COLUMN_TYPE, "2BHK")

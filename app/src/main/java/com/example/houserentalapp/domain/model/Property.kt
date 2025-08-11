@@ -82,24 +82,5 @@ data class Property (
                 "Maintenance charges cannot be negative"
             }
         }
-
     }
 }
-
-data class PropertyAddress (
-    val streetName: String,
-    val locality: String,
-    val city: String,
-)
-
-data class Amenities (
-    val socialAmenities: List<SocialAmenities>?,
-    val internalAmenities: List<InternalAmenities>?,
-    val countableInternalAmenities: List<CountableInternalAmenities>?
-)
-
-data class SocialAmenities(val amenityId: Long, val name: String)
-
-data class InternalAmenities(val amenityId: Long, val name: String)
-
-data class CountableInternalAmenities(val amenityId: Long, val name: String, val count: Int)

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/bnav_home"
+        android:title="Home"
+        android:icon="@drawable/baseline_home_filled_gray" />
+    <item
+        android:id="@+id/bnav_shortlists"
+        android:title="Shortlists"
+        android:icon="@drawable/baseline_favorite_filled_gray" />
+
+    <item
+        android:id="@+id/bnav_listings"
+        android:title="Listing"
+        android:icon="@drawable/outline_add_home_listings_gray" />
+
+    <item
+        android:id="@+id/bnav_profile"
+        android:title="Profile"
+        android:icon="@drawable/outline_account_box_gray" />
+
+</menu>
