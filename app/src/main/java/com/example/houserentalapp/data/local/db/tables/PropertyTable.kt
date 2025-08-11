@@ -28,7 +28,6 @@ object PropertyTable {
     const val COLUMN_STREET_NAME = "street_name"
     const val COLUMN_LOCALITY = "locality"
     const val COLUMN_CITY = "city"
-    const val COLUMN_PINCODE = "pincode"
     // PRICE ---------->
     const val COLUMN_PRICE = "price" // Can be rent or budget(sell)
     const val COLUMN_IS_MAINTENANCE_SEPARATE = "is_maintenance_separate" // ONLY 0 AND 1 (bool)
@@ -46,7 +45,6 @@ object PropertyTable {
             $COLUMN_STREET_NAME TEXT,
             $COLUMN_LOCALITY TEXT NOT NULL,
             $COLUMN_CITY TEXT NOT NULL,
-            $COLUMN_PINCODE TEXT NOT NULL,
             $COLUMN_NAME TEXT NOT NULL,
             $COLUMN_DESCRIPTION TEXT,
             $COLUMN_KIND TEXT NOT NULL,
@@ -55,7 +53,7 @@ object PropertyTable {
             $COLUMN_TRANSACTION_TYPE TEXT,
             $COLUMN_AGE_OF_PROPERTY INTEGER,
             $COLUMN_FURNISHING_TYPE TEXT NOT NULL,
-            $COLUMN_COVERED_PARKING INTEGER,
+            $COLUMN_COVERED_PARKING INTEGER NOT NULL,
             $COLUMN_PREFERRED_TENANT_TYPE TEXT DEFAULT 'ALL',
             $COLUMN_IS_PET_ALLOWED INTEGER,
             $COLUMN_AVAILABLE_FROM DATE,
