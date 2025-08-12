@@ -4,6 +4,7 @@
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_blue</item>
         <item name="android:statusBarColor">@color/primary_blue</item>
+        <item name="android:background">@color/white_blue</item>
         <item name="fontFamily">@font/poppins</item>
     </style>
 
