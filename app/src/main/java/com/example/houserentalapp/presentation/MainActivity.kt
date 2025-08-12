@@ -1,6 +1,9 @@
 package com.example.houserentalapp.presentation
 
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -12,6 +15,7 @@ import com.example.houserentalapp.data.local.db.dao.PropertyDao
 import com.example.houserentalapp.data.local.db.dao.UserDao
 import com.example.houserentalapp.data.local.db.dao.UserPropertyDao
 import com.example.houserentalapp.databinding.ActivityMainBinding
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -32,5 +36,14 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        logInfo("item clicked--------> $item")
+        return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+
     }
 }

@@ -11,4 +11,29 @@
         <item name="android:color">@color/primary_blue_very_light</item>
     </style>
 
+    <style name="Headline1" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/primary_blue_dark</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Headline2" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/primary_blue_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/primary_blue_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Body2" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textColor">@color/primary_blue_dark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>

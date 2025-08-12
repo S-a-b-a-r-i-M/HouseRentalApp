@@ -4,20 +4,20 @@
     <item
         android:id="@+id/bnav_home"
         android:title="Home"
-        android:icon="@drawable/baseline_home_filled_gray" />
+        android:icon="@drawable/bottom_nav_home_icon" />
     <item
         android:id="@+id/bnav_shortlists"
         android:title="Shortlists"
-        android:icon="@drawable/baseline_favorite_filled_gray" />
+        android:icon="@drawable/bottom_nav_shortlisted_icon" />
 
     <item
         android:id="@+id/bnav_listings"
         android:title="Listing"
-        android:icon="@drawable/outline_add_home_listings_gray" />
+        android:icon="@drawable/bottom_nav_listing_icon" />
 
     <item
         android:id="@+id/bnav_profile"
         android:title="Profile"
-        android:icon="@drawable/outline_account_box_gray" />
+        android:icon="@drawable/bottom_nav_profile_icon" />
 
 </menu>
