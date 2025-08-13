@@ -6,10 +6,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentListingsBinding
-import com.example.houserentalapp.presentation.ui.listings.adapter.ListingsTabAdapter
-import com.google.android.material.tabs.TabLayoutMediator
+import com.example.houserentalapp.presentation.utils.extensions.loadFragment
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class ListingsFragment : Fragment() {
     private lateinit var binding: FragmentListingsBinding
@@ -27,21 +29,61 @@ class ListingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListingsBinding.bind(view)
 
-        // SET TAB LAYOUT
         Log.i(TAG, "requireActivity : ${requireActivity()}" )
-        binding.viewPager2.adapter = ListingsTabAdapter(requireActivity())
 
-        TabLayoutMediator(binding.tabLayout, binding.viewPager2) { tab, position ->
-            when(position) {
-                0 -> {
-                    tab.text = getString(R.string.my_properties)
+        setOnClickListeners()
+
+        // ON FRAGMENT FIRST CREATION
+        logDebug("savedInstanceState ------> $savedInstanceState")
+        if (savedInstanceState == null)
+            binding.myPropertiesBtn.performClick() // PERFORM CLICK
+    }
+
+    private fun setOnClickListeners() {
+        val appCompatActivity = requireActivity() as AppCompatActivity
+        with(binding) {
+            var isMyPropertiesBtnReselected = false
+            myPropertiesBtn.setOnClickListener {
+                if (isMyPropertiesBtnReselected) { // TODO: See the possibility of moving this into loadFragment
+                    isMyPropertiesBtnReselected = false
+                    return@setOnClickListener
                 }
-                1 -> {
-                    tab.text = getString(R.string.leads)
+
+                appCompatActivity.loadFragment(
+                    listingsFragmentContainer.id,
+                    MyPropertyFragment()
+                )
+            }
+
+            myPropertiesBtn.addOnCheckedChangeListener { btn, isChecked ->
+                if (!isChecked && !leadsBtn.isChecked) {
+                    btn.isChecked = true
+                    isMyPropertiesBtnReselected = true
+                }
+            }
+
+            var isLeadsBtnReselected = false
+            leadsBtn.setOnClickListener {
+                if (isLeadsBtnReselected) {
+                    isLeadsBtnReselected = false
+                    return@setOnClickListener
+                }
+
+                appCompatActivity.loadFragment(
+                    listingsFragmentContainer.id,
+                    LeadsFragment()
+                )
+            }
+
+            leadsBtn.addOnCheckedChangeListener { btn, isChecked ->
+                if (!isChecked && !myPropertiesBtn.isChecked) {
+                    btn.isChecked = true
+                    isLeadsBtnReselected = true
                 }
             }
         }
     }
+
 
     companion object {
         private const val TAG = "ListingsFragment"

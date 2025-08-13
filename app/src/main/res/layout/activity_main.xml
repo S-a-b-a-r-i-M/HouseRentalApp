@@ -7,50 +7,12 @@
     android:layout_height="match_parent"
     tools:context=".presentation.MainActivity">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/fragmentContainer"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/guideline"/>
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.90" />
-
-    <!-- TODO: MAKE TOP CORNER ROUNDED -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingBottom="0dp"
-        android:elevation="50dp"
-
-        android:background="@color/black"
-        app:itemPaddingTop="4dp"
-        app:itemPaddingBottom="0dp"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/bottom_nav_icon_color"
-        app:itemTextColor="@color/bottom_nav_text_color"
-        app:itemTextAppearanceActiveBoldEnabled="true"
-        app:itemActiveIndicatorStyle="@style/Custom.Indicator"
-
+        android:text="AUTHENTICATION"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/guideline" >
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.05dp"
-            android:alpha="0.5"
-            android:background="@color/light_gray" />
-    </com.google.android.material.bottomnavigation.BottomNavigationView>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

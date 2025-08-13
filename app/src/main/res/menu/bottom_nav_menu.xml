@@ -3,21 +3,22 @@
 
     <item
         android:id="@+id/bnav_home"
-        android:title="Home"
+        android:title="@string/home"
         android:icon="@drawable/bottom_nav_home_icon" />
+
     <item
         android:id="@+id/bnav_shortlists"
-        android:title="Shortlists"
+        android:title="@string/shortlists"
         android:icon="@drawable/bottom_nav_shortlisted_icon" />
 
     <item
         android:id="@+id/bnav_listings"
-        android:title="Listing"
-        android:icon="@drawable/bottom_nav_listing_icon" />
+        android:icon="@drawable/bottom_nav_listing_icon"
+        android:title="@string/listing" />
 
     <item
         android:id="@+id/bnav_profile"
-        android:title="Profile"
-        android:icon="@drawable/bottom_nav_profile_icon" />
+        android:icon="@drawable/bottom_nav_profile_icon"
+        android:title="@string/profile" />
 
 </menu>
