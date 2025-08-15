@@ -44,7 +44,8 @@ class ListingsFragment : Fragment() {
         with(binding) {
             var isMyPropertiesBtnReselected = false
             myPropertiesBtn.setOnClickListener {
-                if (isMyPropertiesBtnReselected) { // TODO: See the possibility of moving this into loadFragment
+                println("myPropertiesBtn setOnClickListener")
+                if (isMyPropertiesBtnReselected) {
                     isMyPropertiesBtnReselected = false
                     return@setOnClickListener
                 }
@@ -56,8 +57,9 @@ class ListingsFragment : Fragment() {
             }
 
             myPropertiesBtn.addOnCheckedChangeListener { btn, isChecked ->
+                println("myPropertiesBtn addOnCheckedChangeListener")
                 if (!isChecked && !leadsBtn.isChecked) {
-                    btn.isChecked = true
+                    btn.isChecked = true // Changing the checked state of the btn won't trigger the onclick
                     isMyPropertiesBtnReselected = true
                 }
             }
@@ -83,7 +85,6 @@ class ListingsFragment : Fragment() {
             }
         }
     }
-
 
     companion object {
         private const val TAG = "ListingsFragment"

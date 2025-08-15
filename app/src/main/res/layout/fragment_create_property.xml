@@ -7,14 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".presentation.ui.property.CreatePropertyFragment">
 
+  <!--  APP BAR  -->
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:paddingHorizontal="10dp">
 
             <ImageButton
@@ -23,22 +29,1111 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/outline_arrow_back_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:src="@drawable/outline_arrow_back_24" />
 
             <TextView
                 android:id="@+id/titleTV"
-                style="@style/Headline2"
+                style="@style/TextAppearance.Headline2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/backImgBtn" />
+                android:layout_marginStart="10dp" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+  <!--  FORM  -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/formScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingBottom="8dp"
+        android:fillViewport="true"
+        android:padding="16dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.5" />
+
+          <!-- LOOKING TO -->
+            <TextView
+                android:id="@+id/tvLookingTo"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/looking_to"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRent"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:checkable="true"
+                android:text="@string/rent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLookingTo" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSell"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:checkable="true"
+                android:text="@string/sell"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvLookingTo" />
+
+          <!-- City -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilCity"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/city"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnSell">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Locality -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLocality"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/locality"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilCity">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLocality"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Type -->
+            <TextView
+                android:id="@+id/tvPropertyType"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/property_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilLocality" />
+
+            <HorizontalScrollView
+                android:id="@+id/listOfProperties"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyType">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnApartment"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="@string/apartment" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnVilla"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/villa" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnFormHouse"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/farm_house" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnStudio"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/studio" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnOther"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/other" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+          <!-- BHK -->
+            <TextView
+                android:id="@+id/tvBHK"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/bhk"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/listOfProperties" />
+
+            <HorizontalScrollView
+                android:id="@+id/listOfBHK"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvBHK">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn1BHK"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="@string/_1_bhk" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn2BHK"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/_2_bhk" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn3BHK"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/_3_bhk" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn4BHK"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/_4_bhk" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn5AboveBHK"
+                        style="@style/Widget.Custom.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:checkable="true"
+                        android:text="@string/_5_bhk" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+          <!-- Property Name -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPropertyName"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/property_name_hint"
+                app:counterMaxLength="100"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/listOfBHK">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPropertyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Property Description -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPropertyDes"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/property_des_hint"
+                app:counterMaxLength="1000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilPropertyName">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPropertyDes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="top"
+                    android:imeOptions="actionNext"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="5"
+                    android:minLines="3" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Furnishing Type -->
+            <TextView
+                android:id="@+id/tvFurnishing"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/furnishing_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilPropertyDes" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFullyFurnished"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:checkable="true"
+                android:text="@string/furnished"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvFurnishing" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSemiFurnished"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:checkable="true"
+                android:text="@string/semi_furnished"
+                android:padding="0dp"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvFurnishing" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUnFurnished"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:checkable="true"
+                android:text="@string/un_furnished"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnFullyFurnished" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFurnishingDetails"
+                style="@style/TextAppearance.Label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="@color/primary_blue_very_light"
+                android:text="@string/add_furnishing_amenities"
+                android:textColor="@color/primary_blue_dark"
+                android:textStyle="bold"
+                app:cornerRadius="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnUnFurnished" />
+
+          <!-- Built-Up Area -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilBuiltUpArea"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/built_up_area"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnFurnishingDetails">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBuiltUpArea"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Parking -->
+            <!-- Covered Parking -->
+            <LinearLayout
+                android:id="@+id/coveredParkingContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilBuiltUpArea" >
+
+                <TextView
+                    android:id="@+id/tvCoveredParking"
+                    style="@style/TextAppearance.Label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/covered_parking" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ibtnDecCoveredParking"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/outline_remove_24"
+                    app:backgroundTint="@color/iconButtonColor" />
+
+                <TextView
+                    android:id="@+id/tvCoveredParkingCount"
+                    style="@style/TextAppearance.Label"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0"
+                    android:layout_marginHorizontal="5dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ibtnIncCoveredParking"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/outline_add_24"
+                    app:backgroundTint="@color/iconButtonColor" />
+
+            </LinearLayout>
+
+            <!-- Open Parking -->
+            <LinearLayout
+                android:id="@+id/openParkingContainer"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coveredParkingContainer" >
+
+                <TextView
+                    android:id="@+id/tvOpenParking"
+                    style="@style/TextAppearance.Label"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/open_parking" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ibtnDecOpenParking"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/outline_remove_24"
+                    app:backgroundTint="@color/iconButtonColor" />
+
+                <TextView
+                    android:id="@+id/tvOpenParkingCount"
+                    style="@style/TextAppearance.Label"
+                    android:layout_width="30dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="0"
+                    android:layout_marginHorizontal="5dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/ibtnIncOpenParking"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@drawable/outline_add_24"
+                    app:backgroundTint="@color/iconButtonColor" />
+
+            </LinearLayout>
+
+          <!-- Pet Allowed -->
+            <TextView
+                android:id="@+id/tvPetFriendly"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_vertical"
+                android:text="@string/pet_friendly"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/openParkingContainer" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPetFriendlyYes"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="4dp"
+                android:checkable="true"
+                app:icon="@drawable/baseline_pets_24"
+                app:iconGravity="start"
+                android:text="@string/yes"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPetFriendly" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPetFriendlyNo"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:checkable="true"
+                android:text="@string/no"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvPetFriendly" />
+
+          <!-- Tenant Type -->
+            <TextView
+                android:id="@+id/tvTenantType"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/preferred_tenant_type"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPetFriendlyYes" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFamily"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:checkable="true"
+                android:text="@string/family"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvTenantType" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBachelors"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:checkable="true"
+                android:text="Bachelors"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvTenantType" />
+
+          <!-- Preferred Bachelor Type -->
+            <GridLayout
+                android:id="@+id/preferredBachelorContainer"
+                android:columnCount="2"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnFamily" >
+
+                <TextView
+                    android:id="@+id/tvPreferredBachelor"
+                    style="@style/TextAppearance.Label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_columnSpan="2"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="Select your preference for bachelors" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_open_for_both"
+                    style="@style/Widget.Custom.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:layout_columnWeight="1"
+                    android:checkable="true"
+                    android:text="Open for Both" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOnlyMen"
+                    style="@style/Widget.Custom.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginStart="10dp"
+                    android:checkable="true"
+                    android:text="Men Only" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOnlyWomen"
+                    style="@style/Widget.Custom.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_columnWeight="1"
+                    android:layout_marginEnd="10dp"
+                    android:checkable="true"
+                    android:text="Women Only" />
+
+            </GridLayout>
+
+          <!-- Available From -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilAvailableFrom"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/available_from"
+                app:hintAnimationEnabled="true"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preferredBachelorContainer">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etAvailableFrom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="none" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Budget Details -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilBudget"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:hintAnimationEnabled="true"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilAvailableFrom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBudget"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Maintenance Charges -->
+            <TextView
+                android:id="@+id/tvMaintenanceChanges"
+                style="@style/TextAppearance.Label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/maintenance_changes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilBudget" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnIncludeInRent"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="10dp"
+                android:checkable="true"
+                android:text="@string/include_in_rent"
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceChanges" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSeparate"
+                style="@style/Widget.Custom.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="10dp"
+                android:checkable="true"
+                android:text="@string/separate"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceChanges" />
+
+          <!-- If Separate MaintenanceChanges -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_maintenance_charge"
+                android:visibility="gone"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/maintenance_charges_per_month"
+                app:hintAnimationEnabled="true"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnIncludeInRent">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etMaintenanceCharge"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+          <!-- Security Deposit -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilSecurityDeposit"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/security_deposit"
+                app:hintAnimationEnabled="true"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSecurityDeposit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next" />
+
+
+
+      <!-- Scrollable Form Content -->
+<!--    <androidx.core.widget.NestedScrollView-->
+<!--        android:id="@+id/formScrollView1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        android:visibility="gone"-->
+<!--        android:layout_weight="1"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toTopOf="parent">-->
+
+<!--        <LinearLayout-->
+<!--            android:orientation="vertical"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:padding="24dp">-->
+<!--          &lt;!&ndash; Property Name &ndash;&gt;-->
+
+<!--          &lt;!&ndash; Property Details Card &ndash;&gt;-->
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                    style="@style/Widget.Material3.CardView.Outlined"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    app:cardElevation="2dp"-->
+<!--                    app:cardCornerRadius="12dp"-->
+<!--                    app:strokeWidth="1dp"-->
+<!--                    app:strokeColor="@color/stroke_color">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:orientation="vertical"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:padding="16dp">-->
+
+<!--                        <TextView-->
+<!--                            style="@style/TextAppearance.Headline3"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginBottom="16dp"-->
+<!--                            android:text="@string/property_details"-->
+<!--                            android:drawablePadding="10dp"-->
+<!--                            app:drawableStartCompat="@drawable/baseline_add_home_filled"-->
+<!--                            app:drawableTint="@color/primary_blue_dark" />-->
+
+<!--                        &lt;!&ndash; Property Type and BHK Row &ndash;&gt;-->
+<!--                        <LinearLayout-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginBottom="16dp"-->
+<!--                            android:orientation="horizontal">-->
+
+<!--                            <com.google.android.material.textfield.TextInputLayout-->
+<!--                                android:id="@+id/tilPropertyType"-->
+<!--                                style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:layout_marginEnd="8dp"-->
+<!--                                android:hint="@string/property_type">-->
+
+<!--                                <AutoCompleteTextView-->
+<!--                                    android:id="@+id/actvPropertyType"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:inputType="none"-->
+<!--                                    android:focusable="false" />-->
+
+<!--                            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                            <com.google.android.material.textfield.TextInputLayout-->
+<!--                                android:id="@+id/tilBHK"-->
+<!--                                style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:layout_marginStart="8dp"-->
+<!--                                android:hint="@string/bhk">-->
+
+<!--                                <AutoCompleteTextView-->
+<!--                                    android:id="@+id/actvBHK"-->
+<!--                                    android:layout_width="match_parent"-->
+<!--                                    android:layout_height="wrap_content"-->
+<!--                                    android:inputType="none"-->
+<!--                                    android:focusable="false" />-->
+
+<!--                            </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                        </LinearLayout>-->
+
+<!--                        &lt;!&ndash; Furnishing Type &ndash;&gt;-->
+<!--                        <com.google.android.material.button.MaterialButtonToggleGroup-->
+<!--                            android:id="@+id/btgFurnishingType"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginBottom="16dp"-->
+<!--                            app:singleSelection="true">-->
+
+<!--                            <com.google.android.material.button.MaterialButton-->
+<!--                                android:id="@+id/btnFullyFurnished"-->
+<!--                                style="@style/Widget.Custom.OutlinedButton"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:textAllCaps="false"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:text="@string/fully_furnished" />-->
+
+<!--                            <com.google.android.material.button.MaterialButton-->
+<!--                                android:id="@+id/btnSemiFurnished"-->
+<!--                                style="@style/Widget.Custom.OutlinedButton"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:text="@string/semi_furnished" />-->
+
+<!--                            <com.google.android.material.button.MaterialButton-->
+<!--                                android:id="@+id/btnUnFurnished"-->
+<!--                                style="@style/Widget.Custom.OutlinedButton"-->
+<!--                                android:layout_width="0dp"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:layout_weight="1"-->
+<!--                                android:text="@string/un_furnished" />-->
+
+
+<!--                        </com.google.android.material.button.MaterialButtonToggleGroup>-->
+
+
+<!--                    </LinearLayout>-->
+
+<!--                </com.google.android.material.card.MaterialCardView>-->
+
+<!--          &lt;!&ndash; Pricing Card &ndash;&gt;-->
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                style="@style/Widget.Material3.CardView.Outlined"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                app:cardElevation="2dp"-->
+<!--                app:cardCornerRadius="12dp"-->
+<!--                app:strokeWidth="1dp"-->
+<!--                app:strokeColor="@color/stroke_color">-->
+
+<!--                <LinearLayout-->
+<!--                    android:orientation="vertical"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:padding="16dp">-->
+
+<!--                    <TextView-->
+<!--                        style="@style/TextAppearance.Headline3"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="16dp"-->
+<!--                        android:text="@string/pricing_details"-->
+<!--                        app:drawableStartCompat="@drawable/baseline_currency_rupee_24"-->
+<!--                        app:drawableTint="@color/primary_blue_dark"-->
+<!--                        android:drawablePadding="8dp" />-->
+
+<!--                  &lt;!&ndash; Monthly Rent &ndash;&gt;-->
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:id="@+id/tilPrice"-->
+<!--                        style="@style/Widget.Custom.TextInputLayout.OutlinedBox"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="10dp"-->
+<!--                        android:hint="@string/monthly_rent"-->
+<!--                        app:counterEnabled="false">-->
+
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:id="@+id/etPrice"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:imeOptions="actionNext"-->
+<!--                            android:inputType="number"-->
+<!--                            android:maxLines="1" />-->
+
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                  &lt;!&ndash; Maintenance Switch &ndash;&gt;-->
+<!--                    <LinearLayout-->
+<!--                        android:orientation="horizontal"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="8dp"-->
+<!--                        android:gravity="center_vertical">-->
+
+<!--                        <TextView-->
+<!--                            style="@style/TextAppearance.Body1"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginEnd="20dp"-->
+<!--                            android:text="Maintenance Separate"-->
+<!--                            android:textColor="@color/gray_dark" />-->
+
+<!--                        <com.google.android.material.switchmaterial.SwitchMaterial-->
+<!--                            android:id="@+id/switchMaintenance"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content" />-->
+
+<!--                    </LinearLayout>-->
+
+<!--                  &lt;!&ndash; Maintenance Charges (Initially Hidden) &ndash;&gt;-->
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:id="@+id/tilMaintenance"-->
+<!--                        style="@style/Widget.Custom.TextInputLayout.OutlinedBox"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="10dp"-->
+<!--                        android:hint="@string/monthly_maintenance"-->
+<!--                        app:prefixText="₹ "-->
+<!--                        app:suffixText="/month"-->
+<!--                        android:visibility="gone"-->
+<!--                        app:counterEnabled="false">-->
+
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:id="@+id/etMaintenance"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:imeOptions="actionNext"-->
+<!--                            android:inputType="number"-->
+<!--                            android:maxLines="1" />-->
+
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--            </com.google.android.material.card.MaterialCardView>-->
+
+<!--          &lt;!&ndash; Location Card &ndash;&gt;-->
+<!--            <com.google.android.material.card.MaterialCardView-->
+<!--                style="@style/Widget.Material3.CardView.Outlined"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginBottom="10dp"-->
+<!--                app:cardElevation="2dp"-->
+<!--                app:cardCornerRadius="12dp"-->
+<!--                app:strokeWidth="1dp"-->
+<!--                app:strokeColor="@color/stroke_color">-->
+
+<!--                <LinearLayout-->
+<!--                    android:orientation="vertical"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:padding="16dp">-->
+
+<!--                    <TextView-->
+<!--                        style="@style/TextAppearance.Headline3"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="16dp"-->
+<!--                        android:text="@string/location_details"-->
+<!--                        app:drawableStartCompat="@drawable/outline_location_on_24"-->
+<!--                        app:drawableTint="@color/primary_blue_dark"-->
+<!--                        android:drawablePadding="8dp" />-->
+
+<!--                    &lt;!&ndash; City-->
+<!--                    app:startIconDrawable="@drawable/ic_location_city"-->
+<!--                    app:startIconTint="@color/primary_blue" &ndash;&gt;-->
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:id="@+id/tilCity"-->
+<!--                        style="@style/Widget.Custom.TextInputLayout.OutlinedBox"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginBottom="10dp"-->
+<!--                        android:hint="@string/city"-->
+<!--                        app:helperText="Enter city name"-->
+<!--                        app:helperTextEnabled="true"-->
+<!--                        app:counterEnabled="false">-->
+
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:id="@+id/etCity"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:inputType="textCapWords"-->
+<!--                            android:maxLines="1"-->
+<!--                            android:imeOptions="actionNext" />-->
+
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                    &lt;!&ndash; Locality app:startIconDrawable="@drawable/ic_place"-->
+<!--                    app:startIconTint="@color/primary_blue"&ndash;&gt;-->
+<!--                    <com.google.android.material.textfield.TextInputLayout-->
+<!--                        android:id="@+id/tilLocality"-->
+<!--                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:hint="@string/locality"-->
+<!--                        app:helperText="Enter area/locality"-->
+<!--                        app:helperTextEnabled="true">-->
+
+<!--                        <com.google.android.material.textfield.TextInputEditText-->
+<!--                            android:id="@+id/etLocality"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:inputType="textCapWords"-->
+<!--                            android:maxLines="1"-->
+<!--                            android:imeOptions="actionNext" />-->
+
+<!--                    </com.google.android.material.textfield.TextInputLayout>-->
+
+<!--                </LinearLayout>-->
+
+<!--            </com.google.android.material.card.MaterialCardView>-->
+
+<!--            &lt;!&ndash; Action Buttons &ndash;&gt;-->
+<!--            <LinearLayout-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:layout_marginBottom="32dp"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:gravity="center">-->
+
+<!--                &lt;!&ndash; Create Property Button &ndash;&gt;-->
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/btnCreateProperty"-->
+<!--                    style="@style/AppTheme.Button"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Create Property"-->
+<!--                    app:icon="@drawable/outline_add_home"-->
+<!--                    app:iconGravity="start" />-->
+
+<!--            </LinearLayout>-->
+
+<!--            &lt;!&ndash; Material3 Progress Indicator (Initially Hidden) &ndash;&gt;-->
+<!--            <com.google.android.material.progressindicator.LinearProgressIndicator-->
+<!--                android:id="@+id/progressIndicator"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginTop="16dp"-->
+<!--                android:visibility="gone"-->
+<!--                app:indicatorColor="@color/primary_blue"-->
+<!--                app:trackColor="@color/primary_blue_light"-->
+<!--                app:trackCornerRadius="2dp"-->
+<!--                android:indeterminate="true" />-->
+
+<!--        </LinearLayout>-->
+
+<!--    </androidx.core.widget.NestedScrollView>-->
 
 </LinearLayout>

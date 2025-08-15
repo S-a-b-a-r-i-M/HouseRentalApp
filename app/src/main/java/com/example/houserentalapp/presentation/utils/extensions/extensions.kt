@@ -11,42 +11,25 @@ val Any.simpleClassName: String
 
 fun getOnlyClassName(classWithPackage: String) = classWithPackage.split(".").last()
 
-fun Activity.logInfo(message: String, throwable: Throwable? = null) {
+fun Any.logInfo(message: String, throwable: Throwable? = null) {
     Log.i(simpleClassName, message, throwable)
 }
 
-fun Activity.logDebug(message: String, throwable: Throwable? = null) {
+fun Any.logDebug(message: String, throwable: Throwable? = null) {
     Log.d(simpleClassName, message, throwable)
 }
 
-fun Activity.logWarning(message: String, throwable: Throwable? = null) {
+fun Any.logWarning(message: String, throwable: Throwable? = null) {
     Log.w(simpleClassName, message, throwable)
 }
 
-fun Activity.logError(message: String, throwable: Throwable? = null) {
+fun Any.logError(message: String, throwable: Throwable? = null) {
     Log.e(simpleClassName, message, throwable)
 }
 
 fun Activity.showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
     Toast.makeText(this, message, duration).show()
 }
-
-fun Fragment.logInfo(message: String, throwable: Throwable? = null) {
-    Log.i(simpleClassName, message, throwable)
-}
-
-fun Fragment.logDebug(message: String, throwable: Throwable? = null) {
-    Log.d(simpleClassName, message, throwable)
-}
-
-fun Fragment.logWarning(message: String, throwable: Throwable? = null) {
-    Log.w(simpleClassName, message, throwable)
-}
-
-fun Fragment.logError(message: String, throwable: Throwable? = null) {
-    Log.e(simpleClassName, message, throwable)
-}
-
 
 fun AppCompatActivity.loadFragment(
     containerId: Int,
@@ -61,6 +44,4 @@ fun AppCompatActivity.loadFragment(
         if (pushToBackStack) addToBackStack(null) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
         commit()
     }
-
-
 }

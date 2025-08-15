@@ -54,6 +54,7 @@
 
     <style name="TextAppearance.Label" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textColor">@color/gray_dark</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Separator" >

@@ -51,7 +51,7 @@
     <string name="available_from">Available From</string>
     <string name="family">Family</string>
     <string name="add_furnishing_amenities">+ Furnishing/Amenities</string>
-    <string name="maintenance_changes_pre_month">Maintenance Changes(pre month)</string>
+    <string name="maintenance_charges_per_month">Maintenance Changes(per month)</string>
     <string name="maintenance_changes">Maintenance Changes</string>
     <string name="include_in_rent">Include in rent</string>
     <string name="separate">Separate</string>
