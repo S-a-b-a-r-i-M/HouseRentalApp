@@ -1,7 +1,6 @@
 package com.example.houserentalapp.presentation.ui
 
 import android.os.Bundle
-import android.window.OnBackInvokedDispatcher
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +34,8 @@ class StarterActivity : AppCompatActivity() {
         logInfo("<-------- onCreate ---------->")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+//        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityStarterBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setWindowInsets()
@@ -49,9 +50,23 @@ class StarterActivity : AppCompatActivity() {
     private fun setWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.starter)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, imeInsets.bottom)
             insets
         }
+    }
+
+    private fun scrollToFocusedView() {
+        val currentFocus = currentFocus
+//        if (currentFocus is EditText) {
+//            val scrollView: NestedScrollView = binding.scrollView
+//            scrollView?.post {
+//                val rect = Rect()
+//                currentFocus.getGlobalVisibleRect(rect)
+//                scrollView.requestChildRectangleOnScreen(currentFocus, rect, false)
+//            }
+//        }
     }
 
     private fun setBottomNavigation() {

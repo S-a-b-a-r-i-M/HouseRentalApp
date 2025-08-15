@@ -43,6 +43,12 @@ enum class TenantType {
     BACHELORS,
 }
 
+enum class BachelorType {
+    BOTH,
+    MEN,
+    WOMEN,
+}
+
 enum class PropertyTransactionType {
     NEW_BOOKING,
     RESALE,

@@ -1,15 +1,17 @@
 package com.example.houserentalapp.domain.model
 
 import com.example.houserentalapp.domain.model.enums.BHK
+import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyTransactionType
 import com.example.houserentalapp.domain.model.enums.PropertyType
+import java.time.LocalDate
 
 data class Property (
-    val id: Long,
+    val id: Long?,
     val landlordId: Long,
     val name: String,
     val description: String?,
@@ -17,25 +19,27 @@ data class Property (
     val kind: PropertyKind,
     val type: PropertyType,
     val furnishingType: FurnishingType,
-    val amenities: Amenities,
+    val amenities: Amenities, // On-hold
     val preferredTenantType: TenantType,
-    val transactionType: PropertyTransactionType, // Specific to Sell
-    val ageOfProperty: Int?,
+    val preferredBachelorType: BachelorType?,
+    val transactionType: PropertyTransactionType?, // Specific to Sell
+    val ageOfProperty: Int?, // Specific to Sell
     val countOfCoveredParking: Int,
-    val availableFrom: Int, // EPOCH
+    val countOfOpenParking: Int,
+    val availableFrom: LocalDate,
     val bhk: BHK,
+    val builtUpArea: Int,
     // val bathRoomCount: Int, // optional
     val isPetAllowed: Boolean,
     val isAvailable: Boolean,
     val viewCount: Int = 0,
+    // Budget Related
+    val price: Int,
+    val isMaintenanceSeparate: Boolean,
+    val maintenanceCharges: Int?,
+    val numberOfSecurityDepositMonths: Int,
     // Address
     val address: PropertyAddress,
-    // Budget Related
-    val price: Float,
-    val isMaintenanceSeparate: Boolean,
-    val maintenanceCharges: Float?,
-    val numberOfSecurityDepositMonths: Int,
-    val numberOfLockInMonths: Int,
     // TimeLine
     val createdAt: Int
     ) {

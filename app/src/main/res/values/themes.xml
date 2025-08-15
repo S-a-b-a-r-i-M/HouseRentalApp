@@ -13,41 +13,76 @@
 <!--        <item name="materialButtonOutlinedStyle">@style/AppTheme.Button.OutlinedButton</item>-->
     </style>
 
-    <style name="Custom.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="fontFamily">@font/poppins</item>
+    <style name="Widget.Custom.OutlinedButton.Tabs" parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="Widget.Custom.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="textAllCaps">false</item>
     </style>
 
     <style name="Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/primary_blue_very_light</item>
     </style>
 
-    <style name="Headline1" parent="TextAppearance.Material3.HeadlineMedium">
-        <item name="android:fontFamily">@font/poppins</item>
+    <style name="TextAppearance.Headline1" parent="TextAppearance.Material3.HeadlineMedium">
         <item name="android:textColor">@color/primary_blue_dark</item>
         <item name="android:textSize">26sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Headline2" parent="TextAppearance.Material3.HeadlineSmall">
-        <item name="android:fontFamily">@font/poppins</item>
+    <style name="TextAppearance.Headline2" parent="TextAppearance.Material3.HeadlineSmall">
         <item name="android:textColor">@color/primary_blue_dark</item>
         <item name="android:textSize">22sp</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Body1" parent="TextAppearance.Material3.BodyLarge">
-        <item name="android:fontFamily">@font/poppins</item>
+    <style name="TextAppearance.Headline3" parent="@style/TextAppearance.Headline2">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextAppearance.Body1" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TextAppearance.Body2" parent="TextAppearance.Material3.BodyMedium">
         <item name="android:textColor">@color/primary_blue_dark</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Body2" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:fontFamily">@font/poppins</item>
-        <item name="android:textColor">@color/primary_blue_dark</item>
-        <item name="android:textStyle">bold</item>
+    <style name="TextAppearance.Label" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
+
+    <style name="Separator" >
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/gray_medium</item>
+        <item name="android:alpha">0.5</item>
+    </style>
+    
+    <style name="Widget.Custom.TextInputLayout.OutlinedBox" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="hintTextColor">@color/gray_dark</item>
+        <item name="android:textColorHint">@color/gray_medium</item>
+        <item name="counterEnabled">true</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="Widget.Custom.TextInputLayout.FilledBox" parent="@style/Widget.Material3.TextInputLayout.FilledBox">
+        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="hintTextColor">@color/gray_dark</item>
+        <item name="android:textColorHint">@color/gray_medium</item>
+        <item name="counterEnabled">true</item>
+        <item name="errorEnabled">true</item>
+    </style>
+
+    <style name="Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="hintTextColor">@color/gray_dark</item>
+        <item name="android:textColorHint">@color/gray_medium</item>
+        <item name="errorEnabled">true</item>
     </style>
 
 </resources>

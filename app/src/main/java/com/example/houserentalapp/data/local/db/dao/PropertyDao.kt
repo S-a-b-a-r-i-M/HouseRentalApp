@@ -20,9 +20,11 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             put(PropertyTable.COLUMN_CITY, "TestCity")
             put(PropertyTable.COLUMN_NAME, "Test Property")
             put(PropertyTable.COLUMN_KIND, "Apartment")
-            put(PropertyTable.COLUMN_TYPE, "2BHK")
+            put(PropertyTable.COLUMN_TYPE, "INDEPENDENT_HOUSE")
+            put(PropertyTable.COLUMN_BHK, "2BHK")
+            put(PropertyTable.COLUMN_BUILT_UP_AREA, "1200")
             put(PropertyTable.COLUMN_LOOKING_TO, "Rent")
-            put(PropertyTable.COLUMN_FURNISHING_TYPE, "Furnished")
+            put(PropertyTable.COLUMN_FURNISHING_TYPE, "SEMI_FURNISHED")
         }
         try {
             val id = dbHelper.writableDatabase.insert(PropertyTable.TABLE_NAME, null, values)
