@@ -41,6 +41,14 @@ class CreatePropertyFragment : Fragment() {
 
         // OnClick Listeners
         setOnClickListeners()
+
+        /* TODO
+         * 1. Amenities
+         * 2. OnSubmit
+         * 3. Validation
+         * 4. Parking
+         * 5. Image Upload
+         */
     }
 
     private fun setOnClickListeners() {

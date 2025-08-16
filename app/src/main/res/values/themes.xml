@@ -3,7 +3,7 @@
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_blue</item>
-        <item name="android:background">@color/white_blue</item>
+        <item name="android:background">@color/white</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="fontFamily">@font/poppins</item>
 
@@ -25,7 +25,7 @@
     </style>
 
     <style name="Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
-        <item name="android:color">@color/primary_blue_very_light</item>
+        <item name="android:color">@color/white</item>
     </style>
 
     <style name="TextAppearance.Headline1" parent="TextAppearance.Material3.HeadlineMedium">
