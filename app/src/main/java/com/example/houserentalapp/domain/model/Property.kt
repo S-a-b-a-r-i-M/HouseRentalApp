@@ -40,8 +40,10 @@ data class Property (
     val numberOfSecurityDepositMonths: Int,
     // Address
     val address: PropertyAddress,
+    // Images
+    val images: List<PropertyImage>,
     // TimeLine
-    val createdAt: Int
+    val createdAt: Long
     ) {
     init {
         // Validation

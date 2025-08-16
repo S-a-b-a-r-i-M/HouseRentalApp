@@ -7,3 +7,8 @@ enum class LeadStatus {
     DEAL_SUCCESS,
     REJECTED,
 }
+
+enum class UserActionEnum {
+    VIEW,
+    SHORTLISTED
+}

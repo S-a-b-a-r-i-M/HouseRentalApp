@@ -3,17 +3,14 @@ package com.example.houserentalapp.data.local.db
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.houserentalapp.data.local.db.tables.InternalAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyInternalAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertySocialAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyTable
-import com.example.houserentalapp.data.local.db.tables.SocialAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.UserInterestedPropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
-import com.example.houserentalapp.data.local.db.tables.UserShortlistedPropertyTable
+import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
-import com.example.houserentalapp.data.local.db.tables.UserViewsTable
 
 class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME, null, DATABASE_VERSION
@@ -37,12 +34,9 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
             it.execSQL(UserTable.CREATE_TABLE)
             it.execSQL(UserPreferenceTable.CREATE_TABLE) //
             it.execSQL(PropertyTable.CREATE_TABLE)
-            it.execSQL(UserViewsTable.CREATE_TABLE)
-            it.execSQL(UserShortlistedPropertyTable.CREATE_TABLE)
+            it.execSQL(UserPropertyActionTable.CREATE_TABLE)
             it.execSQL(UserInterestedPropertyTable.CREATE_TABLE)
-            it.execSQL(SocialAmenitiesTable.CREATE_TABLE)
             it.execSQL(PropertySocialAmenitiesTable.CREATE_TABLE)
-            it.execSQL(InternalAmenitiesTable.CREATE_TABLE)
             it.execSQL(PropertyInternalAmenitiesTable.CREATE_TABLE)
             it.execSQL(PropertyImagesTable.CREATE_TABLE)
 

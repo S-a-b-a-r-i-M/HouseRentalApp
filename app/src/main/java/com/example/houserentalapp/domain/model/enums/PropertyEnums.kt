@@ -56,6 +56,7 @@ enum class PropertyTransactionType {
 
 enum class LookingTo {
     RENT,
+    BUY,
     LEASE, // Optional
     SELL,
 }
