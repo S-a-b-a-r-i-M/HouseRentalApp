@@ -5,33 +5,22 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.repo.UserRepoImpl
-import com.example.houserentalapp.databinding.ActivityStarterBinding
-import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.model.UserPreferences
-import com.example.houserentalapp.domain.model.enums.LookingTo
+import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.repo.UserRepo
-import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.shortlisted.ShortlistsFragment
-import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
-import com.example.houserentalapp.presentation.utils.helpers.PasswordHasher
-import com.google.android.material.button.MaterialButtonToggleGroup
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
 
-class StarterActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityStarterBinding
+    private lateinit var binding: ActivityMainBinding
 
     // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
     private val backPressedCallback = object : OnBackPressedCallback(true){
@@ -49,7 +38,7 @@ class StarterActivity : AppCompatActivity() {
         enableEdgeToEdge()
 //        WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding = ActivityStarterBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setWindowInsets()
 
@@ -155,7 +144,6 @@ class StarterActivity : AppCompatActivity() {
 
        }
          */
-
     }
 
     private fun setWindowInsets() {

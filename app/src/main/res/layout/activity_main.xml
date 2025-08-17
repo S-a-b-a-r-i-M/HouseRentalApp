@@ -2,17 +2,65 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/starter"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.MainActivity">
+    android:backgroundTint="@color/primary_blue"
 
-    <TextView
+    tools:context=".presentation.ui.MainActivity"
+    android:theme="@style/AppTheme">
+
+    <LinearLayout
+        android:id="@+id/wholeContainerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="AUTHENTICATION"
-        android:gravity="center"
+        android:layout_height="0dp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/pageFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:backgroundTint="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/bottomNavigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- TODO: MAKE TOP CORNER ROUNDED -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp"
+            android:elevation="100dp">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavigation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:elevation="100dp"
+
+                app:itemIconSize="26dp"
+                app:itemActiveIndicatorStyle="@style/Custom.Indicator"
+                app:itemIconTint="@color/bottom_nav_icon_color"
+                app:itemPaddingTop="4dp"
+                app:itemPaddingBottom="0dp"
+                app:itemTextAppearanceActiveBoldEnabled="true"
+                app:itemTextColor="@color/bottom_nav_text_color"
+                app:labelVisibilityMode="labeled"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:menu="@menu/bottom_nav_menu">
+
+            </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
