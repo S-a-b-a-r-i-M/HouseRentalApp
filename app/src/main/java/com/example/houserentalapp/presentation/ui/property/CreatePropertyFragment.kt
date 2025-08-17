@@ -5,10 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -36,6 +36,9 @@ class CreatePropertyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
+
         // Enable Tool Bar
         setCustomToolBar()
 
@@ -56,9 +59,8 @@ class CreatePropertyFragment : Fragment() {
 
             // Available From Date Picker
             etAvailableFrom.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
-                    if (hasFocus)
-                        myDatePicker.show(parentFragmentManager, "DATE_PICKER")
-                }
+                if (hasFocus) myDatePicker.show(parentFragmentManager, "DATE_PICKER")
+            }
 
             // ADD AMENITIES // TODO
             btnFurnishingDetails.setOnClickListener {
@@ -81,6 +83,7 @@ class CreatePropertyFragment : Fragment() {
                 listOf(
                     SelectableMaterialButtonData(btnApartment),
                     SelectableMaterialButtonData(btnVilla),
+                    SelectableMaterialButtonData(btnIndependentHouse),
                     SelectableMaterialButtonData(btnFormHouse),
                     SelectableMaterialButtonData(btnStudio),
                     SelectableMaterialButtonData(btnOther),
@@ -215,7 +218,7 @@ class CreatePropertyFragment : Fragment() {
             titleTV.text = getString(R.string.create_property)
 
             backImgBtn.setOnClickListener {
-                (requireActivity() as AppCompatActivity).onBackPressedDispatcher.onBackPressed()
+                parentFragmentManager.popBackStack()
             }
         }
     }

@@ -50,7 +50,7 @@
     <string name="no">No</string>
     <string name="available_from">Available From</string>
     <string name="family">Family</string>
-    <string name="add_furnishing_amenities">+ Furnishing/Amenities</string>
+    <string name="add_furnishing_amenities">+ Add Furnishing/Amenities</string>
     <string name="maintenance_charges_per_month">Maintenance Changes(per month)</string>
     <string name="maintenance_changes">Maintenance Changes</string>
     <string name="include_in_rent">Include in rent</string>
@@ -58,4 +58,5 @@
     <string name="number_of_months_rent_months">Number of months (rent * months)</string>
     <string name="security_deposit">Security Deposit</string>
     <string name="preferred_tenant_type">Preferred Tenant Type</string>
+    <string name="title_activity_main">MainActivity</string>
 </resources>

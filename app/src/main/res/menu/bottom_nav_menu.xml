@@ -3,13 +3,13 @@
 
     <item
         android:id="@+id/bnav_home"
-        android:title="@string/home"
-        android:icon="@drawable/bottom_nav_home_icon" />
+        android:icon="@drawable/bottom_nav_home_icon"
+        android:title="@string/home" />
 
     <item
         android:id="@+id/bnav_shortlists"
-        android:title="@string/shortlists"
-        android:icon="@drawable/bottom_nav_shortlisted_icon" />
+        android:icon="@drawable/bottom_nav_shortlisted_icon"
+        android:title="@string/shortlists" />
 
     <item
         android:id="@+id/bnav_listings"

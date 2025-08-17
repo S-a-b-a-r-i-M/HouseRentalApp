@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentMyPropertyBinding
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
-import com.example.houserentalapp.presentation.utils.extensions.loadFragment
+import com.example.houserentalapp.presentation.utils.extensions.addFragment
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class MyPropertyFragment : Fragment() {
@@ -40,8 +40,8 @@ class MyPropertyFragment : Fragment() {
     fun handleAddPropertyButtonClick() {
         binding.addPropertyBtn.setOnClickListener {
             logInfo("addProperty clicked requireActivity : ${requireActivity()}--------->")
-            (requireActivity() as AppCompatActivity).loadFragment(
-                R.id.starter,
+            (requireActivity() as AppCompatActivity).addFragment(
+                R.id.main,
                 CreatePropertyFragment(),
                 true
             )

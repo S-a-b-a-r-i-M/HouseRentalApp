@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.starter)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 

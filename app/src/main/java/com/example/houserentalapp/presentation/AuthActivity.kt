@@ -7,26 +7,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.houserentalapp.R
-import com.example.houserentalapp.databinding.ActivityMainBinding
-import com.example.houserentalapp.presentation.ui.StarterActivity
+import com.example.houserentalapp.databinding.ActivityAuthBinding
+import com.example.houserentalapp.presentation.ui.MainActivity
 
 // TODO: HANDLE AUTH PORTION
-class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+class AuthActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityAuthBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
 //        setWindowInsets()
 
-        startActivity(Intent(this, StarterActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
     fun setWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.auth)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
 

@@ -42,46 +42,26 @@ class ListingsFragment : Fragment() {
     private fun setOnClickListeners() {
         val appCompatActivity = requireActivity() as AppCompatActivity
         with(binding) {
-            var isMyPropertiesBtnReselected = false
             myPropertiesBtn.setOnClickListener {
-                println("myPropertiesBtn setOnClickListener")
-                if (isMyPropertiesBtnReselected) {
-                    isMyPropertiesBtnReselected = false
-                    return@setOnClickListener
-                }
-
                 appCompatActivity.loadFragment(
                     listingsFragmentContainer.id,
                     MyPropertyFragment()
                 )
             }
 
-            myPropertiesBtn.addOnCheckedChangeListener { btn, isChecked ->
-                println("myPropertiesBtn addOnCheckedChangeListener")
-                if (!isChecked && !leadsBtn.isChecked) {
-                    btn.isChecked = true // Changing the checked state of the btn won't trigger the onclick
-                    isMyPropertiesBtnReselected = true
-                }
+            myPropertiesBtn.addOnCheckedChangeListener { _, isChecked ->
+                myPropertiesBtn.isClickable = !isChecked
             }
 
-            var isLeadsBtnReselected = false
             leadsBtn.setOnClickListener {
-                if (isLeadsBtnReselected) {
-                    isLeadsBtnReselected = false
-                    return@setOnClickListener
-                }
-
                 appCompatActivity.loadFragment(
                     listingsFragmentContainer.id,
                     LeadsFragment()
                 )
             }
 
-            leadsBtn.addOnCheckedChangeListener { btn, isChecked ->
-                if (!isChecked && !myPropertiesBtn.isChecked) {
-                    btn.isChecked = true
-                    isLeadsBtnReselected = true
-                }
+            leadsBtn.addOnCheckedChangeListener { _, isChecked ->
+                leadsBtn.isClickable = !isChecked
             }
         }
     }
