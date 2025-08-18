@@ -16,6 +16,7 @@ object PropertyTable {
     const val COLUMN_COVERED_PARKING = "covered_parking"
     const val COLUMN_OPEN_PARKING = "open_parking"
     const val COLUMN_PREFERRED_TENANT_TYPE = "preferred_tenant_type"
+    const val COLUMN_PREFERRED_BACHELOR_TYPE = "preferred_bachelor_type"
     const val COLUMN_IS_PET_ALLOWED = "is_pet_allowed" // ONLY 0 AND 1 (bool)
     const val COLUMN_AVAILABLE_FROM = "available_from"
     const val COLUMN_BHK = "bhk"
@@ -56,8 +57,9 @@ object PropertyTable {
             $COLUMN_COVERED_PARKING INTEGER NOT NULL,
             $COLUMN_OPEN_PARKING INTEGER NOT NULL,
             $COLUMN_PREFERRED_TENANT_TYPE TEXT DEFAULT 'ALL',
+            $COLUMN_PREFERRED_BACHELOR_TYPE TEXT DEFAULT NULL,
             $COLUMN_IS_PET_ALLOWED INTEGER,
-            $COLUMN_AVAILABLE_FROM DATE,
+            $COLUMN_AVAILABLE_FROM INTEGER NOT NULL,
             $COLUMN_BHK TEXT NOT NULL,
             $COLUMN_BUILT_UP_AREA INTEGER NOT NULL,
             $COLUMN_BATHROOM_COUNT INTEGER,
@@ -73,6 +75,14 @@ object PropertyTable {
             $COLUMN_MODIFIED_AT INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
             FOREIGN KEY($COLUMN_LANDLORD_ID) REFERENCES ${UserTable.TABLE_NAME}(${UserTable.COLUMN_ID})
         )
+    """
+
+    const val CREATE_INDEX = """
+        CREATE INDEX idx_city ON $TABLE_NAME($COLUMN_CITY)
+        CREATE INDEX idx_locality ON $TABLE_NAME($COLUMN_LOCALITY)
+        CREATE INDEX idx_furnishing_type ON $TABLE_NAME($COLUMN_FURNISHING_TYPE)
+        CREATE INDEX idx_bhk ON $TABLE_NAME($COLUMN_BHK)
+        CREATE INDEX idx_price ON $TABLE_NAME($COLUMN_PRICE)
     """
 
     const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"

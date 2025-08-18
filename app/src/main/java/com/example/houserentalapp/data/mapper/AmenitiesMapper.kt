@@ -1,51 +1,31 @@
 package com.example.houserentalapp.data.mapper
 
-import com.example.houserentalapp.data.local.db.entity.AmenitiesEntity
-import com.example.houserentalapp.data.local.db.entity.CountableInternalAmenitiesEntity
-import com.example.houserentalapp.data.local.db.entity.InternalAmenitiesEntity
-import com.example.houserentalapp.data.local.db.entity.SocialAmenitiesEntity
-import com.example.houserentalapp.domain.model.Amenities
-import com.example.houserentalapp.domain.model.CountableInternalAmenities
-import com.example.houserentalapp.domain.model.InternalAmenities
-import com.example.houserentalapp.domain.model.SocialAmenities
+import com.example.houserentalapp.data.local.db.entity.PropertyAmenityEntity
+import com.example.houserentalapp.domain.model.Amenity
+import com.example.houserentalapp.domain.model.enums.AmenityType
 
 object AmenitiesMapper {
-    fun fromDomain(amenities: Amenities): AmenitiesEntity {
-        return AmenitiesEntity(
-            socialAmenities = amenities.socialAmenities?.map {
-                SocialAmenitiesEntity(it.amenityId, it.name)
-            },
-            internalAmenities = amenities.internalAmenities?.map {
-                InternalAmenitiesEntity(it.amenityId, it.name)
-            },
-            countableInternalAmenities = amenities.countableInternalAmenities?.map {
-                CountableInternalAmenitiesEntity(it.amenityId, it.name, it.count)
-            }
-        )
+    fun fromDomain(amenities: List<Amenity>): List<PropertyAmenityEntity> {
+        return amenities.map {
+            PropertyAmenityEntity(
+                amenity = it.amenity,
+                amenityType = it.amenityType.name,
+                count = it.count
+            )
+        }
     }
 
-    fun toDomain(entity: AmenitiesEntity): Amenities {
-        return Amenities(
-            socialAmenities = entity.socialAmenities?.map {
-                if(it.amenityId == null)
-                    throw IllegalArgumentException("socialAmenity id is missing for ${it.name}")
+    fun toDomain(entity: List<PropertyAmenityEntity>): List<Amenity> {
+        return entity.map {
+            if(it.id == null)
+                throw IllegalArgumentException("Property Image id is missing")
 
-                SocialAmenities(it.amenityId, it.name)
-            },
-            internalAmenities = entity.internalAmenities?.map {
-                if(it.amenityId == null)
-                    throw IllegalArgumentException("internalAmenity id is missing for ${it.name}")
-
-                InternalAmenities(it.amenityId, it.name)
-            },
-            countableInternalAmenities = entity.countableInternalAmenities?.map {
-                if(it.amenityId == null)
-                    throw IllegalArgumentException(
-                        "countable internalAmenity id is missing for ${it.name}"
-                    )
-
-                CountableInternalAmenities(it.amenityId, it.name, it.count)
-            }
-        )
+            Amenity(
+                id = it.id,
+                amenity = it.amenity,
+                amenityType = AmenityType.valueOf(it.amenityType),
+                count = it.count
+            )
+        }
     }
 }

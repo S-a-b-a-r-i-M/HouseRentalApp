@@ -12,6 +12,7 @@ import com.example.houserentalapp.domain.model.UserPreferences
 import com.example.houserentalapp.domain.repo.UserRepo
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logError
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class UserRepoImpl(context: Context) : UserRepo {
     private val userDao = UserDao(DatabaseHelper.getInstance(context))
@@ -33,6 +34,7 @@ class UserRepoImpl(context: Context) : UserRepo {
             )
 
             val userId = userDao.insertUser(userEntity, hashedPassWord)
+            logInfo("User($userId) created successfully")
             Result.Success(userId)
         } catch (e: Exception) {
             logError("Error creating user", e)

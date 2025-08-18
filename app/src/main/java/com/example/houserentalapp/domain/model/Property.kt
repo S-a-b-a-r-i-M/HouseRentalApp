@@ -8,7 +8,6 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyTransactionType
 import com.example.houserentalapp.domain.model.enums.PropertyType
-import java.time.LocalDate
 
 data class Property (
     val id: Long?,
@@ -19,7 +18,7 @@ data class Property (
     val kind: PropertyKind,
     val type: PropertyType,
     val furnishingType: FurnishingType,
-    val amenities: Amenities, // On-hold
+    val amenities: List<Amenity>, // On-hold
     val preferredTenantType: TenantType,
     val preferredBachelorType: BachelorType?,
     val transactionType: PropertyTransactionType?, // Specific to Sell
@@ -29,7 +28,7 @@ data class Property (
     val availableFrom: Long,
     val bhk: BHK,
     val builtUpArea: Int,
-     val bathRoomCount: Int = 0, // optional
+    val bathRoomCount: Int = 0, // optional
     val isPetAllowed: Boolean,
     val isAvailable: Boolean,
     val viewCount: Int = 0,
@@ -53,25 +52,25 @@ data class Property (
         }
 
         // Furnishing type validation
-        when (furnishingType) {
-            FurnishingType.SEMI_FURNISHED -> {
-                val internalCount = amenities.internalAmenities?.size ?: 0
-                val countableCount = amenities.countableInternalAmenities?.size ?: 0
-                require(internalCount + countableCount >= 3) {
-                    "Semi-furnished property must have at least 3 internal amenities"
-                }
-            }
-            FurnishingType.FULLY_FURNISHED -> {
-                val internalCount = amenities.internalAmenities?.size ?: 0
-                val countableCount = amenities.countableInternalAmenities?.size ?: 0
-                require(internalCount + countableCount >= 5) {
-                    "Fully-furnished property must have at least 5 internal amenities"
-                }
-            }
-            FurnishingType.UN_FURNISHED -> {
-                // No specific requirement for unfurnished
-            }
-        }
+//        when (furnishingType) {
+//            FurnishingType.SEMI_FURNISHED -> {
+//                val internalCount = amenities.internalAmenities?.size ?: 0
+//                val countableCount = amenities.countableInternalAmenities?.size ?: 0
+//                require(internalCount + countableCount >= 3) {
+//                    "Semi-furnished property must have at least 3 internal amenities"
+//                }
+//            }
+//            FurnishingType.FULLY_FURNISHED -> {
+//                val internalCount = amenities.internalAmenities?.size ?: 0
+//                val countableCount = amenities.countableInternalAmenities?.size ?: 0
+//                require(internalCount + countableCount >= 5) {
+//                    "Fully-furnished property must have at least 5 internal amenities"
+//                }
+//            }
+//            FurnishingType.UN_FURNISHED -> {
+//                // No specific requirement for unfurnished
+//            }
+//        }
 
         // TransactionType
         if (transactionType == PropertyTransactionType.RESALE)

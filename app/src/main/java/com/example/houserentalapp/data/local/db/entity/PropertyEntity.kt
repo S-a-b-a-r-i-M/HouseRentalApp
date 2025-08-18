@@ -9,7 +9,7 @@ data class PropertyEntity (
     val kind: String,
     val type: String,
     val furnishingType: String,
-    val amenities: AmenitiesEntity,
+    val amenities: List<PropertyAmenityEntity>,
     val preferredTenantType: String,
     val preferredBachelorType: String?,
     val transactionType: String?,
@@ -19,7 +19,7 @@ data class PropertyEntity (
     val availableFrom: Long, // milli seconds
     val bhk: String,
     val builtUpArea: Int,
-     val bathRoomCount: Int = 0,
+    val bathRoomCount: Int = 0,
     val isPetAllowed: Boolean,
     val isAvailable: Boolean,
     val viewCount: Int = 0,

@@ -1,6 +1,6 @@
 package com.example.houserentalapp.domain.model.enums
 
-enum class SocietyAmenities {
+enum class SocialAmenitiesEnum {
     POWER_BACKUP,
     SWIMMING_POOL,
     GYM,
@@ -13,7 +13,7 @@ enum class SocietyAmenities {
     REGULAR_WATER_SUPPLY,
 }
 
-enum class FlatFurnishings {
+enum class InternalAmenitiesEnum {
     SOFA,
     STOVE,
     FRIDGE,
@@ -26,10 +26,17 @@ enum class FlatFurnishings {
     WIFI
 }
 
-enum class CountableFlatFurnishings {
+enum class CountableInternalAmenitiesEnum {
     AC,
     TV,
     BED,
     FAN,
     LIGHT,
+}
+
+enum class AmenityType {
+    INTERNAL,
+    INTERNAL_COUNTABLE,
+    SOCIAL,
+    SOCIAL_COUNTABLE
 }

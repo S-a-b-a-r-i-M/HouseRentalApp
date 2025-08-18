@@ -30,14 +30,9 @@ class UserDao(private val dbHelper: DatabaseHelper) {
             put(UserTable.COLUMN_CREATED_AT, userEntity.createdAt)
         }
 
-        try {
-            writableDB.insertOrThrow(
-                UserTable.TABLE_NAME, null, values
-            )
-        } catch (e: Exception) {
-            logError("Error inserting user", e)
-            throw e
-        }
+        writableDB.insertOrThrow(
+            UserTable.TABLE_NAME, null, values
+        )
     }
 
     suspend fun insertUserPreferences(entity: UserPreferenceEntity): Long =
@@ -49,14 +44,9 @@ class UserDao(private val dbHelper: DatabaseHelper) {
             put(UserPreferenceTable.COLUMN_BHK, entity.bhk)
         }
 
-        try {
-            writableDB.insertOrThrow(
-                UserPreferenceTable.TABLE_NAME, null, values
-            )
-        } catch (e: Exception) {
-            logError("Error inserting user preferences", e)
-            throw e
-        }
+        writableDB.insert(
+            UserPreferenceTable.TABLE_NAME, null, values
+        )
     }
 
     // -------------- READ --------------
