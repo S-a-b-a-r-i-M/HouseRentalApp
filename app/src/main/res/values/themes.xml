@@ -3,8 +3,7 @@
     <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/primary_blue</item>
         <item name="colorPrimaryVariant">@color/primary_blue</item>
-        <item name="android:background">@color/white</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
         <item name="fontFamily">@font/poppins</item>
 
         <!-- Button Theme Integration -->
@@ -41,7 +40,7 @@
     </style>
 
     <style name="TextAppearance.Headline3" parent="@style/TextAppearance.Headline2">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <style name="TextAppearance.Body1" parent="TextAppearance.Material3.BodyLarge">
@@ -80,7 +79,9 @@
         <item name="errorEnabled">true</item>
     </style>
 
-    <style name="Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+    <style
+        name="Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="boxStrokeColor">@color/stroke_color</item>
         <item name="hintTextColor">@color/gray_dark</item>
         <item name="android:textColorHint">@color/gray_medium</item>

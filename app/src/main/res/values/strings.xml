@@ -59,4 +59,6 @@
     <string name="security_deposit">Security Deposit</string>
     <string name="preferred_tenant_type">Preferred Tenant Type</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="flat_furnishings">Flat Furnishings</string>
+    <string name="society_amenities">Society Amenities</string>
 </resources>

@@ -41,17 +41,17 @@
                 android:id="@+id/bottomNavigation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="65dp"
+                android:background="@color/primary_blue"
                 android:elevation="100dp"
 
-                app:itemIconSize="26dp"
-                app:itemActiveIndicatorStyle="@style/Custom.Indicator"
-                app:itemIconTint="@color/bottom_nav_icon_color"
                 app:itemPaddingTop="4dp"
                 app:itemPaddingBottom="0dp"
-                app:itemTextAppearanceActiveBoldEnabled="true"
-                app:itemTextColor="@color/bottom_nav_text_color"
+                app:itemIconSize="26dp"
                 app:labelVisibilityMode="labeled"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:itemActiveIndicatorStyle="@style/Custom.Indicator"
+                app:itemIconTint="@color/bottom_nav_icon_color"
+                app:itemTextColor="@color/bottom_nav_text_color"
                 app:menu="@menu/bottom_nav_menu">
 
             </com.google.android.material.bottomnavigation.BottomNavigationView>
