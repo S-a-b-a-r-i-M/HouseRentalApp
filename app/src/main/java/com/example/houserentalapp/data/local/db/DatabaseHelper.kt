@@ -4,8 +4,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
-import com.example.houserentalapp.data.local.db.tables.PropertyInternalAmenitiesTable
-import com.example.houserentalapp.data.local.db.tables.PropertySocialAmenitiesTable
+import com.example.houserentalapp.data.local.db.tables.PropertyAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserInterestedPropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
@@ -36,12 +35,13 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
             it.execSQL(PropertyTable.CREATE_TABLE)
             it.execSQL(UserPropertyActionTable.CREATE_TABLE)
             it.execSQL(UserInterestedPropertyTable.CREATE_TABLE)
-            it.execSQL(PropertySocialAmenitiesTable.CREATE_TABLE)
-            it.execSQL(PropertyInternalAmenitiesTable.CREATE_TABLE)
+            it.execSQL(PropertyAmenitiesTable.CREATE_TABLE)
             it.execSQL(PropertyImagesTable.CREATE_TABLE)
 
           // INDEX CREATION
-            it.execSQL(UserTable.CREATE_INDEXES)
+//            it.execSQL(UserTable.CREATE_INDEXES) // Let's see the performance without indexes first
+//            it.execSQL(PropertyTable.CREATE_INDEX)
+//            it.execSQL(PropertyImagesTable.CREATE_INDEX)
         }
     }
 
