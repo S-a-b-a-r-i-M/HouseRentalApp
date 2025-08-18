@@ -6,7 +6,7 @@ import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyType
 
 data class PropertySummary(
-    val id: Long?,
+    val id: Long,
     val name: String,
     val description: String?,
     val lookingTo: LookingTo,

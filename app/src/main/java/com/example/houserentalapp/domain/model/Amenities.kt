@@ -6,8 +6,8 @@ data class Amenities (
     val countableInternalAmenities: List<CountableInternalAmenities>?
 )
 
-data class SocialAmenities(val amenityId: Long, val name: String)
+data class SocialAmenities(val amenityId: Long?, val name: String)
 
-data class InternalAmenities(val amenityId: Long, val name: String)
+data class InternalAmenities(val amenityId: Long?, val name: String)
 
-data class CountableInternalAmenities(val amenityId: Long, val name: String, val count: Int)
+data class CountableInternalAmenities(val amenityId: Long?, val name: String, val count: Int)

@@ -1,0 +1,16 @@
+package com.example.houserentalapp.data.local.db.entity
+
+data class PropertySummaryEntity (
+    val id: Long,
+    val name: String,
+    val description: String?,
+    val lookingTo: String,
+    val type: String,
+    val furnishingType: String,
+    val bhk: String,
+    val price: Int,
+    val builtUpArea: Int,
+    val address: PropertyAddressEntity,
+    val primaryImage: PropertyImageEntity,
+    val viewCount: Int = 0,
+)

@@ -26,10 +26,10 @@ data class Property (
     val ageOfProperty: Int?, // Specific to Sell
     val countOfCoveredParking: Int,
     val countOfOpenParking: Int,
-    val availableFrom: LocalDate,
+    val availableFrom: Long,
     val bhk: BHK,
     val builtUpArea: Int,
-    // val bathRoomCount: Int, // optional
+     val bathRoomCount: Int = 0, // optional
     val isPetAllowed: Boolean,
     val isAvailable: Boolean,
     val viewCount: Int = 0,
