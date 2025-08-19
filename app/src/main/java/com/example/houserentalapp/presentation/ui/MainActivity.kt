@@ -8,9 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.ActivityMainBinding
-import com.example.houserentalapp.domain.repo.UserRepo
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
@@ -47,103 +45,6 @@ class MainActivity : AppCompatActivity() {
         setBottomNavigation()
         if (savedInstanceState == null)
             loadFragment(HomeFragment())
-
-        val userRepo: UserRepo = UserRepoImpl(this)
-        /*
-        runBlocking {
-            val phone = "9942976912"
-            val createUserResult =  userRepo.createUser(
-               "sabari",
-               "9942976912",
-               "sabari@gmail.com",
-               PasswordHasher.getHashPassword("fsdfsafgs4324v")
-            )
-            when(createUserResult) {
-                is Result.Success<Long> -> {
-                    val userId: Long = createUserResult.data
-                    logInfo("User($userId) Created")
-
-                    // get user
-                    when (val result = userRepo.getUserById(userId)) {
-                        is Result.Success<User?> -> {
-                            if (result.data == null)
-                                throw IllegalStateException("No user found for userid: $userId")
-
-                            logInfo("User retrieved (${result.data}) Created")
-
-                            // create UserPreferences
-                            val userPreferencesResult = userRepo.createUserPreferences(
-                                userId, UserPreferences(null, null, null)
-                            )
-                            when (userPreferencesResult) {
-                                is Result.Success<Long> -> {
-                                    logInfo("User Preferences (${userPreferencesResult.data}) Created")
-                                }
-                                is Result.Error -> {
-                                    logError(userPreferencesResult.message)
-                                }
-                            }
-
-                            // get UserPreferences
-                            when (val result2 = userRepo.getUserPreferences(userId)) {
-                                is Result.Success<UserPreferences?> -> {
-                                    if (result2.data == null)
-                                        throw IllegalStateException("No user found for userid: $userId")
-
-                                    logInfo("User Preferences (${result2.data}) retrieved")
-                                }
-                                is Result.Error -> {
-                                    logError(result2.message)
-                                }
-                            }
-
-                            // update user prefs
-                            when (val result3 = userRepo.updateUserPreferences(
-                                userId,
-                                UserPreferences(null, null, LookingTo.RENT)
-                            )) {
-                                is Result.Success<Boolean> -> {
-                                    if (!result3.data)
-                                        throw IllegalStateException("prefrence update failed")
-
-                                    logInfo("User Preferences updated")
-                                }
-                                is Result.Error -> {
-                                    logError(result3.message)
-                                }
-                            }
-                        }
-                        is Result.Error -> logError(result.message)
-                    }
-
-                    // get user by phone
-                    when (val result = userRepo.getUserByPhone("9942976912")) {
-                        is Result.Success<User?> -> {
-                            if (result.data == null)
-                                throw IllegalStateException("No user found for phone")
-
-                            logInfo("User retrieved (${result.data})")
-                        }
-                        is Result.Error -> logError(result.message)
-                    }
-
-
-                }
-                is Result.Error -> logError(createUserResult.message)
-            }
-
-            when(val result = userRepo.isPhoneNumberExists(phone)) {
-                is Result.Success<Boolean> -> {
-                    println("isPhoneNumberExists Success")
-                }
-                is Result.Error -> {
-                    println("isPhoneNumberExists Error")
-                }
-            }
-
-
-       }
-         */
     }
 
     private fun setWindowInsets() {

@@ -61,4 +61,6 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="flat_furnishings">Flat Furnishings</string>
     <string name="society_amenities">Society Amenities</string>
+    <string name="women_only">Women Only</string>
+    <string name="men_only">Men Only</string>
 </resources>

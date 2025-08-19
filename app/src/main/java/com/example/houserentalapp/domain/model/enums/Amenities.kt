@@ -1,37 +1,38 @@
 package com.example.houserentalapp.domain.model.enums
 
-enum class SocialAmenitiesEnum {
-    POWER_BACKUP,
-    SWIMMING_POOL,
-    GYM,
-    LIFT,
-    GARDEN,
-    PLAY_AREA,
-    CCTV,
-    GATED_COMMUNITY,
-    COMMUNITY_HALL,
-    REGULAR_WATER_SUPPLY,
+enum class SocialAmenity(val readable: String) {
+    POWER_BACKUP("Power Backup"),
+    SWIMMING_POOL("Swimming Pool"),
+    GYM("Gym"),
+    LIFT("Lift"),
+    GARDEN("Garden"),
+    PLAY_AREA("Play Area"),
+    CCTV("CCTV"),
+    GATED_COMMUNITY("Gated Community"),
+    COMMUNITY_HALL("Community Hall"),
+    REGULAR_WATER_SUPPLY("Regular Water Supply"),
 }
 
-enum class InternalAmenitiesEnum {
-    SOFA,
-    STOVE,
-    FRIDGE,
-    CHIMNEY,
-    MICROWAVE,
-    DINING_TABLE,
-    WASHING_MACHINE,
-    WATER_PURIFIER,
-    WATER_HEATER,
-    WIFI
+enum class InternalAmenity(val readable: String) {
+    SOFA("Sofa"),
+    STOVE("Stove"),
+    FRIDGE("Fridge"),
+    CHIMNEY("Chimney"),
+    MICROWAVE("Microwave"),
+    DINING_TABLE("Dining Table"),
+    WASHING_MACHINE("Washing Machine"),
+    WATER_PURIFIER("Water Purifier"),
+    WATER_HEATER("Water Heater"),
+    WIFI("WiFi"),
 }
 
-enum class CountableInternalAmenitiesEnum {
-    AC,
-    TV,
-    BED,
-    FAN,
-    LIGHT,
+
+enum class CountableInternalAmenity(val readable: String) {
+    AC("AC"),
+    TV("TV"),
+    BED("Bed"),
+    FAN("Fan"),
+    LIGHT("Light"),
 }
 
 enum class AmenityType {
