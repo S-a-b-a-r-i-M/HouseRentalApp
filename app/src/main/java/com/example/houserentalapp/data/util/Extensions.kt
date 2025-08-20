@@ -1,6 +1,5 @@
 package com.example.houserentalapp.data.util
 
-import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlin.enums.EnumEntries
 

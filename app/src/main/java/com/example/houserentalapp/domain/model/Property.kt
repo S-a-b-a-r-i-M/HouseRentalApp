@@ -19,8 +19,8 @@ data class Property (
     val type: PropertyType,
     val furnishingType: FurnishingType,
     val amenities: List<Amenity>, // On-hold
-    val preferredTenantType: TenantType,
-    val preferredBachelorType: BachelorType?,
+    val preferredTenantType: List<TenantType>,
+    val preferredBachelorType: String? = BachelorType.BOTH.readable,
     val transactionType: PropertyTransactionType?, // Specific to Sell
     val ageOfProperty: Int?, // Specific to Sell
     val countOfCoveredParking: Int,
@@ -36,56 +36,15 @@ data class Property (
     val price: Int,
     val isMaintenanceSeparate: Boolean,
     val maintenanceCharges: Int?,
-    val numberOfSecurityDepositMonths: Int,
+    val securityDepositAmount: Int?,
     // Address
     val address: PropertyAddress,
     // Images
     val images: List<PropertyImage>,
     // TimeLine
-    val createdAt: Long
+    val createdAt: Long = System.currentTimeMillis()
     ) {
     init {
-        // Validation
-        // Name
-        require(name.trim().length in 3..50) {
-            "Property name must be between 3 and 50 characters"
-        }
-
-        // Furnishing type validation
-//        when (furnishingType) {
-//            FurnishingType.SEMI_FURNISHED -> {
-//                val internalCount = amenities.internalAmenities?.size ?: 0
-//                val countableCount = amenities.countableInternalAmenities?.size ?: 0
-//                require(internalCount + countableCount >= 3) {
-//                    "Semi-furnished property must have at least 3 internal amenities"
-//                }
-//            }
-//            FurnishingType.FULLY_FURNISHED -> {
-//                val internalCount = amenities.internalAmenities?.size ?: 0
-//                val countableCount = amenities.countableInternalAmenities?.size ?: 0
-//                require(internalCount + countableCount >= 5) {
-//                    "Fully-furnished property must have at least 5 internal amenities"
-//                }
-//            }
-//            FurnishingType.UN_FURNISHED -> {
-//                // No specific requirement for unfurnished
-//            }
-//        }
-
-        // TransactionType
-        if (transactionType == PropertyTransactionType.RESALE)
-            requireNotNull(ageOfProperty) {
-                "Age of property is required for resale properties"
-            }
-
-        // Maintenance charges
-        if (isMaintenanceSeparate) {
-            requireNotNull(maintenanceCharges) {
-                "Maintenance charges must be specified when maintenance is separate"
-            }
-            require(maintenanceCharges >= 0) {
-                "Maintenance charges cannot be negative"
-            }
-        }
+        // Domain Level Validation
     }
 }

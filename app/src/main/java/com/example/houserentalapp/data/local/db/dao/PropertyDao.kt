@@ -52,7 +52,8 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             put(PropertyTable.COLUMN_KIND, entity.kind)
             put(PropertyTable.COLUMN_TYPE, entity.type)
             put(PropertyTable.COLUMN_FURNISHING_TYPE, entity.furnishingType)
-            put(PropertyTable.COLUMN_PREFERRED_TENANT_TYPE, entity.preferredTenantType)
+            put(PropertyTable.COLUMN_PREFERRED_TENANTS, entity.preferredTenants)
+            put(PropertyTable.COLUMN_PREFERRED_BACHELOR_TYPE, entity.preferredBachelorType)
             put(PropertyTable.COLUMN_TRANSACTION_TYPE, entity.transactionType)
             put(PropertyTable.COLUMN_AGE_OF_PROPERTY, entity.ageOfProperty)
             put(PropertyTable.COLUMN_COVERED_PARKING, entity.countOfCoveredParking)
@@ -68,7 +69,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             put(PropertyTable.COLUMN_PRICE, entity.price)
             put(PropertyTable.COLUMN_IS_MAINTENANCE_SEPARATE, if (entity.isMaintenanceSeparate) 1 else 0)
             put(PropertyTable.COLUMN_MAINTENANCE_CHARGES, entity.maintenanceCharges)
-            put(PropertyTable.COLUMN_SECURITY_DEPOSIT, entity.numberOfSecurityDepositMonths)
+            put(PropertyTable.COLUMN_SECURITY_DEPOSIT, entity.securityDepositAmount)
             // ADDRESS
             put(PropertyTable.COLUMN_STREET_NAME, entity.address.streetName)
             put(PropertyTable.COLUMN_LOCALITY, entity.address.locality)
@@ -432,7 +433,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 type = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_TYPE)),
                 furnishingType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_FURNISHING_TYPE)),
                 amenities = emptyList(), // Will be populated separately
-                preferredTenantType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_PREFERRED_TENANT_TYPE)),
+                preferredTenants = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_PREFERRED_TENANTS)),
                 preferredBachelorType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_PREFERRED_BACHELOR_TYPE)),
                 transactionType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_TRANSACTION_TYPE)),
                 ageOfProperty = getIntOrNull(getColumnIndexOrThrow(PropertyTable.COLUMN_AGE_OF_PROPERTY)),
@@ -448,7 +449,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 price = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_PRICE)),
                 isMaintenanceSeparate = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_MAINTENANCE_SEPARATE)) == 1,
                 maintenanceCharges = getIntOrNull(getColumnIndexOrThrow(PropertyTable.COLUMN_MAINTENANCE_CHARGES)),
-                numberOfSecurityDepositMonths = getInt(
+                securityDepositAmount = getInt(
                     getColumnIndexOrThrow(
                         PropertyTable.COLUMN_SECURITY_DEPOSIT
                     )

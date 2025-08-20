@@ -45,5 +45,20 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
         }
     }
 
-    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) { }
+    override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
+        // TODO: Need to deep dive
+        /*
+        db?.let {
+            it.execSQL(UserTable.DROP_TABLE)
+            it.execSQL(UserPreferenceTable.DROP_TABLE)
+            it.execSQL(PropertyTable.DROP_TABLE)
+            it.execSQL(UserPropertyActionTable.DROP_TABLE)
+            it.execSQL(UserInterestedPropertyTable.DROP_TABLE)
+            it.execSQL(PropertyAmenitiesTable.DROP_TABLE)
+            it.execSQL(PropertyImagesTable.DROP_TABLE)
+
+            onCreate(db)
+        }
+        */
+    }
 }

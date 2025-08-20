@@ -5,7 +5,6 @@ import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.enums.BHK
-import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyKind
@@ -25,8 +24,8 @@ object PropertyMapper {
             type = domain.type.name,
             furnishingType = domain.furnishingType.name,
             amenities = AmenitiesMapper.fromDomain(domain.amenities),
-            preferredTenantType = domain.preferredTenantType.name,
-            preferredBachelorType = domain.preferredBachelorType?.name,
+            preferredTenants = domain.preferredTenantType.joinToString(","),
+            preferredBachelorType = domain.preferredBachelorType,
             transactionType = domain.transactionType?.name,
             ageOfProperty = domain.ageOfProperty,
             countOfCoveredParking = domain.countOfCoveredParking,
@@ -41,7 +40,7 @@ object PropertyMapper {
             price = domain.price,
             isMaintenanceSeparate = domain.isMaintenanceSeparate,
             maintenanceCharges = domain.maintenanceCharges,
-            numberOfSecurityDepositMonths = domain.numberOfSecurityDepositMonths,
+            securityDepositAmount = domain.securityDepositAmount,
             address = PropertyAddressMapper.fromDomain(domain.address),
             images = domain.images.map { PropertyImageMapper.fromDomain(it) },
             createdAt = domain.createdAt
@@ -59,8 +58,10 @@ object PropertyMapper {
             type = PropertyType.valueOf(entity.type),
             furnishingType = FurnishingType.valueOf(entity.furnishingType),
             amenities = AmenitiesMapper.toDomain(entity.amenities),
-            preferredTenantType = TenantType.valueOf(entity.preferredTenantType),
-            preferredBachelorType = entity.preferredBachelorType?.let { BachelorType.valueOf(it) },
+            preferredTenantType = entity.preferredTenants
+                .split(",")
+                .map { TenantType.fromString(it)!! },
+            preferredBachelorType = entity.preferredBachelorType,
             transactionType = entity.transactionType?.let { PropertyTransactionType.valueOf(it) },
             ageOfProperty = entity.ageOfProperty,
             countOfCoveredParking = entity.countOfCoveredParking,
@@ -75,7 +76,7 @@ object PropertyMapper {
             price = entity.price,
             isMaintenanceSeparate = entity.isMaintenanceSeparate,
             maintenanceCharges = entity.maintenanceCharges,
-            numberOfSecurityDepositMonths = entity.numberOfSecurityDepositMonths,
+            securityDepositAmount = entity.securityDepositAmount,
             address = PropertyAddressMapper.toDomain(entity.address),
             images = entity.images.map { PropertyImageMapper.toDomain(it) },
             createdAt = entity.createdAt

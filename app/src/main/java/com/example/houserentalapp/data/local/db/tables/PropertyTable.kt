@@ -15,7 +15,7 @@ object PropertyTable {
     const val COLUMN_FURNISHING_TYPE = "furnishing_type"
     const val COLUMN_COVERED_PARKING = "covered_parking"
     const val COLUMN_OPEN_PARKING = "open_parking"
-    const val COLUMN_PREFERRED_TENANT_TYPE = "preferred_tenant_type"
+    const val COLUMN_PREFERRED_TENANTS = "preferred_tenants"
     const val COLUMN_PREFERRED_BACHELOR_TYPE = "preferred_bachelor_type"
     const val COLUMN_IS_PET_ALLOWED = "is_pet_allowed" // ONLY 0 AND 1 (bool)
     const val COLUMN_AVAILABLE_FROM = "available_from"
@@ -34,7 +34,7 @@ object PropertyTable {
     const val COLUMN_PRICE = "price" // It can be rent or budget(sell).
     const val COLUMN_IS_MAINTENANCE_SEPARATE = "is_maintenance_separate" // ONLY 0 AND 1 (bool)
     const val COLUMN_MAINTENANCE_CHARGES = "maintenance_charges"
-    const val COLUMN_SECURITY_DEPOSIT = "security_deposit" // none or number of months
+    const val COLUMN_SECURITY_DEPOSIT = "security_deposit" // amount
     // TIMELINE ---------->
     const val COLUMN_CREATED_AT = "created_at"
     const val COLUMN_MODIFIED_AT = "modified_at"
@@ -56,7 +56,7 @@ object PropertyTable {
             $COLUMN_FURNISHING_TYPE TEXT NOT NULL,
             $COLUMN_COVERED_PARKING INTEGER NOT NULL,
             $COLUMN_OPEN_PARKING INTEGER NOT NULL,
-            $COLUMN_PREFERRED_TENANT_TYPE TEXT DEFAULT 'ALL',
+            $COLUMN_PREFERRED_TENANTS TEXT DEFAULT 'ALL',
             $COLUMN_PREFERRED_BACHELOR_TYPE TEXT DEFAULT NULL,
             $COLUMN_IS_PET_ALLOWED INTEGER,
             $COLUMN_AVAILABLE_FROM INTEGER NOT NULL,

@@ -10,7 +10,7 @@ data class PropertyEntity (
     val type: String,
     val furnishingType: String,
     val amenities: List<PropertyAmenityEntity>,
-    val preferredTenantType: String,
+    val preferredTenants: String,
     val preferredBachelorType: String?,
     val transactionType: String?,
     val ageOfProperty: Int?,
@@ -27,7 +27,7 @@ data class PropertyEntity (
     val price: Int,
     val isMaintenanceSeparate: Boolean,
     val maintenanceCharges: Int?,
-    val numberOfSecurityDepositMonths: Int,
+    val securityDepositAmount: Int?,
     // Address
     val address: PropertyAddressEntity,
     // Images

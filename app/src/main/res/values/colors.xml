@@ -12,7 +12,7 @@
     <color name="gray_light">#E0E0E0</color>
     <color name="gray_dark">#616161</color>
     <color name="iconButtonColor">#616161</color>
-    <color name="red_error">#F44336</color>
+    <color name="red_error">#AF2B1E</color>
     <color name="red_error_light">#FFCDD2</color>
     <color name="green_success">#4CAF50</color>
     <color name="green_success_light">#C8E6C9</color>

@@ -5,6 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presentation.ui.property.CreatePropertyFragment">
 
   <!--  APP BAR  -->
@@ -69,6 +70,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/looking_to"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvLookingToErr"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:visibility="gone"
+                android:background="@drawable/baseline_error_24"
+                android:backgroundTint="@color/red_error"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
@@ -417,120 +428,40 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/listOfFurnishingType" />
 
-          <!-- Built-Up Area -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilBuiltUpArea"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="10dp"
-                android:hint="@string/built_up_area"
-                app:counterEnabled="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnFurnishingDetails">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etBuiltUpArea"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:imeOptions="actionNext"
-                    android:inputType="number"
-                    android:maxLines="1" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
           <!-- Parking -->
             <!-- Covered Parking -->
-            <LinearLayout
+            <com.example.houserentalapp.presentation.ui.reusable.CounterView
                 android:id="@+id/coveredParkingContainer"
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:gravity="center_vertical"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tilBuiltUpArea" >
-
-                <TextView
-                    android:id="@+id/tvCoveredParking"
-                    style="@style/TextAppearance.Label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/covered_parking" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/ibtnDecCoveredParking"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/outline_remove_24"
-                    app:backgroundTint="@color/iconButtonColor" />
-
-                <TextView
-                    android:id="@+id/tvCoveredParkingCount"
-                    style="@style/TextAppearance.Label"
-                    android:layout_width="30dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="0"
-                    android:layout_marginHorizontal="5dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/ibtnIncCoveredParking"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/outline_add_24"
-                    app:backgroundTint="@color/iconButtonColor" />
-
-            </LinearLayout>
-
-            <!-- Open Parking -->
-            <LinearLayout
-                android:id="@+id/openParkingContainer"
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:gravity="center_vertical"
+                app:label="@string/covered_parking"
+                app:labelSize="12sp"
+                app:labelColor="@color/gray_dark"
+                app:minCount="0"
+                app:maxCount="8"
+                app:iconWidth="25dp"
+                app:iconHeight="25dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/coveredParkingContainer" >
+                app:layout_constraintTop_toBottomOf="@+id/btnFurnishingDetails"/>
 
-                <TextView
-                    android:id="@+id/tvOpenParking"
-                    style="@style/TextAppearance.Label"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/open_parking" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/ibtnDecOpenParking"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/outline_remove_24"
-                    app:backgroundTint="@color/iconButtonColor" />
-
-                <TextView
-                    android:id="@+id/tvOpenParkingCount"
-                    style="@style/TextAppearance.Label"
-                    android:layout_width="30dp"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="0"
-                    android:layout_marginHorizontal="5dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/ibtnIncOpenParking"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:background="@drawable/outline_add_24"
-                    app:backgroundTint="@color/iconButtonColor" />
-
-            </LinearLayout>
+            <!-- Open Parking -->
+            <com.example.houserentalapp.presentation.ui.reusable.CounterView
+                android:id="@+id/openParkingContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:label="@string/open_parking"
+                app:labelSize="12sp"
+                app:labelColor="@color/gray_dark"
+                app:minCount="0"
+                app:maxCount="8"
+                app:iconWidth="25dp"
+                app:iconHeight="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coveredParkingContainer"/>
 
           <!-- Pet Allowed -->
             <TextView
@@ -604,7 +535,7 @@
                 android:layout_marginTop="4dp"
                 android:layout_marginStart="10dp"
                 android:checkable="true"
-                android:text="Bachelors"
+                android:text="@string/bachelors"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toBottomOf="@+id/tvTenantType" />
@@ -629,7 +560,7 @@
                     android:layout_columnSpan="2"
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="10dp"
-                    android:text="Select your preference for bachelors" />
+                    android:text="@string/select_your_preference_for_bachelors" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_open_for_both"
@@ -639,7 +570,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_columnWeight="1"
                     android:checkable="true"
-                    android:text="Open for Both" />
+                    android:text="@string/open_for_both" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOnlyMen"
@@ -649,7 +580,7 @@
                     android:layout_columnWeight="1"
                     android:layout_marginStart="10dp"
                     android:checkable="true"
-                    android:text="Men Only" />
+                    android:text="@string/men_only" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOnlyWomen"
@@ -659,9 +590,33 @@
                     android:layout_columnWeight="1"
                     android:layout_marginEnd="10dp"
                     android:checkable="true"
-                    android:text="Women Only" />
+                    android:text="@string/women_only" />
 
             </GridLayout>
+
+            <!-- Built-Up Area -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilBuiltUpArea"
+                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                android:hint="@string/built_up_area"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/preferredBachelorContainer">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etBuiltUpArea"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="number"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
           <!-- Available From -->
             <com.google.android.material.textfield.TextInputLayout
@@ -669,13 +624,13 @@
                 style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="4dp"
                 android:hint="@string/available_from"
                 app:hintAnimationEnabled="true"
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/preferredBachelorContainer">
+                app:layout_constraintTop_toBottomOf="@+id/tilBuiltUpArea">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etAvailableFrom"
@@ -700,7 +655,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tilAvailableFrom">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etBudget"
+                    android:id="@+id/et_price"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
@@ -710,12 +665,12 @@
 
           <!-- Maintenance Charges -->
             <TextView
-                android:id="@+id/tvMaintenanceChanges"
+                android:id="@+id/tvMaintenanceSeparate"
                 style="@style/TextAppearance.Label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="@string/maintenance_changes"
+                android:text="@string/maintenance_charges"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilBudget" />
 
@@ -730,7 +685,7 @@
                 android:text="@string/include_in_rent"
                 app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceChanges" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceSeparate" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSeparate"
@@ -743,7 +698,7 @@
                 android:text="@string/separate"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceChanges" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceSeparate" />
 
           <!-- If Separate MaintenanceChanges -->
             <com.google.android.material.textfield.TextInputLayout
@@ -797,27 +752,28 @@
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
-        android:text="Next" />
+        android:text="@string/post_property" />
 
       <!-- Scrollable Form Content -->
-<!--                            <com.google.android.material.textfield.TextInputLayout-->
-<!--                                android:id="@+id/tilBHK"-->
-<!--                                style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
-<!--                                android:layout_width="0dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_weight="1"-->
-<!--                                android:layout_marginStart="8dp"-->
-<!--                                android:hint="@string/bhk">-->
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/tilBHK"-->
+<!--            style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
+<!--            android:layout_width="0dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_weight="1"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:hint="@string/bhk">-->
 
-<!--                                <AutoCompleteTextView-->
-<!--                                    android:id="@+id/actvBHK"-->
-<!--                                    android:layout_width="match_parent"-->
-<!--                                    android:layout_height="wrap_content"-->
-<!--                                    android:inputType="none"-->
-<!--                                    android:focusable="false" />-->
+<!--            <AutoCompleteTextView-->
+<!--                android:id="@+id/actvBHK"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:inputType="none"-->
+<!--                android:focusable="false" />-->
 
 <!--                            </com.google.android.material.textfield.TextInputLayout>-->
 </LinearLayout>

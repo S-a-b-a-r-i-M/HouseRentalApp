@@ -1,28 +1,25 @@
 package com.example.houserentalapp.presentation.ui.property
 
-import android.util.Log
-import android.view.View
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
-import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.google.android.material.button.MaterialButton
 
 data class SelectableMaterialButtonData(
     val button: MaterialButton,
-    val onSelect: () -> Unit = { },
-    val onDeSelect: () -> Unit = { },
-    val onClick: View.OnClickListener? = null,
+    val onSelectChange: (Boolean) -> Unit = { }
 )
 
 // TODO-DOUBT: Will it lead to any kind of memory leaks ?
 class SingleSelectableGroupedButtons(buttonsData: List<SelectableMaterialButtonData>) {
 
     private var selectedButtonData: SelectableMaterialButtonData? = null
+    private var onOptionSelectedListener: ((SelectableMaterialButtonData) -> Unit)? = null
+
+    fun setOnOptionSelectedListener(onSelect: (SelectableMaterialButtonData) -> Unit) {
+        this.onOptionSelectedListener = onSelect
+    }
 
     init {
         buttonsData.forEach {
-            // ONCLICK
-            it.button.setOnClickListener(it.onClick)
-
             // CHECKED CHANGE
             it.button.addOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
@@ -37,9 +34,10 @@ class SingleSelectableGroupedButtons(buttonsData: List<SelectableMaterialButtonD
                     }
                     // ASSIGN NEW BUTTON DATA
                     selectedButtonData = it.apply { button.isClickable = false }
-                    it.onSelect() // Call Select of new button
-                } else
-                    it.onDeSelect() // Call Select of UnSelected button
+                    onOptionSelectedListener?.invoke(it) // Common select handler
+                }
+
+                it.onSelectChange(isChecked) // Call Select change of the button
             }
         }
     }
