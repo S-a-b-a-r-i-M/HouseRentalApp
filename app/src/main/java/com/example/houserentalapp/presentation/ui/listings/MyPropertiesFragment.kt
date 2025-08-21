@@ -34,10 +34,10 @@ class MyPropertyFragment : Fragment() {
         binding = FragmentMyPropertyBinding.bind(view)
 
         // SET ADD PROPERTY BUTTON
-        handleAddPropertyButtonClick()
+        setupListeners()
     }
 
-    fun handleAddPropertyButtonClick() {
+    fun setupListeners() {
         binding.addPropertyBtn.setOnClickListener {
             logInfo("addProperty clicked requireActivity : ${requireActivity()}--------->")
             (requireActivity() as AppCompatActivity).addFragment(

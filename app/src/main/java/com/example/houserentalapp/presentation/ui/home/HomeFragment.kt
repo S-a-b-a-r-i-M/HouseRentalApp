@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentHomeBinding
+import com.example.houserentalapp.presentation.ui.MainActivity
 
 class HomeFragment : Fragment() {
 
@@ -23,5 +24,17 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
 
+        setListeners()
+    }
+
+    fun setListeners() {
+        with(binding) {
+            searchBar.setOnClickListener {
+                (context as MainActivity).loadFragment(
+                    FiltersFragment(),
+                    true
+                )
+            }
+        }
     }
 }

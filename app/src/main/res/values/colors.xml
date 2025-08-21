@@ -10,6 +10,7 @@
     <color name="primary_blue_light">#94C0D8</color>
     <color name="gray_medium">#adb5bd</color>
     <color name="gray_light">#E0E0E0</color>
+    <color name="gray_ver_light">#F2F1F1</color>
     <color name="gray_dark">#616161</color>
     <color name="iconButtonColor">#616161</color>
     <color name="red_error">#AF2B1E</color>

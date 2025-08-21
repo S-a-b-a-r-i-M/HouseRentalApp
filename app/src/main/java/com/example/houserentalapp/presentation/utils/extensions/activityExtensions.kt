@@ -15,12 +15,9 @@ fun AppCompatActivity.loadFragment(
     fragment: Fragment,
     pushToBackStack: Boolean = false
 ) {
-    // EXISTING FRAGMENT
-    val existingFragment = supportFragmentManager.findFragmentById(containerId)
-
     supportFragmentManager.beginTransaction().apply {
         replace(containerId, fragment)
-        if (pushToBackStack) addToBackStack(null) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+        if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
         commit()
     }
 }

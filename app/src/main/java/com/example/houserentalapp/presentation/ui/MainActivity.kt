@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,7 @@ import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.shortlisted.ShortlistsFragment
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
 class MainActivity : AppCompatActivity() {
 
@@ -94,10 +96,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(binding.pageFragmentContainer.id, fragment)
-            .commit()
+    fun loadFragment(fragment: Fragment, pushToBackStack: Boolean = false, containerId: Int = binding.pageFragmentContainer.id,) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(containerId, fragment)
+            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+            commit()
+        }
+    }
+
+    fun showBottomNav() {
+        binding.bottomNavigationContainer.visibility = View.VISIBLE
+    }
+
+    fun hideBottomNav() {
+        binding.bottomNavigationContainer.visibility = View.GONE
     }
 }

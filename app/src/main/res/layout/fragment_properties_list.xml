@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_blue"
+    tools:context=".presentation.ui.profile.PropertiesListFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="100dp" >
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                style="@style/Widget.Material3.CollapsingToolbar"
+                android:layout_width="match_parent"
+                android:layout_height="65dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:paddingEnd="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/backImgBtn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="2dp"
+                        android:background="@null"
+                        android:padding="0dp"
+                        android:src="@drawable/outline_arrow_back_24" />
+
+                    <HorizontalScrollView
+                        android:id="@+id/titleTV"
+                        style="@style/TextAppearance.Headline2"
+                        android:background="@color/gray_ver_light"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="5dp"
+                            android:text="Chennai | Madurai | Thirunelvali"
+                            android:textColor="@color/gray_dark" />
+                    </HorizontalScrollView>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:minWidth="60dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="4dp"
+                        android:padding="0dp"
+                        app:cornerRadius="4dp"
+                        android:text="Filter" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnSort"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10dp"
+                        android:layout_margin="4dp"
+                        android:background="@drawable/sort_background"
+                        android:src="@drawable/outline_swap_vert_24" />
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </androidx.cardview.widget.CardView>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
