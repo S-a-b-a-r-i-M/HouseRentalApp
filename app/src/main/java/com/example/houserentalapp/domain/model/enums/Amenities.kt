@@ -5,7 +5,6 @@ enum class SocialAmenity(val readable: String) {
     SWIMMING_POOL("Swimming Pool"),
     GYM("Gym"),
     LIFT("Lift"),
-    GARDEN("Garden"),
     PLAY_AREA("Play Area"),
     CCTV("CCTV"),
     GATED_COMMUNITY("Gated Community"),
@@ -14,16 +13,14 @@ enum class SocialAmenity(val readable: String) {
 }
 
 enum class InternalAmenity(val readable: String) {
+    WIFI("WiFi"),
     SOFA("Sofa"),
-    STOVE("Stove"),
     FRIDGE("Fridge"),
     CHIMNEY("Chimney"),
     MICROWAVE("Microwave"),
-    DINING_TABLE("Dining Table"),
     WASHING_MACHINE("Washing Machine"),
     WATER_PURIFIER("Water Purifier"),
     WATER_HEATER("Water Heater"),
-    WIFI("WiFi"),
 }
 
 

@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white_blue"
+    tools:context=".presentation.ui.property.SinglePropertyDetailFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="@color/white">
+
+          <!-- ViewPager2 with parallax effect -->
+
+<!--            <androidx.viewpager2.widget.ViewPager2-->
+<!--                android:id="@+id/viewPager2"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="match_parent"-->
+<!--                android:backgroundTint="@color/black"-->
+<!--                app:layout_collapseMode="parallax"-->
+<!--                app:layout_collapseParallaxMultiplier="0.5" />-->
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/interior"
+                android:scaleType="fitXY"
+                app:layout_collapseMode="parallax"
+                app:layout_collapseParallaxMultiplier="0.5" />
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:contentInsetStart="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:paddingHorizontal="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/backImgBtn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/outline_arrow_back_24"
+                        app:tint="@color/icon_button_color"
+                        android:contentDescription="@string/back" />
+
+                    <TextView
+                        style="@style/TextAppearance.Toolbar"
+                        android:textColor="@color/gray_dark"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="8dp"
+                        android:text="Property Name" />
+
+                    <ImageButton
+                        android:id="@+id/ibtnSort"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_margin="4dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/outline_favorite"
+                        app:tint="@color/icon_button_color"
+                        android:contentDescription="@string/favourite" />
+
+                </LinearLayout>
+
+            </com.google.android.material.appbar.MaterialToolbar>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" >
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="12dp">
+
+          <!-- Summary Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                android:layout_marginVertical="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp">
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_percent="0.65" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/hGuideline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        app:layout_constraintGuide_percent="0.60" />
+
+                    <TextView
+                        android:id="@+id/tvPropertyType"
+                        style="@style/TextAppearance.Body1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Property Name"
+                        android:textColor="@color/gray_dark"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvAddress"
+                        style="@style/TextAppearance.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:paddingVertical="4dp"
+                        android:text="locality, city"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvPropertyType" />
+
+                    <TextView
+                        android:id="@+id/tvFurnishingType"
+                        style="@style/TextAppearance.LabelSmall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:text="furnished"
+                        app:drawableTopCompat="@drawable/outline_chair_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/tvBuiltArea"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
+
+                    <TextView
+                        android:id="@+id/tvBuiltArea"
+                        style="@style/TextAppearance.LabelSmall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:drawableTop="@drawable/outline_aspect_ratio_24"
+                        android:gravity="center"
+                        android:text="1024 sq.ft"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/tvPreferredTenant"
+                        app:layout_constraintStart_toEndOf="@+id/tvFurnishingType"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
+
+                    <TextView
+                        android:id="@+id/tvPreferredTenant"
+                        style="@style/TextAppearance.LabelSmall"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:layout_marginTop="4dp"
+                        android:drawableTop="@drawable/outline_family_filled"
+                        android:gravity="center"
+                        android:text="Anyone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintStart_toEndOf="@id/tvBuiltArea"
+                        app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
+
+
+                    <TextView
+                        android:id="@+id/tvTitleRent"
+                        style="@style/TextAppearance.Label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="Rent"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvRent"
+                        style="@style/TextAppearance.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="4dp"
+                        android:text="10,000"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toTopOf="@id/card1HSeparater1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTitleRent" />
+
+                    <View
+                        android:id="@+id/card1HSeparater1"
+                        android:layout_width="0dp"
+                        android:layout_height="0.25dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/separator_color"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@id/tvRent" />
+
+                    <View
+                        android:id="@+id/card1HSeparater2"
+                        android:layout_width="0dp"
+                        android:layout_height="0.25dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/separator_color"
+                        app:layout_constraintBottom_toTopOf="@+id/hGuideline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline" />
+
+                    <View
+                        android:id="@+id/card1VSeparater1"
+                        android:layout_width="0.25dp"
+                        android:layout_height="0dp"
+                        android:background="@color/separator_color"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/tvMaintenance"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/outline_build_circle_24"
+                        android:gravity="center"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:text="included"
+                        android:textColor="@color/gray_dark"
+                        app:layout_constraintBottom_toTopOf="@id/hGuideline"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@+id/card1HSeparater1" />
+
+                    <TextView
+                        android:id="@+id/tvTitleSecurityDeposit"
+                        style="@style/TextAppearance.Label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Deposit"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toTopOf="@+id/hGuideline" />
+
+                    <TextView
+                        android:id="@+id/tvSecurityDeposit"
+                        style="@style/TextAppearance.Body2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="1,50,000"
+                        android:textAlignment="center"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@+id/tvTitleSecurityDeposit" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+          <!-- OverView -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cardCornerRadius="8dp"
+                android:layout_marginVertical="8dp">
+
+                <!-- Make it one ConstraintLayout -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        style="@style/TextAppearance.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="4dp"
+                        android:text="@string/overview"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:layout_marginHorizontal="5dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@drawable/gray_bg_border" >
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/vGuideline2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintGuide_percent="0.50" />
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/hGuideline3"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintGuide_percent="0.25" />
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/hGuideline4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintGuide_percent="0.50" />
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/hGuideline5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintGuide_percent="0.75" />
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/hGuideline6"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            app:layout_constraintGuide_percent="1" />
+
+                        <View
+                            android:id="@+id/vSeparater1"
+                            style="@style/Separator"
+                            android:layout_width="0.25dp"
+                            android:layout_height="0dp"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintEnd_toEndOf="@+id/vGuideline2"/>
+
+                        <View
+                            android:id="@+id/hSeparater1"
+                            style="@style/Separator"
+                            android:layout_width="0dp"
+                            android:layout_height="0.25dp"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline3"
+                            app:layout_constraintBottom_toBottomOf="@+id/hGuideline3"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <View
+                            android:id="@+id/hSeparater2"
+                            style="@style/Separator"
+                            android:layout_width="0dp"
+                            android:layout_height="0.25dp"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline4"
+                            app:layout_constraintBottom_toBottomOf="@+id/hGuideline4"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <View
+                            android:id="@+id/hSeparater3"
+                            style="@style/Separator"
+                            android:layout_width="0dp"
+                            android:layout_height="0.25dp"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintBottom_toBottomOf="@+id/hGuideline5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"/>
+
+                        <!-- Cell 0, 0 - Property Type -->
+                        <ImageView
+                            android:id="@+id/imgPropertyType"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_house_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPropertyType"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Individual House"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewPropertyTypeLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPropertyType"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPropertyTypeLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Property Type"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPropertyType"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPropertyType" />
+
+                        <!-- Cell 0, 1 - BHK -->
+                        <ImageView
+                            android:id="@+id/imgBHK"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_meeting_room_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
+                            app:layout_constraintStart_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewBHK"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="2 BHK"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewBHKLabel"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgBHK"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewBHKLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="BHK"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgBHK"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewBHK" />
+
+                        <!-- Cell 1, 0 - Pet -->
+                        <ImageView
+                            android:id="@+id/imgPet"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/baseline_pets_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPetAllowed"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Yes"
+                            app:layout_constraintBottom_toTopOf="@id/tvOverviewPetAllowedLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPet"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPetAllowedLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Pet Allowed"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPet"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPetAllowed" />
+
+                        <!-- Cell 1, 1 - Bathroom -->
+                        <ImageView
+                            android:id="@+id/imgBathroom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_bathroom_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
+                            app:layout_constraintStart_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewBathroom"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="2"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewBathroomLabel"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgBathroom"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewBathroomLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Bathroom"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgBathroom"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewBathroom" />
+
+                        <!-- Cell 2, 0 - Posted On -->
+                        <ImageView
+                            android:id="@+id/imgPostedOn"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_calendar_month_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPostedOn"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="16/08/2025"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewPostedOnLabel"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPostedOn"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewPostedOnLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Posted On"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgPostedOn"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPostedOn" />
+
+                        <!-- Cell 2, 1 - AvailableFrom -->
+                        <ImageView
+                            android:id="@+id/imgAvailableFrom"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_calendar_month_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintStart_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewAvailableFrom"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="01/09/2025"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewPostedOnLabel"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgAvailableFrom"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewAvailableFromLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Available From"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgAvailableFrom"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPostedOn" />
+
+                      <!-- Cell 3, 0 - Covered Parking -->
+                        <ImageView
+                            android:id="@+id/imgCoveredParking"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_garage_24"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline5" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewCoveredParking"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Covered: 2"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgCoveredParking"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewCoveredParkingLabel"/>
+
+                        <TextView
+                            android:id="@+id/tvOverviewCoveredParkingLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Parking"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
+                            app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintStart_toEndOf="@+id/imgCoveredParking"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewCoveredParking" />
+
+                      <!-- Cell 3, 1 - Open Parking -->
+                        <ImageView
+                            android:id="@+id/imgOpenParking"
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:paddingHorizontal="10dp"
+                            android:src="@drawable/outline_open_parking"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
+                            app:layout_constraintStart_toStartOf="@+id/vGuideline2"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline5" />
+
+                        <TextView
+                            android:id="@+id/tvOverviewOpenParking"
+                            style="@style/TextAppearance.Body3"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Open: 1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgOpenParking"
+                            app:layout_constraintTop_toTopOf="@+id/hGuideline5"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewOpenLabel"/>
+
+                        <TextView
+                            android:id="@+id/tvOverviewOpenLabel"
+                            style="@style/TextAppearance.LabelSmall"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Open Parking"
+                            app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imgOpenParking"
+                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewOpenParking" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <TextView
+                        android:id="@+id/tvDescriptionLabel"
+                        style="@style/TextAppearance.Label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="4dp"
+                        android:text="Description: "
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                  <!-- TODO: See More and See Less -->
+                    <TextView
+                        android:id="@+id/tvDescription"
+                        style="@style/TextAppearance.Body3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingHorizontal="4dp"
+                        android:text="Property, in the broad sense, describes anything that a person, group of people, or entity owns. It includes real property, personal property, private property, government-owned property, and more. Real property is one of the most familiar types of."
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+          <!-- Amenities -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="8dp"
+                android:layout_marginVertical="8dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="4dp"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        style="@style/TextAppearance.Body2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingVertical="4dp"
+                        android:text="@string/amenities_u"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <HorizontalScrollView
+                        android:id="@+id/hscrlFlatAmenities"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginVertical="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+
+                    <HorizontalScrollView
+                        android:id="@+id/hscrlSocialAmenities"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:layout_marginVertical="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/hscrlFlatAmenities" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom" >
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnInterested"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginVertical="5dp"
+            android:layout_marginHorizontal="30dp"
+            android:text="I'm Interested" />
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

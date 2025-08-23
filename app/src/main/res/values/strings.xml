@@ -20,14 +20,15 @@
     <string name="bhk">BHK</string>
     <string name="furnishing_type">Furnishing Type</string>
     <string name="pricing_details">Pricing Details</string>
+    <string name="pricing_details_u"><u>Pricing Details</u></string>
     <string name="monthly_rent">Monthly Rent</string>
     <string name="furnished">Furnished</string>
     <string name="semi_furnished">Semi Furnished</string>
     <string name="un_furnished">Unfurnished</string>
     <string name="monthly_maintenance">Monthly Maintenance</string>
     <string name="location_details">Location Details</string>
-    <string name="city">City</string>
-    <string name="locality">Enter area/locality</string>
+    <string name="city">City<font color="#FF0000"> * </font></string>
+    <string name="locality">Enter area/locality <font color="#FF0000"> * </font> </string>
     <string name="looking_to">Looking To</string>
     <string name="apartment">Apartment</string>
     <string name="independent_house">Independent House</string>
@@ -70,4 +71,10 @@
     <string name="select_your_preference_for_bachelors">Select your preference for bachelors</string>
     <string name="open_for_both">Open for Both</string>
     <string name="post_property">Post Property</string>
+    <string name="back">back</string>
+    <string name="hamburger">hamburger</string>
+    <string name="sort">sort</string>
+    <string name="favourite">favourite</string>
+    <string name="overview"><u>OverView</u></string>
+    <string name="amenities_u"><u>Amenities</u></string>
 </resources>

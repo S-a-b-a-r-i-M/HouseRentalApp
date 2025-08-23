@@ -12,78 +12,73 @@
         android:id="@+id/toolBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.cardview.widget.CardView
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:elevation="100dp" >
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStart="0dp" >
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                style="@style/Widget.Material3.CollapsingToolbar"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="65dp">
+                android:layout_height="55dp"
+                android:paddingHorizontal="12dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:paddingEnd="5dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                <!-- TODO: write as a separate view -->
+                <ImageButton
+                    android:id="@+id/backImgBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/outline_arrow_back_24"
+                    app:tint="@color/gray_dark"
+                    android:contentDescription="@string/back" />
 
-                    <ImageButton
-                        android:id="@+id/backImgBtn"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="2dp"
-                        android:background="@null"
-                        android:padding="0dp"
-                        android:src="@drawable/outline_arrow_back_24" />
-
-                    <HorizontalScrollView
-                        android:id="@+id/titleTV"
-                        style="@style/TextAppearance.Headline2"
-                        android:background="@color/gray_ver_light"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:layout_margin="4dp">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
-                            android:paddingHorizontal="5dp"
-                            android:text="Chennai | Madurai | Thirunelvali"
-                            android:textColor="@color/gray_dark" />
-                    </HorizontalScrollView>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:minWidth="60dp"
+                <HorizontalScrollView
+                    android:id="@+id/titleTV"
+                    style="@style/TextAppearance.Toolbar"
+                    android:background="@color/gray_very_light"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp">
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:layout_marginHorizontal="4dp"
-                        android:padding="0dp"
-                        app:cornerRadius="4dp"
-                        android:text="Filter" />
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="5dp"
+                        android:text="Chennai | Madurai | Thirunelvali"
+                        android:textColor="@color/gray_dark" />
+                </HorizontalScrollView>
 
-                    <ImageButton
-                        android:id="@+id/ibtnSort"
-                        android:layout_width="50dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_margin="4dp"
-                        android:background="@drawable/sort_background"
-                        android:src="@drawable/outline_swap_vert_24" />
+                <com.google.android.material.button.MaterialButton
+                    android:minWidth="60dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="4dp"
+                    android:padding="0dp"
+                    app:cornerRadius="4dp"
+                    android:text="Filter" />
 
-                </LinearLayout>
+                <ImageButton
+                    android:id="@+id/ibtnSort"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_margin="4dp"
+                    android:background="@drawable/sort_background"
+                    android:src="@drawable/outline_swap_vert_24"
+                    app:tint="@color/primary_blue"
+                    android:contentDescription="@string/sort"/>
 
-            </com.google.android.material.appbar.MaterialToolbar>
+            </LinearLayout>
 
-        </androidx.cardview.widget.CardView>
+        </com.google.android.material.appbar.MaterialToolbar>
 
     </com.google.android.material.appbar.AppBarLayout>
 

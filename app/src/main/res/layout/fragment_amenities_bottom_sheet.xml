@@ -28,7 +28,7 @@
                 android:layout_height="35dp"
                 android:layout_marginBottom="20dp"
                 android:background="@drawable/baseline_close_24"
-                app:backgroundTint="@color/iconButtonColor" />
+                app:backgroundTint="@color/icon_button_color" />
 
         </LinearLayout>
 

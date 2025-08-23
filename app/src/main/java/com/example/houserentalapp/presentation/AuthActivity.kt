@@ -9,6 +9,8 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityAuthBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailFragment
+import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 
 // TODO: HANDLE AUTH PORTION
 class AuthActivity : AppCompatActivity() {

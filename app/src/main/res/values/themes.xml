@@ -6,6 +6,15 @@
         <item name="bottomNavigationStyle">@style/Widget.Material3.BottomNavigationView</item>
         <item name="fontFamily">@font/poppins</item>
 
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/primary_blue_dark</item>
+        <!-- Navigation bar color -->
+        <item name="android:navigationBarColor">@color/primary_blue_dark</item>
+        <!-- Make status bar icons dark (for light backgrounds) -->
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Make navigation bar icons dark (for light backgrounds) -->
+        <item name="android:windowLightNavigationBar">true</item>
+
         <!-- Button Theme Integration -->
 <!--        <item name="materialButtonStyle">@style/AppTheme.Button</item>-->
 <!--        <item name="borderlessButtonStyle">@style/AppTheme.Button.TextButton</item>-->
@@ -39,27 +48,40 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="TextAppearance.Toolbar" parent="@style/TextAppearance.Headline2">
+    </style>
+
     <style name="TextAppearance.Headline3" parent="@style/TextAppearance.Headline2">
+        <item name="android:textColor">@color/black</item>
         <item name="android:textSize">18sp</item>
     </style>
 
     <style name="TextAppearance.Body1" parent="TextAppearance.Material3.BodyLarge">
         <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.04</item>
     </style>
 
     <style name="TextAppearance.Body2" parent="TextAppearance.Material3.BodyMedium">
-        <item name="android:textColor">@color/primary_blue_dark</item>
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
+
+    <style name="TextAppearance.Body3" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textColor">@color/gray_dark</item>
+    </style>
+
+    <style name="TextAppearance.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textColor">@color/gray_dark</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.Label" parent="TextAppearance.Material3.BodySmall">
+    <style name="TextAppearance.Label" parent="TextAppearance.Material3.LabelMedium">
         <item name="android:textColor">@color/gray_dark</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="Separator" >
-        <item name="android:layout_height">1dp</item>
-        <item name="android:background">@color/gray_medium</item>
+        <item name="android:background">@color/separator_color</item>
         <item name="android:alpha">0.5</item>
     </style>
     

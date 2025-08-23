@@ -11,37 +11,41 @@
         android:id="@+id/toolBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.Material3.Dark.ActionBar"
+        app:statusBarScrim="@color/primary_blue_dark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:gravity="bottom">
+        app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetStart="0dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="55dp"
+                android:paddingHorizontal="12dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
+
                 <ImageButton
-                    android:id="@+id/backImgBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:src="@drawable/outline_menu_24" />
+                    android:id="@+id/hamburgerImgBtn"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/outline_menu_24"
+                    app:tint="@color/icon_button_color"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/hamburger" />
 
                 <TextView
                     android:id="@+id/titleTV"
-                    style="@style/TextAppearance.Headline2"
+                    style="@style/TextAppearance.Toolbar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="10dp"
-                    android:text="Hi User"
-                    android:layout_weight="1" />
+                    android:text="Hi User" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPostProperty"
