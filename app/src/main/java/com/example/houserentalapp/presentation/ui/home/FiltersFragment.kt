@@ -8,6 +8,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
+import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding
@@ -22,6 +23,9 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
+
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
 
         setListeners()
     }

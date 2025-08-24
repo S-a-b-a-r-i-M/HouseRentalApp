@@ -14,8 +14,8 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 
-class PropertiesAdapter() : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>() {
-    class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>() {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private var imageContainer: LinearLayout = itemView.findViewById(R.id.imageContainer)
         private var tvHeader: TextView = itemView.findViewById(R.id.tvHeader)
         private var tvBody1: TextView = itemView.findViewById(R.id.tvBody1)
@@ -23,7 +23,6 @@ class PropertiesAdapter() : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>()
         private var tvFooter: TextView = itemView.findViewById(R.id.tvFooter)
 
         fun bind(summary: PropertySummary) {
-            logInfo("itemView context: ${itemView.context}")
             val screenWidth = itemView.context.resources.displayMetrics.widthPixels
             val imageWidth = (screenWidth / 2.2).toInt()
 
@@ -59,9 +58,14 @@ class PropertiesAdapter() : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>()
                 tvFooter.text = "${summary.bhk.readable} | ${summary.furnishingType.readable} | ${summary.builtUpArea} sq.ft."
             }
 
-            // On Item Click
+            // Set On Click
+            imageContainer.setOnClickListener {
+                logInfo("Property ${summary.id} Clicked")
+                onClick(summary.id)
+            }
             itemView.setOnClickListener {
                 logInfo("Property ${summary.id} Clicked")
+                onClick(summary.id)
             }
         }
     }

@@ -10,13 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.PropertySummary
-import com.example.houserentalapp.domain.utils.createPropertiesListViewModel
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.createPropertiesListViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
@@ -36,6 +37,9 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
+
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
 
         setupUI()
         setupObservers()
@@ -80,7 +84,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     fun setupUI() {
         with(binding) {
             // RecyclerView
-            propertiesAdapter = PropertiesAdapter()
+            propertiesAdapter = PropertiesAdapter(::handleOnPropertyClick)
             rvProperty.apply {
                 layoutManager = LinearLayoutManager(requireActivity())
                 adapter = propertiesAdapter
@@ -89,8 +93,14 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         }
     }
 
+    private fun handleOnPropertyClick(propertyId: Long) {
+        val destinationFragment = SinglePropertyDetailFragment()
+        destinationFragment.arguments = Bundle().apply { putLong("property_id", propertyId) }
+        mainActivity.loadFragment(destinationFragment, true)
+    }
+
     private fun setupObservers() {
-        propertiesListViewModel.propertySummariesState.observe(viewLifecycleOwner) { result ->
+        propertiesListViewModel.propertySummariesResult.observe(viewLifecycleOwner) { result ->
             when(result) {
                 is ResultUI.Success<List<PropertySummary>> -> {
                     logInfo("success")

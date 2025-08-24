@@ -1,26 +1,9 @@
 package com.example.houserentalapp.domain.utils
 
-import android.content.Context
-import androidx.fragment.app.Fragment
-import com.example.houserentalapp.data.repo.PropertyRepoImpl
-import com.example.houserentalapp.domain.usecase.CreatePropertyUseCase
-import com.example.houserentalapp.domain.usecase.GetPropertySummariesUseCase
-import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModelFactory
-import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModelFactory
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-
-fun Fragment.createPropertyViewModelFactory(): CreatePropertyViewModelFactory {
-    val useCase = CreatePropertyUseCase(PropertyRepoImpl(requireActivity()))
-    return CreatePropertyViewModelFactory(useCase)
-}
-
-fun Fragment.createPropertiesListViewModel() : PropertiesListViewModelFactory {
-    val useCase = GetPropertySummariesUseCase(PropertyRepoImpl(requireActivity()))
-    return PropertiesListViewModelFactory(useCase)
-}
 
 fun String.toEpoch(format: String = "dd/MM/yyyy"): Long {
     val formatter = DateTimeFormatter.ofPattern(format)

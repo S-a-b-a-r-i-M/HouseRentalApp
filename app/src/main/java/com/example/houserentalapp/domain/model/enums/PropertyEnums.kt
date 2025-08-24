@@ -3,12 +3,6 @@ package com.example.houserentalapp.domain.model.enums
 import androidx.annotation.StringRes
 import com.example.houserentalapp.R
 
-// TODO: Create base enum
-
-interface ReadableEnum {
-    val readable: String
-}
-
 enum class PropertyKind(override val readable: String) : ReadableEnum {
     RESIDENTIAL("Residential"),
     COMMERCIAL("Commercial")
@@ -61,14 +55,8 @@ enum class BHK(override val readable: String) : ReadableEnum {
         return readable
     }
 
-    companion object {
-        fun fromString(inputStr: String): BHK? = entries.find {
-            it.readable.contentEquals(inputStr, true)
-        }
-
-        fun isValid(inputStr: String): Boolean = entries.any {
-            it.readable.contentEquals(inputStr, true)
-        }
+    companion object : ReadableEnum.Companion<BHK> {
+        override val values: Array<BHK> = entries.toTypedArray()
     }
 }
 
@@ -76,20 +64,8 @@ enum class TenantType(override val readable: String) : ReadableEnum {
     FAMILY("Family"),
     BACHELORS("Bachelors");
 
-    companion object {
-        fun fromString(inputStr: String): TenantType? {
-            val trimmedStr = inputStr.trim()
-            return entries.find {
-                it.readable.contentEquals(trimmedStr, true)
-            }
-        }
-
-        fun isValid(inputStr: String): Boolean {
-            val trimmedStr = inputStr.trim()
-            return entries.any {
-                it.readable.contentEquals(trimmedStr, true)
-            }
-        }
+    companion object : ReadableEnum.Companion<TenantType> {
+        override val values: Array<TenantType> = entries.toTypedArray()
     }
 }
 
@@ -98,35 +74,27 @@ enum class BachelorType(override val readable: String) : ReadableEnum {
     MEN("Men Only"),
     WOMEN("Women Only");
 
-    companion object {
-        fun fromString(inputStr: String): BachelorType? = entries.find {
-            it.readable.contentEquals(inputStr, true)
-        }
-
-        fun isValid(inputStr: String): Boolean = entries.any {
-            it.readable.contentEquals(inputStr, true)
-        }
+    companion object : ReadableEnum.Companion<BachelorType> {
+        override val values: Array<BachelorType> = entries.toTypedArray()
     }
 }
 
 enum class PropertyTransactionType(override val readable: String) : ReadableEnum {
     NEW_BOOKING("New Booking"),
-    RESALE("Resale"),
+    RESALE("Resale");
+
+    companion object : ReadableEnum.Companion<PropertyTransactionType> {
+        override val values: Array<PropertyTransactionType> = entries.toTypedArray()
+    }
 }
 
-enum class LookingTo(@StringRes val stringResId: Int, val readable: String) {
+enum class LookingTo(@StringRes val stringResId: Int, override val readable: String) : ReadableEnum {
     RENT(R.string.rent, "Rent"),
     BUY(R.string.buy, "Buy"),
     LEASE(R.string.lease, "Lease"), // Optional
     SELL(R.string.sell, "Sell");
 
-    companion object {
-        fun fromString(inputStr: String): LookingTo? = entries.find {
-            it.name.contentEquals(inputStr, true)
-        }
-
-        fun isValid(inputStr: String): Boolean = entries.any {
-            it.readable.contentEquals(inputStr, true)
-        }
+    companion object : ReadableEnum.Companion<LookingTo> {
+        override val values: Array<LookingTo> = entries.toTypedArray()
     }
 }
