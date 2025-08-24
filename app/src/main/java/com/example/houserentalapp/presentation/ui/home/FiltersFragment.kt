@@ -7,8 +7,7 @@ import android.view.View
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.ui.profile.PropertiesListFragment
-import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 
 class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding

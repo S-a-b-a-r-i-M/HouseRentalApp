@@ -2,7 +2,8 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
     android:elevation="50dp"
     app:cardCornerRadius="10dp" >
 
@@ -13,67 +14,35 @@
         android:padding="5dp">
 
         <HorizontalScrollView
-            android:id="@+id/srlImageView"
+            android:id="@+id/scrlImageView"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-                <!-- Have to add images at runtime -->
-            <!-- val screenWidth = resources.displayMetrics.widthPixels
-val imageWidth = screenWidth / 2
-
-val imageContainer = findViewById<LinearLayout>(R.id.imageContainer)
-
-// Add images programmatically
-repeat(4) {
-    val imageView = ImageView(this).apply {
-        layoutParams = LinearLayout.LayoutParams(imageWidth, LinearLayout.LayoutParams.MATCH_PARENT)
-        scaleType = ImageView.ScaleType.CENTER_CROP
-        setImageResource(R.drawable.interior)
-    }
-    imageContainer.addView(imageView)
-} -->
             <LinearLayout
+                android:id="@+id/imageContainer"
                 android:orientation="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:weightSum="2">
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/interior" />
-
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/interior" />
-
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/interior" />
-
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/interior" />
 
             </LinearLayout>
 
         </HorizontalScrollView>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="2dp"
+            style="@style/Separator" />
+
         <TextView
             android:id="@+id/tvHeader"
             style="@style/TextAppearance.Body1"
             android:layout_marginTop="2dp"
-            android:text="Property Name"
+            android:text="@string/property_name"
             android:textStyle="normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -81,26 +50,25 @@ repeat(4) {
         <TextView
             android:id="@+id/tvBody1"
             style="@style/TextAppearance.Body3"
-            android:layout_marginTop="2dp"
-            android:text="street name, locality, city."
+            android:text="@string/street_name_locality_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvBody2"
             style="@style/TextAppearance.Body1"
-            android:layout_marginTop="6dp"
-            android:text="Price + Maintanence / Month"
-            android:textColor="@color/gray_dark"
+            android:layout_marginTop="2dp"
+            android:text="@string/price_maintenance_month"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvFooter"
             style="@style/TextAppearance.Body3"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="2dp"
             android:textColor="@color/gray_dark"
-            android:text="bhk property type | un-furnished | 1000 sq.ft."
+            android:text="@string/bhk_property_type_un_furnished_1000_sq_ft"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

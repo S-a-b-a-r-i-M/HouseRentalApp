@@ -21,7 +21,7 @@ class AuthActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
-//        setWindowInsets()
+        setWindowInsets()
 
         startActivity(Intent(this, MainActivity::class.java))
         finish()

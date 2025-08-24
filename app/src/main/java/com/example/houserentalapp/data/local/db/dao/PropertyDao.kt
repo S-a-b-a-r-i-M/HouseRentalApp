@@ -2,6 +2,7 @@ package com.example.houserentalapp.data.local.db.dao
 
 import android.content.ContentValues
 import android.database.Cursor
+import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.database.getIntOrNull
 import com.example.houserentalapp.data.local.db.DatabaseHelper
@@ -150,11 +151,13 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
 
     fun getPropertySummariesWithFilter(
         filters: Map<String, Any>, pagination: Pagination
-    ): List<PropertySummaryEntity> {
+    ): Pair<List<PropertySummaryEntity>, Int> {
         val (whereClause, whereArgs) = buildWhere(filters)
         val orderBy = "${PropertyTable.COLUMN_CREATED_AT} DESC"
         val limit = "${pagination.offset}, ${pagination.limit}"
         val db = readableDB
+        // Get Total Records count with filters
+        val totalRecords = getPropertiesCount(db, whereClause, whereArgs)
 
         db.query(
             PropertyTable.TABLE_NAME,
@@ -171,16 +174,45 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 while (moveToNext()) {
                     val summary = mapCursorToPropertySummaryEntity(this)
                     // Read Primary Image
-                    val primaryImage = getPropertyPrimaryImage(db, summary.id)
+                    // val primaryImage = getPropertyPrimaryImage(db, summary.id)
 
+//                    propertySummaries.add(
+//                        mapCursorToPropertySummaryEntity(cursor).copy(primaryImage = primaryImage)
+//                    )
                     propertySummaries.add(
-                        mapCursorToPropertySummaryEntity(cursor).copy(primaryImage = primaryImage)
+                        mapCursorToPropertySummaryEntity(cursor).copy( primaryImage = PropertyImageEntity(
+                            1,
+                            "",
+                            true
+                        ))
                     )
                 }
             }
 
-            return propertySummaries
+            return Pair(propertySummaries, totalRecords)
         }
+    }
+
+    private fun getPropertiesCount(db: SQLiteDatabase, whereClause: String, whereArgs: Array<String>): Int {
+//        readableDB.query(
+//            PropertyTable.TABLE_NAME,
+//            arrayOf("COUNT(*)"),
+//            whereClause,
+//            whereArgs,
+//            null, null, null, null
+//        ).use { cursor ->
+//            if(cursor.moveToFirst())
+//                return cursor.getInt(0)
+//        }
+//
+//        return -1
+
+        return DatabaseUtils.queryNumEntries(
+            db,
+            PropertyTable.TABLE_NAME,
+            whereClause,
+            whereArgs
+        ).toInt()
     }
 
     private fun getPropertyImages(db: SQLiteDatabase, propertyId: Long): List<PropertyImageEntity> {

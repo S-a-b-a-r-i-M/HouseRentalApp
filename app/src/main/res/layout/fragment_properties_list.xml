@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white_blue"
-    tools:context=".presentation.ui.profile.PropertiesListFragment">
+    tools:context=".presentation.ui.property.PropertiesListFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/toolBarLayout"
@@ -40,26 +40,29 @@
                     android:contentDescription="@string/back" />
 
                 <HorizontalScrollView
-                    android:id="@+id/titleTV"
                     style="@style/TextAppearance.Toolbar"
                     android:background="@color/gray_very_light"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:layout_margin="4dp">
+
                     <TextView
+                        android:id="@+id/tvFilteredCityAndLocalityInfo"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="5dp"
                         android:text="Chennai | Madurai | Thirunelvali"
                         android:textColor="@color/gray_dark" />
+
                 </HorizontalScrollView>
 
                 <com.google.android.material.button.MaterialButton
                     android:minWidth="60dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:backgroundTint="@color/primary_blue"
                     android:layout_marginHorizontal="4dp"
                     android:padding="0dp"
                     app:cornerRadius="4dp"
@@ -71,8 +74,8 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_margin="4dp"
-                    android:background="@drawable/sort_background"
-                    android:src="@drawable/outline_swap_vert_24"
+                    android:background="@drawable/image_btn_background"
+                    android:src="@drawable/baseline_favorite_filled"
                     app:tint="@color/primary_blue"
                     android:contentDescription="@string/sort"/>
 
@@ -82,5 +85,25 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSort"
+        style="@style/Widget.Material3.FloatingActionButton.Surface"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:src="@drawable/outline_swap_vert_24"
+        android:contentDescription="@string/sort"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvProperty"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolBarLayout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

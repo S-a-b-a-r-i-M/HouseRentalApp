@@ -7,7 +7,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class CreatePropertyUseCase(private val propertyRepo: PropertyRepo) {
-    suspend operator fun invoke(property: Property): Result<Long> {
+    suspend operator fun invoke(property: Property): Result<Long> { // invoke() is Kotlin's way to make objects "callable" like functions
         return try {
             when(val result = propertyRepo.createProperty(property)){
                 is Result.Success<Long> -> {

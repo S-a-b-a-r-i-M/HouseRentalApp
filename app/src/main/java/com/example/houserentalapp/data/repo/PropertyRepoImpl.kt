@@ -58,12 +58,12 @@ class PropertyRepoImpl(context: Context) : PropertyRepo {
     ): Result<List<PropertySummary>> {
         return try {
             withContext(Dispatchers.IO) {
-                val summariesEntity = propertyDao.getPropertySummariesWithFilter(
+                val (summariesEntity, count) = propertyDao.getPropertySummariesWithFilter(
                     filters, pagination
                 )
                 val summariesDomain = summariesEntity.map { PropertyMapper.toPropertySummary(it) }
                 logInfo("getPropertySummaries retrieved ${summariesDomain.size} summaries")
-                Result.Success(summariesDomain)
+                Result.Success(summariesDomain, meta = mapOf("total_records" to count))
             }
         } catch (e: Exception) {
             logError("Error reading property summaries", e)

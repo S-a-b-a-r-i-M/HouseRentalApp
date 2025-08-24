@@ -77,4 +77,8 @@
     <string name="favourite">favourite</string>
     <string name="overview"><u>OverView</u></string>
     <string name="amenities_u"><u>Amenities</u></string>
+    <string name="property_name">Property Name</string>
+    <string name="street_name_locality_city">street name, locality, city.</string>
+    <string name="price_maintenance_month">Price + Maintanence / Month</string>
+    <string name="bhk_property_type_un_furnished_1000_sq_ft">bhk property type | un-furnished | 1000 sq.ft.</string>
 </resources>
