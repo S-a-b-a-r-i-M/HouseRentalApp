@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!-- BASE BUTTON STYLES FOR YOUR HOUSE RENTAL APP -->
+
+    <!-- 1. Primary Button Style (Main Actions) -->
+    <style name="AppTheme.Button" parent="Widget.Material3.Button">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="backgroundTint">@color/primary_blue</item>
+        <item name="rippleColor">@color/primary_blue_light</item>
+        <item name="elevation">2dp</item>
+    </style>
+
+    <!-- 2. Secondary Button Style (Outlined Actions) -->
+    <style name="AppTheme.Button.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.01</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="strokeColor">@color/primary_blue</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="rippleColor">@color/primary_blue_light</item>
+        <item name="backgroundTint">@android:color/transparent</item>
+    </style>
+
+    <!-- 3. Text Button Style (Tertiary Actions) -->
+    <style name="AppTheme.Button.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">@color/primary_blue</item>
+        <item name="rippleColor">@color/primary_blue_light</item>
+    </style>
+
+    <!-- SPECIALIZED BUTTON STYLES FOR HOUSE RENTAL APP -->
+
+    <!-- 4. Large Primary Button (Search, Filter buttons) -->
+    <style name="AppTheme.Button.Large" parent="AppTheme.Button">
+        <item name="android:textSize">18sp</item>
+        <item name="android:minHeight">56dp</item>
+        <item name="android:paddingStart">32dp</item>
+        <item name="android:paddingEnd">32dp</item>
+        <item name="elevation">4dp</item>
+    </style>
+
+    <!-- 5. Small Button (Quick actions, tags) -->
+    <style name="AppTheme.Button.Small" parent="AppTheme.Button">
+        <item name="android:textSize">12sp</item>
+        <item name="android:minHeight">32dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="elevation">1dp</item>
+    </style>
+
+    <!-- 6. Icon Button (With icons - Contact, Share, etc.) -->
+    <style name="AppTheme.Button.Icon" parent="AppTheme.Button">
+        <item name="iconGravity">start</item>
+        <item name="iconSize">20dp</item>
+        <item name="iconPadding">8dp</item>
+        <item name="iconTint">@android:color/white</item>
+    </style>
+
+    <!-- 7. Danger Button (Delete, Remove actions) -->
+    <style name="AppTheme.Button.Danger" parent="AppTheme.Button">
+        <item name="backgroundTint">@color/red_error</item>
+        <item name="rippleColor">@color/red_error_light</item>
+    </style>
+
+    <!-- 8. Success Button (Confirm, Save actions) -->
+    <style name="AppTheme.Button.Success" parent="AppTheme.Button">
+        <item name="backgroundTint">@color/green_success</item>
+        <item name="rippleColor">@color/green_success_light</item>
+    </style>
+
+    <!-- 9. Floating Action Button Style -->
+    <style name="AppTheme.Button.FAB" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/primary_blue</item>
+        <item name="tint">@android:color/white</item>
+        <item name="elevation">6dp</item>
+        <item name="rippleColor">@color/primary_blue_light</item>
+    </style>
+
+    <!-- 10. Toggle Button Style (Filter toggles) -->
+    <style name="AppTheme.Button.Toggle" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:fontFamily">@font/poppins</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cornerRadius">20dp</item>
+        <item name="android:minHeight">36dp</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+<!--        <item name="strokeColor">@color/button_toggle_stroke</item>-->
+<!--        <item name="strokeWidth">1dp</item>-->
+<!--        <item name="android:textColor">@color/button_toggle_text</item>-->
+<!--        <item name="backgroundTint">@color/button_toggle_background</item>-->
+<!--        <item name="checkable">true</item>-->
+    </style>
+
+    <!-- IMPLEMENTATION EXAMPLES -->
+
+    <!-- Usage in your layouts: -->
+
+    <!-- Primary Action (Search Properties) -->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btnSearchProperties"-->
+<!--        style="@style/AppTheme.Button.Large"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Search Properties"-->
+<!--        app:icon="@drawable/ic_search" />-->
+
+    <!-- Secondary Action (Save Property) -->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btnSaveProperty"-->
+<!--        style="@style/AppTheme.Button.OutlinedButton"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Save Property"-->
+<!--        app:icon="@drawable/ic_bookmark"-->
+<!--        app:iconGravity="start" />-->
+
+    <!-- Filter Toggle Button -->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btnFilterBHK"-->
+<!--        style="@style/AppTheme.Button.Toggle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="2 BHK" />-->
+
+    <!-- Delete Property (Danger) -->
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        android:id="@+id/btnDeleteProperty"-->
+<!--        style="@style/AppTheme.Button.Danger"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Delete Property"-->
+<!--        app:icon="@drawable/ic_delete" />-->
+
+    <!-- SUPPORTING COLOR STATE LISTS -->
+
+    <!-- res/color/button_toggle_stroke.xml -->
+<!--    <selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--        <item android:state_checked="true" android:color="@color/primary_blue" />-->
+<!--        <item android:color="@color/gray_light" />-->
+<!--    </selector>-->
+
+    <!-- res/color/button_toggle_text.xml -->
+<!--    <selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--        <item android:state_checked="true" android:color="@android:color/white" />-->
+<!--        <item android:color="@color/gray_dark" />-->
+<!--    </selector>-->
+
+    <!-- res/color/button_toggle_background.xml -->
+<!--    <selector xmlns:android="http://schemas.android.com/apk/res/android">-->
+<!--        <item android:state_checked="true" android:color="@color/primary_blue" />-->
+<!--        <item android:color="@android:color/transparent" />-->
+<!--    </selector>-->
+
+    <!-- ADDITIONAL COLORS NEEDED (Add to colors.xml) -->
+
+</resources>
