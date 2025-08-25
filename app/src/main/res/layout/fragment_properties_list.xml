@@ -29,15 +29,9 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <!-- TODO: write as a separate view -->
-                <ImageButton
+                <include
                     android:id="@+id/backImgBtn"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/outline_arrow_back_24"
-                    app:tint="@color/gray_dark"
-                    android:contentDescription="@string/back" />
+                    layout="@layout/back_button" />
 
                 <HorizontalScrollView
                     style="@style/TextAppearance.Toolbar"
@@ -74,9 +68,9 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_margin="4dp"
+                    app:tint="@color/primary_blue"
                     android:background="@drawable/image_btn_background"
                     android:src="@drawable/baseline_favorite_filled"
-                    app:tint="@color/primary_blue"
                     android:contentDescription="@string/sort"/>
 
             </LinearLayout>
@@ -87,11 +81,12 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabSort"
-        style="@style/Widget.Material3.FloatingActionButton.Surface"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="25dp"
+        app:tint="@color/primary_blue"
+        android:backgroundTint="@color/primary_blue_very_light"
         android:src="@drawable/outline_swap_vert_24"
         android:contentDescription="@string/sort"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -105,5 +100,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBarLayout" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/primary_blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

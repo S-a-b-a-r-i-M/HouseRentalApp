@@ -2,21 +2,23 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="white_blue">#F7F9FE</color>
+
+    <color name="white_blue">#F2F3F6</color>
     <color name="primary_blue">#1CA6EF</color>
     <color name="stroke_color">#1CA6EF</color>
     <color name="primary_blue_dark">#2D74CF</color>
     <color name="primary_blue_very_light">#DBEAF0</color>
     <color name="primary_blue_light">#94C0D8</color>
+
     <color name="gray_medium">#adb5bd</color>
     <color name="separator_color">#adb5bd</color>
     <color name="gray_light">#E0E0E0</color>
     <color name="gray_very_light">#F2F1F1</color>
     <color name="gray_dark">#616161</color>
     <color name="icon_button_color">#616161</color>
+
     <color name="red_error">#AF2B1E</color>
     <color name="red_error_light">#FFCDD2</color>
     <color name="green_success">#4CAF50</color>
     <color name="green_success_light">#C8E6C9</color>
-    <color name="toolbar_text_color">#2D74CF</color>
 </resources>

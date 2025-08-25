@@ -52,14 +52,9 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <ImageButton
+                    <include
                         android:id="@+id/backImgBtn"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/outline_arrow_back_24"
-                        app:tint="@color/icon_button_color"
-                        android:contentDescription="@string/back" />
+                        layout="@layout/back_button" />
 
                     <TextView
                         style="@style/TextAppearance.Toolbar"

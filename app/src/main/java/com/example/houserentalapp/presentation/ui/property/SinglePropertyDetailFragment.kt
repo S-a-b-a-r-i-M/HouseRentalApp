@@ -66,7 +66,7 @@ class SinglePropertyDetailFragment : Fragment() {
 
     fun setListeners() {
         with(binding) {
-            backImgBtn.setOnClickListener {
+            backImgBtn.root.setOnClickListener {
                 parentFragmentManager.popBackStack()
             }
         }
