@@ -417,14 +417,11 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFurnishingDetails"
-                style="@style/TextAppearance.Label"
+                style="@style/AppTheme.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:backgroundTint="@color/primary_blue_very_light"
                 android:text="@string/add_furnishing_amenities"
-                android:textColor="@color/primary_blue_dark"
-                android:textStyle="bold"
                 app:cornerRadius="12dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -732,13 +729,13 @@
                 style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
                 android:hint="@string/security_deposit"
                 app:hintAnimationEnabled="true"
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge">
+                app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge"
+                app:layout_constraintBottom_toTopOf="@+id/btnUploadImages" >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSecurityDeposit"
@@ -748,6 +745,17 @@
                     android:inputType="number" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUploadImages"
+                style="@style/AppTheme.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Add Property Images"
+                app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

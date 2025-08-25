@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
+import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
+import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
@@ -20,6 +22,7 @@ import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomP
 class SinglePropertyDetailFragment : Fragment() {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var viewModel: SinglePropertyDetailViewModel
+    private lateinit var adapter: PropertyImageViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,15 +56,18 @@ class SinglePropertyDetailFragment : Fragment() {
             viewModel.loadProperty(propertyId as Long)
     }
 
-    fun setupUI(){
+    fun setupUI() {
+        with(binding) {
+            adapter = PropertyImageViewAdapter()
+            viewPager2.adapter = adapter
+        }
+    }
+
+    fun setupViewModel() {
         val mainActivity = requireActivity() as MainActivity
         val useCase = GetPropertyUseCase(PropertyRepoImpl(mainActivity))
         val factory = SinglePropertyDetailViewModelFactory(useCase)
         viewModel = ViewModelProvider(mainActivity, factory).get(SinglePropertyDetailViewModel::class.java)
-    }
-
-    fun setupViewModel() {
-
     }
 
     fun setListeners() {
@@ -73,7 +79,20 @@ class SinglePropertyDetailFragment : Fragment() {
     }
 
     fun setObservers() {
+        with(binding) {
+            viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
+                when(result) {
+                    is ResultUI.Error -> {
 
+                    }
+                    ResultUI.Loading -> {
+
+                    }
+                    is ResultUI.Success<Property> ->
+                        adapter.setPropertyImages(result.data.images)
+                }
+
+            }
+        }
     }
-
 }

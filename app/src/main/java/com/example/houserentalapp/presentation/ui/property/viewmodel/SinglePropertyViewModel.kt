@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 
 class SinglePropertyDetailViewModel(private val useCase: GetPropertyUseCase) : ViewModel() {
     private val _propertyResult = MutableLiveData<ResultUI<Property>>()
-    val property: LiveData<ResultUI<Property>> = _propertyResult
+    val propertyResult: LiveData<ResultUI<Property>> = _propertyResult
 
     fun loadProperty(propertyId: Long) {
         _propertyResult.value = ResultUI.Loading

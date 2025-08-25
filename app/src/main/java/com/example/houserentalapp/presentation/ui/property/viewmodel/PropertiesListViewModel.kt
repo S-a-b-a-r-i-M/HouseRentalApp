@@ -24,10 +24,11 @@ class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewMod
     private var offset: Int = 0
     private val limit: Int = 10
 
-    fun getOffset() = offset
     init {
+        // Initial fetch
+        if (propertySummaryList.isEmpty())
+            loadPropertySummaries()
         // Load Filters
-        //
     }
 
     fun loadPropertySummaries() {
@@ -45,10 +46,11 @@ class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewMod
                         val totalRecords = result.meta?.get("total_records")
                         if (totalRecords == null) {
                             logWarning("loadPropertySummaries -> total record count is missing")
-                            return@launch
-                        }
-                        hasMore = propertySummaryList.size < (totalRecords as Int)
-                        offset += limit // Update offset
+                            hasMore = result.data.size == limit
+                        } else
+                            hasMore = propertySummaryList.size < (totalRecords as Int)
+                        // Update offset
+                        offset += limit
                     }
                     is Result.Error -> {
                         logError("Error on loadPropertySummaries : ${result.message}")
@@ -63,7 +65,7 @@ class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewMod
     }
 
     // Will get triggered by filters modification
-    fun resetPagination() {
+    fun refresh() {
         offset = 0
         hasMore = true
         propertySummaryList.clear()

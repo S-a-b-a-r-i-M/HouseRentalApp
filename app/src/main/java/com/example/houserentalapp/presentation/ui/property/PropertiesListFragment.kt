@@ -42,10 +42,8 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         setSystemBarBottomPadding(binding.root)
 
         setupUI()
+        setupListeners()
         setupObservers()
-
-        if (savedInstanceState == null)
-            propertiesListViewModel.loadPropertySummaries()
     }
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
@@ -93,6 +91,14 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         }
     }
 
+    fun setupListeners() {
+        with(binding) {
+            backImgBtn.root.setOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
+        }
+    }
+
     private fun handleOnPropertyClick(propertyId: Long) {
         val destinationFragment = SinglePropertyDetailFragment()
         destinationFragment.arguments = Bundle().apply { putLong("property_id", propertyId) }
@@ -105,15 +111,27 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 is ResultUI.Success<List<PropertySummary>> -> {
                     logInfo("success")
                     propertiesAdapter.setDataList(result.data)
+                    hideProgressBar()
                 }
                 is ResultUI.Error -> {
+                    hideProgressBar()
                     logError("error occured")
                 }
                 ResultUI.Loading -> {
+                    showProgressBar()
                     logInfo("loading")
                 }
             }
         }
+    }
+
+    fun showProgressBar() {
+        isScrolling
+        binding.progressBar.visibility = View.VISIBLE
+    }
+
+    fun hideProgressBar() {
+        binding.progressBar.visibility = View.GONE
     }
 
     override fun onDetach() {

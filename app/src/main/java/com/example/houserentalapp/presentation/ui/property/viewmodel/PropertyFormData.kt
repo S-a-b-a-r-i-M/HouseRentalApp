@@ -12,8 +12,8 @@ enum class PropertyFormField {
     PREFERRED_BACHELOR_TYPE,
     TRANSACTION_TYPE,
     AGE_OF_PROPERTY,
-    COUNT_OF_COVERED_PARKING,
-    COUNT_OF_OPEN_PARKING,
+    COVERED_PARKING_COUNT,
+    OPEN_PARKING_COUNT,
     AVAILABLE_FROM,
     BHK,
     BUILT_UP_AREA,
@@ -25,8 +25,7 @@ enum class PropertyFormField {
     SECURITY_DEPOSIT,
     STREET_NAME,
     LOCALITY,
-    CITY,
-    IMAGES
+    CITY
 }
 
 data class NewPropertyImageModel (

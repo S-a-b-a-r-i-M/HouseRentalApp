@@ -81,4 +81,5 @@
     <string name="street_name_locality_city">street name, locality, city.</string>
     <string name="price_maintenance_month">Price + Maintanence / Month</string>
     <string name="bhk_property_type_un_furnished_1000_sq_ft">bhk property type | un-furnished | 1000 sq.ft.</string>
+    <string name="property_image">Property Image</string>
 </resources>

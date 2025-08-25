@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity() {
         logInfo("<-------- onCreate ---------->")
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-//        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

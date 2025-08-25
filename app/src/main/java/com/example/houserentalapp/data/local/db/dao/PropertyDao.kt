@@ -174,17 +174,10 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 while (moveToNext()) {
                     val summary = mapCursorToPropertySummaryEntity(this)
                     // Read Primary Image
-                    // val primaryImage = getPropertyPrimaryImage(db, summary.id)
+                     val imagesEntity = getPropertyImages(db, summary.id)
 
-//                    propertySummaries.add(
-//                        mapCursorToPropertySummaryEntity(cursor).copy(primaryImage = primaryImage)
-//                    )
                     propertySummaries.add(
-                        mapCursorToPropertySummaryEntity(cursor).copy( primaryImage = PropertyImageEntity(
-                            1,
-                            "",
-                            true
-                        ))
+                        mapCursorToPropertySummaryEntity(cursor).copy(images = imagesEntity)
                     )
                 }
             }
@@ -515,9 +508,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                     locality = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOCALITY)),
                     city = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_CITY))
                 ),
-                primaryImage = PropertyImageEntity( // This duplicate value will be replaced
-                    null, "", false
-                )
+                images = emptyList(), // Will be populated separately
             )
         }
     }

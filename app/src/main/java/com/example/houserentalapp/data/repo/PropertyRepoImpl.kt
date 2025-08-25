@@ -1,10 +1,14 @@
 package com.example.houserentalapp.data.repo
 
 import android.content.Context
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.PropertyDao
+import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
 import com.example.houserentalapp.data.mapper.PropertyMapper
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertySummary
@@ -14,16 +18,52 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.File
+import kotlin.coroutines.coroutineContext
 
-class PropertyRepoImpl(context: Context) : PropertyRepo {
+class PropertyRepoImpl(private val context: Context) : PropertyRepo {
     private val propertyDao = PropertyDao(DatabaseHelper.getInstance(context))
 
     // -------------- CREATE --------------
+    // SAVE INTO INTERNAL STORAGE
+    // TODO: Check the logic, it can be moved to use case ?
+    private fun saveImageToInternalStorage(imageUri: Uri): String? {
+        with(context) {
+            val fileName = contentResolver.query(imageUri, null, null, null)?.use {
+                it.moveToFirst()
+                val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                "${System.currentTimeMillis()}_${it.getString((nameIndex))}"
+            } ?: "${System.currentTimeMillis()}"
+
+            val inputStream = contentResolver.openInputStream(imageUri)
+            val destinationFile = File(filesDir, fileName)
+
+            inputStream?.use { input ->
+                destinationFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            } ?: return null
+
+            return fileName
+        }
+    }
+
     override suspend fun createProperty(property: Property): Result<Long> {
         return try {
             withContext(Dispatchers.IO) {
+                val imageEntityList = mutableListOf<PropertyImageEntity>()
+                property.images.forEachIndexed { idx, it ->
+                    if (it.imageSource is ImageSource.Uri) {
+                        val fileName = saveImageToInternalStorage(it.imageSource.uri)
+                        if (fileName != null)
+                            imageEntityList.add(
+                                PropertyImageEntity(null, fileName, idx == 0)
+                            )
+                    }
+                }
+
                 val propertyEntity = PropertyMapper.fromDomain(property)
-                val propertyId = propertyDao.insertProperty(propertyEntity)
+                val propertyId = propertyDao.insertProperty(propertyEntity.copy(images = imageEntityList))
                 logInfo("Property($propertyId) created successfully.")
                 Result.Success(propertyId)
             }

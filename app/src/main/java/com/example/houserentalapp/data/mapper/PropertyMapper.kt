@@ -42,7 +42,7 @@ object PropertyMapper {
             maintenanceCharges = domain.maintenanceCharges,
             securityDepositAmount = domain.securityDepositAmount,
             address = PropertyAddressMapper.fromDomain(domain.address),
-            images = domain.images.map { PropertyImageMapper.fromDomain(it) },
+            images = emptyList(), // No images here at creation
             createdAt = domain.createdAt
         )
     }
@@ -95,7 +95,7 @@ object PropertyMapper {
             price = entity.price,
             builtUpArea = entity.builtUpArea,
             address = PropertyAddressMapper.toDomain(entity.address),
-            primaryImage = PropertyImageMapper.toDomain(entity.primaryImage),
+            images = entity.images.map { PropertyImageMapper.toDomain(it) },
             viewCount = entity.viewCount
         )
     }

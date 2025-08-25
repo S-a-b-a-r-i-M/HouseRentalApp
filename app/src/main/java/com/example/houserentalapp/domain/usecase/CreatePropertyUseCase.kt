@@ -1,5 +1,7 @@
 package com.example.houserentalapp.domain.usecase
 
+import android.net.Uri
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.repo.PropertyRepo
 import com.example.houserentalapp.domain.utils.Result

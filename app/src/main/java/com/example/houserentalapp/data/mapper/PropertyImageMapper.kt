@@ -1,6 +1,7 @@
 package com.example.houserentalapp.data.mapper
 
 import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
 
 object PropertyImageMapper {
@@ -19,6 +20,7 @@ object PropertyImageMapper {
         return PropertyImage(
             id = entity.id,
             imageAddress = entity.imageAddress,
+            imageSource = ImageSource.LocalFile(entity.imageAddress),
             isPrimary = entity.isPrimary
         )
     }

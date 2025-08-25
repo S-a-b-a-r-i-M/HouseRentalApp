@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CounterView">
+        <attr name="label" format="string" />
+        <attr name="count" format="integer" />
+        <attr name="minCount" format="integer" />
+        <attr name="maxCount" format="integer" />
+
+        <!-- TEXT SIZES -->
+        <attr name="labelSize" format="dimension" />
+        <attr name="counterSize" format="dimension" />
+
+        <!-- ICON DIMENSIONS -->
+        <attr name="iconWidth" format="dimension" />
+        <attr name="iconHeight" format="dimension" />
+
+        <!-- COLORS -->
+        <attr name="labelColor" format="color" />
+        <attr name="counterColor" format="color" />
+        <attr name="iconTintColor" format="color" />
+        <attr name="iconBackgroundColor" format="color" />
+    </declare-styleable>
+</resources>

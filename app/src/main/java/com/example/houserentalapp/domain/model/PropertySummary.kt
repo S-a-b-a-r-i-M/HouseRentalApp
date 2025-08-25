@@ -16,6 +16,6 @@ data class PropertySummary(
     val price: Int,
     val builtUpArea: Int,
     val address: PropertyAddress,
-    val primaryImage: PropertyImage,
+    val images: List<PropertyImage>,
     val viewCount: Int = 0, // Used At your property
 )

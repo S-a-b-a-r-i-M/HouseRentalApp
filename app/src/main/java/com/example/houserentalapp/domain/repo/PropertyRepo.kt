@@ -1,5 +1,6 @@
 package com.example.houserentalapp.domain.repo
 
+import android.net.Uri
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertySummary

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/tvLabel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:gravity="start"
+        android:textStyle="bold"
+        android:layout_gravity="start"
+        android:layout_weight="1" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDecrement"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/outline_remove_24"
+        app:backgroundTint="@color/icon_button_color" />
+
+    <TextView
+        android:id="@+id/tvCount"
+        style="@style/TextAppearance.Label"
+        android:layout_width="30dp"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:text="0"
+        android:layout_marginHorizontal="5dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnIncrement"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:background="@drawable/outline_add_24"
+        app:backgroundTint="@color/icon_button_color" />
+</merge>
