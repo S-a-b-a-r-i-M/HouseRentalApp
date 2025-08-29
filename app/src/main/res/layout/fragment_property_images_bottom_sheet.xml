@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/amenitiesBottomSheet"
+    android:id="@+id/imagesBottomSheet"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipToPadding="false"
-    android:backgroundTint="@color/black"
-    tools:context=".presentation.ui.property.AmenitiesBottomSheet">
+    android:paddingHorizontal="10dp"
+    tools:context=".presentation.ui.property.PropertyImagesBottomSheet">
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnClose"
@@ -19,18 +19,9 @@
         android:background="@drawable/baseline_close_24"
         app:backgroundTint="@color/icon_button_color" />
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvImages"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp" >
-
-        <LinearLayout
-            android:id="@+id/amenities_container"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </androidx.core.widget.NestedScrollView>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

@@ -8,8 +8,8 @@ object AmenitiesMapper {
     fun fromDomain(amenities: List<Amenity>): List<PropertyAmenityEntity> {
         return amenities.map {
             PropertyAmenityEntity(
-                amenity = it.amenity,
-                amenityType = it.amenityType.name,
+                amenity = it.name,
+                amenityType = it.type.name,
                 count = it.count
             )
         }
@@ -22,8 +22,8 @@ object AmenitiesMapper {
 
             Amenity(
                 id = it.id,
-                amenity = it.amenity,
-                amenityType = AmenityType.valueOf(it.amenityType),
+                name = it.amenity,
+                type = AmenityType.valueOf(it.amenityType),
                 count = it.count
             )
         }

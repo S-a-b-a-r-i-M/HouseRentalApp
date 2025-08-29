@@ -49,6 +49,5 @@ enum class CountableInternalAmenity(override val readable: String) : ReadableEnu
 enum class AmenityType {
     INTERNAL,
     INTERNAL_COUNTABLE,
-    SOCIAL,
-    SOCIAL_COUNTABLE
+    SOCIAL
 }

@@ -101,7 +101,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     private fun handleOnPropertyClick(propertyId: Long) {
         val destinationFragment = SinglePropertyDetailFragment()
-        destinationFragment.arguments = Bundle().apply { putLong("property_id", propertyId) }
+        destinationFragment.arguments = Bundle().apply { putLong("propertyId", propertyId) }
         mainActivity.loadFragment(destinationFragment, true)
     }
 

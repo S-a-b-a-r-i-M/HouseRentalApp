@@ -95,7 +95,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun loadFragment(fragment: Fragment, pushToBackStack: Boolean = false, containerId: Int = binding.pageFragmentContainer.id,) {
+    fun loadFragment(
+        fragment: Fragment,
+        pushToBackStack: Boolean = false,
+        containerId: Int = binding.pageFragmentContainer.id
+    ) {
         supportFragmentManager.beginTransaction().apply {
             replace(containerId, fragment)
             if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK

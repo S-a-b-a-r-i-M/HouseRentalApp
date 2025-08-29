@@ -27,8 +27,8 @@
     <string name="un_furnished">Unfurnished</string>
     <string name="monthly_maintenance">Monthly Maintenance</string>
     <string name="location_details">Location Details</string>
-    <string name="city">City<font color="#FF0000"> * </font></string>
-    <string name="locality">Enter area/locality <font color="#FF0000"> * </font> </string>
+    <string name="city">City</string>
+    <string name="locality">Enter area/locality</string>
     <string name="looking_to">Looking To</string>
     <string name="apartment">Apartment</string>
     <string name="independent_house">Independent House</string>
@@ -82,4 +82,19 @@
     <string name="price_maintenance_month">Price + Maintanence / Month</string>
     <string name="bhk_property_type_un_furnished_1000_sq_ft">bhk property type | un-furnished | 1000 sq.ft.</string>
     <string name="property_image">Property Image</string>
+    <string name="filters">Filters</string>
+    <string name="open_shortlists">Open shortlists</string>
+    <string name="enter_house_no_street_name">Enter house no, street name</string>
+    <string name="add_property_images">+ Add property Images</string>
+    <string name="image_of_an_property">image of an property</string>
+    <string name="no_description">No Description Available</string>
+    <string name="delete_image">delete image</string>
+    <string name="no_amenities_available">No Amenities Available</string>
+    <string name="included">included</string>
+    <string name="preferred_tenant">Preferred Tenant</string>
+    <string name="pet_allowed">Pet Allowed</string>
+    <string name="locality_city">locality, city</string>
+    <string name="bathroom">Bathroom</string>
+    <string name="posted_on">Posted On</string>
+    <string name="i_m_interested">I\'m Interested</string>
 </resources>

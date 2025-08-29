@@ -16,14 +16,8 @@ enum class PropertyType(override val readable: String) : ReadableEnum {
     STUDIO("Studio"),
     OTHER("Other");
 
-    companion object {
-        fun fromString(inputStr: String): PropertyType? = entries.find {
-            it.readable.contentEquals(inputStr, true)
-        }
-
-        fun isValid(inputStr: String): Boolean = entries.any {
-            it.readable.contentEquals(inputStr, true)
-        }
+    companion object : ReadableEnum.Companion<PropertyType> {
+        override val values: Array<PropertyType> = entries.toTypedArray()
     }
 }
 
@@ -32,14 +26,8 @@ enum class FurnishingType(override val readable: String) : ReadableEnum {
     SEMI_FURNISHED("Semi Furnished"),
     FULLY_FURNISHED("Furnished");
 
-    companion object {
-        fun fromString(inputStr: String): FurnishingType? = entries.find {
-            it.readable.contentEquals(inputStr, true)
-        }
-
-        fun isValid(inputStr: String): Boolean = entries.any {
-            it.readable.contentEquals(inputStr, true)
-        }
+    companion object : ReadableEnum.Companion<FurnishingType> {
+        override val values: Array<FurnishingType> = entries.toTypedArray()
     }
 }
 

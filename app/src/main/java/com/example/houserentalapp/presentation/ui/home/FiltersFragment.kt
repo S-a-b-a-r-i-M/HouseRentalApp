@@ -35,6 +35,7 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
             btnSubmit.setOnClickListener {
                 mainActivity.loadFragment(
                     PropertiesListFragment(),
+                    true
                 )
             }
         }

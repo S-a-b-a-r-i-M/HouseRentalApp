@@ -23,7 +23,7 @@ enum class PropertyFormField {
     IS_MAINTENANCE_SEPARATE,
     MAINTENANCE_CHARGES,
     SECURITY_DEPOSIT,
-    STREET_NAME,
+    STREET,
     LOCALITY,
     CITY
 }

@@ -1,6 +1,8 @@
 package com.example.houserentalapp.presentation.utils.helpers
 
 import com.example.houserentalapp.R
+import com.example.houserentalapp.domain.model.Amenity
+import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
@@ -33,3 +35,14 @@ val countableInternalAmenityDrawables = mapOf(
     CountableInternalAmenity.FAN to R.drawable.outline_mode_fan_24,
     CountableInternalAmenity.LIGHT to R.drawable.outline_lightbulb_24,
 )
+
+fun getAmenityDrawable(amenity: Amenity, defaultDrawable: Int = R.drawable.outline_chair_24) : Int {
+    return when(amenity.type) {
+        AmenityType.INTERNAL ->
+            internalAmenityDrawables[InternalAmenity.fromString(amenity.name)]
+        AmenityType.INTERNAL_COUNTABLE ->
+            countableInternalAmenityDrawables[CountableInternalAmenity.fromString(amenity.name)]
+        AmenityType.SOCIAL ->
+            socialAmenityDrawables[SocialAmenity.fromString(amenity.name)]
+    } ?: defaultDrawable
+}

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentHomeBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 
 class HomeFragment : Fragment() {
@@ -29,10 +30,18 @@ class HomeFragment : Fragment() {
     }
 
     fun setListeners() {
+        val mainActivity = context as MainActivity
         with(binding) {
             searchBar.setOnClickListener {
-                (context as MainActivity).loadFragment(
-                    FiltersFragment(),
+                mainActivity.loadFragment(
+                    PropertiesListFragment(),
+                    true
+                )
+            }
+
+            btnPostProperty.setOnClickListener {
+                mainActivity.loadFragment(
+                    CreatePropertyFragment(),
                     true
                 )
             }

@@ -19,25 +19,25 @@ import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
+import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.CreatePropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.domain.utils.toEpoch
+import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import kotlinx.coroutines.launch
 
 class CreatePropertyViewModel(
     private val createPropertyUseCase: CreatePropertyUseCase
 ) : ViewModel() {
-    private val _loading = MutableLiveData<Boolean>()
-    val loading: LiveData<Boolean> = _loading
-    private val _success = MutableLiveData<String?>()
-    val success: LiveData<String?> = _success
-    private val _error = MutableLiveData<String?>()
-    val error: LiveData<String?> = _error
+    private val _createPropertyResult = MutableLiveData<ResultUI<Long>>()
+    val createPropertyResult: LiveData<ResultUI<Long>> = _createPropertyResult
 
     private val formDataMap = PropertyFormField.entries.associateWith {
         MutableLiveData<String?>(null)
@@ -59,19 +59,23 @@ class CreatePropertyViewModel(
         MutableLiveData<Boolean>(false)
     }
 
-    private val imageUris = MutableLiveData<List<Uri>>(emptyList())
+    private val _imageUris = MutableLiveData<List<Uri>>(emptyList())
+    val imageUris: LiveData<List<Uri>> = _imageUris
 
     fun getFormDataMap(field: PropertyFormField) : LiveData<String?> = formDataMap.getValue(field)
 
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
 
     fun updateFormValue(field: PropertyFormField, value: Any) {
-        if (field == PropertyFormField.COVERED_PARKING_COUNT || field == PropertyFormField.OPEN_PARKING_COUNT) {
+        if (field == PropertyFormField.COVERED_PARKING_COUNT ||
+            field == PropertyFormField.OPEN_PARKING_COUNT ||
+            field == PropertyFormField.BATH_ROOM_COUNT
+        ) {
             val valueInt = value as? Int ?: run {
                 logError("updateFormValue -> $field, given value is not a integer")
                 return
             }
-            updateParkingInternal(field, valueInt)
+            updateCounterValue(field, valueInt)
             return
         }
 
@@ -82,31 +86,23 @@ class CreatePropertyViewModel(
     }
 
     fun setPropertyImages(imageUris: List<Uri>) {
-        this.imageUris.value = imageUris
+        this._imageUris.value = imageUris
     }
 
     fun removePropertyImage(imageUri: Uri) {
-        val currentImages = imageUris.value?.toMutableList() ?: run {
+        val currentImages = _imageUris.value?.toMutableList() ?: run {
             logWarning("no images to remove")
             return
         }
 
         currentImages.remove(imageUri)
-        imageUris.value = currentImages
+        _imageUris.value = currentImages
     }
 
-    private fun updateParkingInternal(field: PropertyFormField, updateValue: Int) {
+    private fun updateCounterValue(field: PropertyFormField, updateValue: Int) {
         formDataMap.getValue(field).apply {
             value = ((value?.toIntOrNull() ?: 0) + updateValue).toString()
         }
-    }
-
-    fun updateCoveredParking(updateValue: Int) {
-        updateParkingInternal(PropertyFormField.COVERED_PARKING_COUNT, updateValue)
-    }
-
-    fun updateOpenParking(updateValue: Int) {
-        updateParkingInternal(PropertyFormField.OPEN_PARKING_COUNT, updateValue)
     }
 
     fun getInternalCountableAmenity(amenity: CountableInternalAmenity): LiveData<Int> =
@@ -148,15 +144,15 @@ class CreatePropertyViewModel(
         }
 
         viewModelScope.launch {
-            _loading.value = true
+            _createPropertyResult.value = ResultUI.Loading
             when (val result = createPropertyUseCase(property)) {
                 is Result.Success<Long> -> {
-                    _loading.value = false
-                    _success.value = "Property Created Successfully"
+                    _createPropertyResult.value = ResultUI.Success(result.data)
+                    logInfo("Property(${result.data}) Created Successfully")
                 }
                 is Result.Error -> {
-                    _loading.value = false
-                    _error.value = "Property Creation failed"
+                    _createPropertyResult.value = ResultUI.Error(result.message)
+                    logError("Property Creation failed")
                 }
             }
         }
@@ -192,41 +188,22 @@ class CreatePropertyViewModel(
             }
         }
 
-        // LOOKING_TO Validation
-        validateField(PropertyFormField.LOOKING_TO) { value ->
-            when {
-                value == null -> "select one"
-                !LookingTo.isValid(value as String) -> {
-                    logWarning("Value $value is not found in LookingTo")
-                    "error"
+        // LOOKING_TO, TYPE, FURNISHING_TYPE, BHK Validation
+        listOf(
+            Pair(PropertyFormField.LOOKING_TO, LookingTo),
+            Pair(PropertyFormField.TYPE, PropertyType),
+            Pair(PropertyFormField.FURNISHING_TYPE, FurnishingType),
+            Pair(PropertyFormField.BHK, BHK)
+        ).forEach { (filed, enum) ->
+            validateField(filed) { value ->
+                when {
+                    value == null -> "select one"
+                    !enum.isValid(value as String) -> {
+                        logWarning("Value $value is not found in ${enum.simpleClassName}")
+                        "error"
+                    }
+                    else -> null
                 }
-                else -> null
-            }
-        }
-
-        // KIND Validation (skip)
-
-        // TYPE Validation
-        validateField(PropertyFormField.TYPE) { value ->
-            when {
-                value == null -> "select one"
-                !PropertyType.isValid(value as String) -> {
-                    logWarning("Value $value is not found in PropertyType")
-                    "error"
-                }
-                else -> null
-            }
-        }
-
-        // FURNISHING_TYPE Validation
-        validateField(PropertyFormField.FURNISHING_TYPE) { value ->
-            when {
-                value == null -> "select one"
-                !FurnishingType.isValid(value as String) -> {
-                    logWarning("Value $value is not found in FurnishingType")
-                    "error"
-                }
-                else -> null
             }
         }
 
@@ -247,38 +224,6 @@ class CreatePropertyViewModel(
                 }
             }
 
-        // BHK Validation
-        validateField(PropertyFormField.BHK) { value ->
-            when {
-                value == null -> "select one"
-                !BHK.isValid(value as String) -> {
-                    logWarning("Value $value is not found in BHK")
-                    "error"
-                }
-                else -> null
-            }
-        }
-
-        // BUILT_UP_AREA Validation
-        validateField(PropertyFormField.BUILT_UP_AREA) { value ->
-            if (value == null) "enter valid input" else null
-        }
-
-        // IS_PET_ALLOWED Validation
-        validateField(PropertyFormField.IS_PET_FRIENDLY) { value ->
-            if (value == null) "enter valid input" else null
-        }
-
-        // AVAILABLE_FROM Validation
-        validateField(PropertyFormField.AVAILABLE_FROM) { value ->
-            if (value == null || value == "") "enter valid input" else null
-        }
-
-        // PRICE Validation
-        validateField(PropertyFormField.PRICE) { value ->
-            if (value == null) "enter valid input" else null
-        }
-
         // IS_MAINTENANCE_SEPARATE Validation
         val isMaintenanceSeparateValue = validateField(PropertyFormField.IS_MAINTENANCE_SEPARATE) { value ->
             if (value == null) "select one" else null
@@ -289,23 +234,25 @@ class CreatePropertyViewModel(
             if (isMaintenanceSeparateValue == true && value == null) "enter valid input" else null
         }
 
-        // SECURITY_DEPOSIT Validation
-        validateField(PropertyFormField.SECURITY_DEPOSIT) { value ->
-            if (value == null) "enter valid input" else null
+        // Int Input Validations
+        listOf(PropertyFormField.BUILT_UP_AREA, PropertyFormField.PRICE, PropertyFormField.SECURITY_DEPOSIT).forEach {
+            validateField(it) { value ->
+                if (value == null || value as? Int == null) "enter valid input" else null
+            }
         }
 
-        // Address Validations
-//        validateField(NewPropertyFormField.STREET_NAME) { value ->
-//            if (value == null || (value as? String)?.isEmpty() == true) "enter valid input" else null
-//        }
-
-        validateField(PropertyFormField.LOCALITY) { value ->
-            if (value == null || (value as? String)?.isEmpty() == true) "enter valid input" else null
-        }
-
-        validateField(PropertyFormField.CITY) { value ->
-            if (value == null || (value as? String)?.isEmpty() == true) "enter valid input" else null
-        }
+        // String Input Validations
+        listOf(
+            PropertyFormField.AVAILABLE_FROM,
+            PropertyFormField.STREET,
+            PropertyFormField.LOCALITY,
+            PropertyFormField.CITY,
+            PropertyFormField.IS_PET_FRIENDLY
+        ).forEach {
+                validateField(it) { value ->
+                    if (value == null || (value as? String)?.isEmpty() == true) "enter valid input" else null
+                }
+            }
 
         return isValidationSuccess
     }
@@ -319,8 +266,8 @@ class CreatePropertyViewModel(
         }.forEach { (icAmenity, count) ->
             amenities.add(Amenity(
                 id = null,
-                amenity = icAmenity.readable,
-                amenityType = AmenityType.INTERNAL_COUNTABLE,
+                name = icAmenity.readable,
+                type = AmenityType.INTERNAL_COUNTABLE,
                 count = count.value
             ))
         }
@@ -331,8 +278,8 @@ class CreatePropertyViewModel(
         }.forEach { (intAmenity) ->
             amenities.add(Amenity(
                 id = null,
-                amenity = intAmenity.readable,
-                amenityType = AmenityType.INTERNAL,
+                name = intAmenity.readable,
+                type = AmenityType.INTERNAL,
             ))
         }
 
@@ -342,8 +289,8 @@ class CreatePropertyViewModel(
         }.forEach { (socialAmenity) ->
             amenities.add(Amenity(
                 id = null,
-                amenity = socialAmenity.readable,
-                amenityType = AmenityType.SOCIAL,
+                name = socialAmenity.readable,
+                type = AmenityType.SOCIAL,
             ))
         }
 
@@ -369,11 +316,11 @@ class CreatePropertyViewModel(
                 ).value!!.toInt() else 0
 
                 val address = PropertyAddress(
-                    streetName = getValue(PropertyFormField.STREET_NAME).value ?: "",
+                    streetName = getValue(PropertyFormField.STREET).value ?: "",
                     locality = getValue(PropertyFormField.LOCALITY).value!!,
                     city = getValue(PropertyFormField.CITY).value!!
                 )
-                val propertyImages = imageUris.value?.map {
+                val propertyImages = _imageUris.value?.map {
                     PropertyImage(null, "", ImageSource.Uri(it), false)
                 } ?: emptyList()
 
@@ -398,7 +345,7 @@ class CreatePropertyViewModel(
                     availableFrom = getValue(PropertyFormField.AVAILABLE_FROM).value!!.toEpoch(),
                     bhk = BHK.fromString(getValue(PropertyFormField.BHK).value!!)!!,
                     builtUpArea = getValue(PropertyFormField.BUILT_UP_AREA).value?.toInt() ?: 0,
-                    bathRoomCount = 0,
+                    bathRoomCount = getValue(PropertyFormField.BATH_ROOM_COUNT).value?.toInt() ?: 0,
                     isPetAllowed = getValue(PropertyFormField.IS_PET_FRIENDLY).value?.toBoolean() ?: false,
                     isAvailable = true,
                     price = getValue(PropertyFormField.BUILT_UP_AREA).value!!.toInt(),
@@ -414,24 +361,6 @@ class CreatePropertyViewModel(
             logError(exp.message.toString(), exp)
             return null
         }
-    }
-
-    /**
-     * Clear error message (usually called after showing error to user)
-     */
-    fun clearErr() {
-        _error.value = null
-    }
-
-    fun clearFieldErr(field: PropertyFormField) {
-        formErrorMap[field]?.value = null
-    }
-
-    /**
-     * Clear success message (usually called after showing success to user)
-     */
-    fun clearSuccess() {
-        _success.value = null
     }
 }
 
