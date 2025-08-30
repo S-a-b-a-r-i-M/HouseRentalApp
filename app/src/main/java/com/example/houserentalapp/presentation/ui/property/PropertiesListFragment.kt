@@ -1,6 +1,5 @@
 package com.example.houserentalapp.presentation.ui.property
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -31,13 +30,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
-
-        // Hide Bottom Nav
         mainActivity = requireActivity() as MainActivity
-        mainActivity.hideBottomNav()
-
-        // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
 
         setupUI()
         setupListeners()
@@ -78,14 +71,21 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     fun setupUI() {
+        // Hide Bottom Nav
+        mainActivity.hideBottomNav()
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
+
         with(binding) {
-            // RecyclerView
+          // RecyclerView
             propertiesAdapter = PropertiesAdapter(::handleOnPropertyClick)
             rvProperty.apply {
                 layoutManager = LinearLayoutManager(requireActivity())
                 adapter = propertiesAdapter
                 addOnScrollListener(scrollListener)
             }
+
+
         }
     }
 

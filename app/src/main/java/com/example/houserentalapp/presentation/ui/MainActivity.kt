@@ -18,6 +18,16 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
+/* Pending Things
+    Existing fix:
+        1. TODO: Create Property -> Add more images, enhance the counter view design
+        2. TODO: Check Toolbar implementation
+    New:
+        1. TODO: Favourites page -> move and remove properties
+        2. TODO: Filters
+        2. TODO: My Properties Page -> List of uploaded properties, edit status, edit details.
+ */
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding

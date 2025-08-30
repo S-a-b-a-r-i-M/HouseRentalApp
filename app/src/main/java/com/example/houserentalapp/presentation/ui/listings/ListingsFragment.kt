@@ -29,8 +29,6 @@ class ListingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListingsBinding.bind(view)
 
-        Log.i(TAG, "requireActivity : ${requireActivity()}" )
-
         setOnClickListeners()
 
         // ON FRAGMENT FIRST CREATION

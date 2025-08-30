@@ -15,9 +15,15 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingTBarLayout"
             android:layout_width="match_parent"
             android:layout_height="250dp"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+            app:title="@string/property_name"
+            app:titleCollapseMode="scale"
+            app:titleTextEllipsize="end"
+            app:collapsedTitleTextColor="@color/gray_dark"
+            app:expandedTitleTextColor="@android:color/transparent"
             app:contentScrim="@color/white">
 
           <!-- ViewPager2 with parallax effect -->
@@ -34,43 +40,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:contentInsetStart="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:paddingHorizontal="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <include
-                        android:id="@+id/backImgBtn"
-                        layout="@layout/back_button" />
-
-                    <TextView
-                        style="@style/TextAppearance.App.Toolbar"
-                        android:textColor="@color/gray_dark"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="8dp"
-                        android:text="@string/property_name" />
-
-                    <ImageButton
-                        android:id="@+id/ibtnShortlists"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_margin="4dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:src="@drawable/outline_favorite"
-                        app:tint="@color/icon_button_color"
-                        android:contentDescription="@string/favourite" />
-
-                </LinearLayout>
-
-            </com.google.android.material.appbar.MaterialToolbar>
+                app:menu="@menu/detailed_property_toolbar_menu"
+                app:navigationIcon="@drawable/outline_arrow_back_24" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 

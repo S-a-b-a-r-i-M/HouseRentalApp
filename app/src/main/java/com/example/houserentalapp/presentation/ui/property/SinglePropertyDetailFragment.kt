@@ -55,9 +55,6 @@ class SinglePropertyDetailFragment : Fragment() {
 
         logInfo("Selected property id : $propertyId")
 
-        // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
-
         setupUI()
         setupViewModel()
 
@@ -69,6 +66,8 @@ class SinglePropertyDetailFragment : Fragment() {
     }
 
     fun setupUI() {
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
         with(binding) {
             adapter = PropertyImagesViewAdapter()
             viewPager2.adapter = adapter
@@ -84,8 +83,15 @@ class SinglePropertyDetailFragment : Fragment() {
 
     fun setListeners() {
         with(binding) {
-            backImgBtn.root.setOnClickListener {
+            toolbar.setNavigationOnClickListener {
                 parentFragmentManager.popBackStack()
+            }
+
+            toolbar.setOnMenuItemClickListener { item ->
+                if(item.itemId == R.id.tbar_shortlist)
+                    logInfo("tbar_shortlist clicked")
+
+                true
             }
         }
     }
@@ -124,6 +130,7 @@ class SinglePropertyDetailFragment : Fragment() {
 
     private fun bindPropertyMinDetails(property: Property) {
         with(binding) {
+            collapsingTBarLayout.title = property.name
             tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
             tvAddress.text = property.address.let { "${it.streetName}, ${it.locality}, ${it.city}" }
             tvFurnishingType.text = property.furnishingType.readable

@@ -6,7 +6,9 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.App.Toolbar" parent="@style/TextAppearance.App.Headline1" />
+    <style name="TextAppearance.App.Toolbar" parent="@style/TextAppearance.App.Headline1" >
+
+    </style>
 
     <style name="TextAppearance.App.Headline2" parent="@style/TextAppearance.App.Headline1">
         <item name="android:textColor">@color/black</item>

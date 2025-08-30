@@ -96,12 +96,7 @@ class CreatePropertyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Hide Bottom nav. Note: This will make issues if you put this into onAttach()
         mainActivity = context as MainActivity
-        mainActivity.hideBottomNav()
-
-        // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
 
         // Set up UI
         setupUI()
@@ -312,6 +307,11 @@ class CreatePropertyFragment : Fragment() {
     }
 
     private fun setupUI() {
+        // Hide Bottom nav.
+        mainActivity.hideBottomNav()
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
+
         setupCustomToolBar()
         setupSingleSelectableGroupedButtons()
         groupRelatedFields()
