@@ -41,7 +41,7 @@ data class  Property (
     val address: PropertyAddress,
     // Images
     val images: List<PropertyImage>,
-    // TimeLine
+    // TimeLine in epoch millis(UTC)
     val createdAt: Long = System.currentTimeMillis()
     ) {
     init {

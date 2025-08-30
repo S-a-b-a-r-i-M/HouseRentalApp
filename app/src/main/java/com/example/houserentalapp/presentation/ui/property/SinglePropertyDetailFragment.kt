@@ -20,7 +20,7 @@ import com.example.houserentalapp.domain.model.Amenity
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
-import com.example.houserentalapp.domain.utils.fromEpoch
+import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
@@ -122,10 +122,7 @@ class SinglePropertyDetailFragment : Fragment() {
         }
     }
 
-    private fun bindPropertyDetails(property: Property) {
-        // Load Images
-        adapter.setPropertyImages(property.images)
-
+    private fun bindPropertyMinDetails(property: Property) {
         with(binding) {
             tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
             tvAddress.text = property.address.let { "${it.streetName}, ${it.locality}, ${it.city}" }
@@ -138,8 +135,11 @@ class SinglePropertyDetailFragment : Fragment() {
             else
                 "included"
             tvSecurityDeposit.text = "₹ ${property.securityDepositAmount}"
+        }
+    }
 
-            // Card 2 Details
+    private fun bindPropertyOverviewDetails(property: Property) {
+        with(binding) {
             tvPropertyType.text = property.type.readable
             tvBHK.text = property.bhk.readable
             tvIsPetAllowed.text = if (property.isPetAllowed) "Yes allowed" else "Not allowed"
@@ -158,41 +158,12 @@ class SinglePropertyDetailFragment : Fragment() {
                     setTextAppearance(R.style.TextAppearance_App_Body2)
                     setTextColor(context.resources.getColor(R.color.gray_medium))
                 }
+        }
+    }
 
-            // Amenities Details
-            if (property.amenities.isNotEmpty()) {
-                val internalAmenities = mutableListOf<Amenity>()
-                val internalCountableAmenities = mutableListOf<Amenity>()
-                val socialAmenities = mutableListOf<Amenity>()
-
-                property.amenities.forEach {
-                    when (it.type) {
-                        AmenityType.INTERNAL -> internalAmenities.add(it)
-                        AmenityType.INTERNAL_COUNTABLE -> internalCountableAmenities.add(it)
-                        AmenityType.SOCIAL -> socialAmenities.add(it)
-                    }
-                }
-
-                internalCountableAmenities.forEach {
-                    gridsOfInternalAmenities.addView(getAmenityView(it))
-                }
-                internalAmenities.forEach {
-                    gridsOfInternalAmenities.addView(getAmenityView(it))
-                }
-                socialAmenities.forEach {
-                    gridsOfSocialAmenities.addView(getAmenityView(it))
-                }
-
-                // Separator
-                amenitiesSeparator.visibility = if (
-                    (internalAmenities.isNotEmpty() || internalCountableAmenities.isNotEmpty()) &&
-                    socialAmenities.isNotEmpty()
-                )
-                    View.VISIBLE
-                else
-                    View.GONE
-
-            } else {
+    private fun bindPropertyAmenitiesDetails(amenities: List<Amenity>) {
+        with(binding) {
+            if (amenities.isEmpty()) {
                 val textView = TextView(context).apply {
                     text = context.getString(R.string.no_amenities_available)
                     gravity = Gravity.CENTER
@@ -201,8 +172,50 @@ class SinglePropertyDetailFragment : Fragment() {
                 }
 
                 llAmenities.addView(textView)
+                return
             }
+
+            val internalAmenities = mutableListOf<Amenity>()
+            val internalCountableAmenities = mutableListOf<Amenity>()
+            val socialAmenities = mutableListOf<Amenity>()
+
+            amenities.forEach {
+                when (it.type) {
+                    AmenityType.INTERNAL -> internalAmenities.add(it)
+                    AmenityType.INTERNAL_COUNTABLE -> internalCountableAmenities.add(it)
+                    AmenityType.SOCIAL -> socialAmenities.add(it)
+                }
+            }
+
+            internalCountableAmenities.forEach {
+                gridsOfInternalAmenities.addView(getAmenityView(it))
+            }
+            internalAmenities.forEach {
+                gridsOfInternalAmenities.addView(getAmenityView(it))
+            }
+            socialAmenities.forEach {
+                gridsOfSocialAmenities.addView(getAmenityView(it))
+            }
+
+            // Separator
+            amenitiesSeparator.visibility = if (
+                (internalAmenities.isNotEmpty() || internalCountableAmenities.isNotEmpty()) &&
+                socialAmenities.isNotEmpty()
+            )
+                View.VISIBLE
+            else
+                View.GONE
         }
+    }
+
+    private fun bindPropertyDetails(property: Property) {
+        // Load Images
+        adapter.setPropertyImages(property.images)
+
+        // Load Details
+        bindPropertyMinDetails(property)
+        bindPropertyOverviewDetails(property)
+        bindPropertyAmenitiesDetails(property.amenities)
     }
 
     fun setObservers() {

@@ -33,5 +33,5 @@ data class PropertyEntity (
     // Images
     val images: List<PropertyImageEntity>,
     // TimeLine
-    val createdAt: Long // milli seconds
+    val createdAt: Long
 )

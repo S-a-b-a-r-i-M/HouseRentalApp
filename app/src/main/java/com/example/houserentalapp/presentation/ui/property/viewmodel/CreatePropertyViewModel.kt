@@ -19,12 +19,11 @@ import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
-import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.CreatePropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
-import com.example.houserentalapp.domain.utils.toEpoch
+import com.example.houserentalapp.presentation.utils.helpers.toEpochSeconds
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
@@ -237,7 +236,7 @@ class CreatePropertyViewModel(
         // Int Input Validations
         listOf(PropertyFormField.BUILT_UP_AREA, PropertyFormField.PRICE, PropertyFormField.SECURITY_DEPOSIT).forEach {
             validateField(it) { value ->
-                if (value == null || value as? Int == null) "enter valid input" else null
+                if (value !is String || value.toIntOrNull() == null) "enter valid input" else null
             }
         }
 
@@ -250,7 +249,7 @@ class CreatePropertyViewModel(
             PropertyFormField.IS_PET_FRIENDLY
         ).forEach {
                 validateField(it) { value ->
-                    if (value == null || (value as? String)?.isEmpty() == true) "enter valid input" else null
+                    if (value !is String || value.isBlank()) "enter valid input" else null
                 }
             }
 
@@ -342,7 +341,7 @@ class CreatePropertyViewModel(
                     ageOfProperty = 0,
                     countOfCoveredParking = getValue(PropertyFormField.COVERED_PARKING_COUNT).value?.toInt() ?: 0,
                     countOfOpenParking = getValue(PropertyFormField.OPEN_PARKING_COUNT).value?.toInt() ?: 0,
-                    availableFrom = getValue(PropertyFormField.AVAILABLE_FROM).value!!.toEpoch(),
+                    availableFrom = getValue(PropertyFormField.AVAILABLE_FROM).value!!.toEpochSeconds(),
                     bhk = BHK.fromString(getValue(PropertyFormField.BHK).value!!)!!,
                     builtUpArea = getValue(PropertyFormField.BUILT_UP_AREA).value?.toInt() ?: 0,
                     bathRoomCount = getValue(PropertyFormField.BATH_ROOM_COUNT).value?.toInt() ?: 0,
