@@ -31,6 +31,25 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
         private var tvBody2: TextView = itemView.findViewById(R.id.tvBody2)
         private var tvFooter: TextView = itemView.findViewById(R.id.tvFooter)
 
+        private fun getShapableImageView(imageWidth: Int) : ShapeableImageView {
+            return ShapeableImageView(itemView.context).apply {
+                scaleType = ImageView.ScaleType.CENTER_CROP
+                shapeAppearanceModel = ShapeAppearanceModel.builder().apply {
+                    setAllCornerSizes(24f)
+                }.build()
+
+                val marginInPx = 5.dpToPx(itemView.context)
+                setLayoutParams(
+                    LinearLayout.LayoutParams(
+                        imageWidth,
+                        LinearLayout.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        setMargins(marginInPx, 0, marginInPx, 0)
+                    }
+                )
+            }
+        }
+
         fun bind(summary: PropertySummary) {
             val screenWidth = itemView.context.resources.displayMetrics.widthPixels
             val imageWidth = (screenWidth / 2.2).toInt()
@@ -45,26 +64,11 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
                             logWarning(
                                 "Image(${it.imageAddress}) is not exists, property:${summary.id}"
                             )
-                            return
+                            return@forEach
                         }
 
                         // Add Image Into imageContainer
-                        val shapableImageView = ShapeableImageView(itemView.context).apply {
-                            scaleType = ImageView.ScaleType.CENTER_CROP
-                            shapeAppearanceModel = ShapeAppearanceModel.builder().apply {
-                                setAllCornerSizes(24f)
-                            }.build()
-
-                            val marginInPx = 5.dpToPx(itemView.context)
-                            setLayoutParams(
-                                LinearLayout.LayoutParams(
-                                    imageWidth,
-                                    LinearLayout.LayoutParams.MATCH_PARENT
-                                ).apply {
-                                    setMargins(marginInPx, 0, marginInPx, 0)
-                                }
-                            )
-                        }
+                        val shapableImageView = getShapableImageView(imageWidth)
 //                        Glide.with(itemView) // TODO: Need to check this
 //                            .load(file)
 //                            .into(shapableImageView)

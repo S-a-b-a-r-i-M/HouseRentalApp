@@ -28,15 +28,13 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
     private var isScrolling: Boolean = false
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = requireActivity() as MainActivity
-        mainActivity.hideBottomNav()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
+
+        // Hide Bottom Nav
+        mainActivity = requireActivity() as MainActivity
+        mainActivity.hideBottomNav()
 
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)

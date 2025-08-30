@@ -66,7 +66,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         val context = requireActivity()
         // ADD TITLE
         val tvFlatFurnishings = TextView(context).apply {
-            setTextAppearance(R.style.TextAppearance_Headline3)
+            setTextAppearance(R.style.TextAppearance_App_Headline2)
             setText(R.string.flat_furnishings)
             setPadding(0, 10, 0, 20)
             setLayoutParams(matchParentWrapContentParams)
@@ -96,7 +96,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
     private fun buildSocialAmenitiesFields() {
         // ADD TITLE
         val tvSocietyAmenities = TextView(context).apply {
-            setTextAppearance(R.style.TextAppearance_Headline3)
+            setTextAppearance(R.style.TextAppearance_App_Headline2)
             setText(R.string.society_amenities)
             setPadding(0, 20, 0, 20)
             setLayoutParams(matchParentWrapContentParams)

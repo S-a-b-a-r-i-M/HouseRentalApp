@@ -1,6 +1,5 @@
 package com.example.houserentalapp.presentation.ui.listings
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,11 +15,6 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 class MyPropertyFragment : Fragment() {
 
     private lateinit var binding: FragmentMyPropertyBinding
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        logInfo("<--------------- onAttach --------------->")
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

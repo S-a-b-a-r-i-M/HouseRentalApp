@@ -1,12 +1,13 @@
 package com.example.houserentalapp.presentation.utils.helpers
 
-import android.graphics.Color
+import android.content.Context
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.View
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.houserentalapp.R
 
 fun setSystemBarBottomPadding(view: View) {
     ViewCompat.setOnApplyWindowInsetsListener(view){ _, insets ->
@@ -23,10 +24,10 @@ fun setSystemBarBottomPadding(view: View) {
     }
 }
 
-fun getRequiredStyleLabel(label: String): SpannableString {
-    val spannable = SpannableString("$label *")
+fun getRequiredStyleLabel(label: String, context: Context): SpannableString {
+    val spannable = SpannableString("$label*")
     spannable.setSpan(
-        ForegroundColorSpan(Color.RED),
+        ForegroundColorSpan(context.resources.getColor(R.color.red_error)),
         spannable.length - 1,
         spannable.length,
         SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE // Both start and end are exclusive

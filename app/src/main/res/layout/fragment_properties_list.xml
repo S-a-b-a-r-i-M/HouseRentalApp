@@ -34,7 +34,7 @@
                     layout="@layout/back_button" />
 
                 <HorizontalScrollView
-                    style="@style/TextAppearance.Toolbar"
+                    style="@style/TextAppearance.App.Toolbar"
                     android:background="@color/gray_very_light"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"

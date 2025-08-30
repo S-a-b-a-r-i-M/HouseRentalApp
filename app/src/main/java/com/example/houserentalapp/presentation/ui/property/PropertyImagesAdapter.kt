@@ -10,7 +10,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.PropertyImage
 import java.io.File
 
-class PropertyImageViewAdapter() : RecyclerView.Adapter<PropertyImageViewAdapter.ViewHolder>() {
+class PropertyImagesViewAdapter() : RecyclerView.Adapter<PropertyImagesViewAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val imageView: ImageView = itemView.findViewById(R.id.imageViewProperty)

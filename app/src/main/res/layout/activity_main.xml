@@ -49,7 +49,7 @@
                 app:itemPaddingBottom="0dp"
                 app:itemIconSize="26dp"
                 app:labelVisibilityMode="labeled"
-                app:itemActiveIndicatorStyle="@style/Custom.Indicator"
+                app:itemActiveIndicatorStyle="@style/Widget.App.Indicator"
                 app:itemIconTint="@color/bottom_nav_icon_color"
                 app:itemTextColor="@color/bottom_nav_text_color"
                 app:menu="@menu/bottom_nav_menu">

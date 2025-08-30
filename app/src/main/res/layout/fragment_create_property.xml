@@ -33,7 +33,7 @@
 
                 <TextView
                     android:id="@+id/titleTV"
-                    style="@style/TextAppearance.Toolbar"
+                    style="@style/TextAppearance.App.Toolbar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp" />
@@ -55,7 +55,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_marginBottom="10dp" >
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guideline"
@@ -67,7 +68,7 @@
           <!-- LOOKING TO -->
             <TextView
                 android:id="@+id/tvLookingTo"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/looking_to"
@@ -86,7 +87,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRent"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -99,7 +100,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSell"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -113,7 +114,7 @@
           <!-- City -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilCity"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -136,7 +137,7 @@
           <!-- Locality -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilLocality"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -156,16 +157,39 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+          <!-- House Number with Street Name -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_street"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:hint="@string/enter_house_no_street_name"
+                app:counterEnabled="false"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilLocality">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_street"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:maxLines="1" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
           <!-- Type -->
             <TextView
                 android:id="@+id/tvPropertyType"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/property_type"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tilLocality" />
+                app:layout_constraintTop_toBottomOf="@+id/til_street" />
 
             <HorizontalScrollView
                 android:id="@+id/listOfProperties"
@@ -182,7 +206,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnApartment"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -190,7 +214,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnVilla"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -199,7 +223,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnIndependentHouse"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -208,7 +232,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFormHouse"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -217,7 +241,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnStudio"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -226,7 +250,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnOther"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -240,7 +264,7 @@
           <!-- BHK -->
             <TextView
                 android:id="@+id/tvBHK"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -263,7 +287,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn1BHK"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:checkable="true"
@@ -271,7 +295,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn2BHK"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -280,7 +304,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn3BHK"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -289,7 +313,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn4BHK"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -298,7 +322,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn5AboveBHK"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -312,7 +336,7 @@
           <!-- Property Name -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPropertyName"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -335,7 +359,7 @@
           <!-- Property Description -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPropertyDes"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -361,7 +385,7 @@
           <!-- Furnishing Type -->
             <TextView
                 android:id="@+id/tvFurnishing"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -385,7 +409,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnFullyFurnished"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
@@ -394,7 +418,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSemiFurnished"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
@@ -404,7 +428,7 @@
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnUnFurnished"
-                        style="@style/Widget.Custom.OutlinedButton"
+                        style="@style/Widget.App.OutlinedButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10dp"
@@ -416,8 +440,8 @@
             </HorizontalScrollView>
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFurnishingDetails"
-                style="@style/AppTheme.Button.TextButton"
+                android:id="@+id/btn_add_amenities"
+                style="@style/Widget.App.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -427,11 +451,27 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/listOfFurnishingType" />
 
+            <com.example.houserentalapp.presentation.ui.reusable.CounterView
+                android:id="@+id/bathRoomCounter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:label="Bathrooms"
+                app:labelSize="12sp"
+                app:labelColor="@color/gray_dark"
+                app:minCount="0"
+                app:maxCount="8"
+                app:iconWidth="25dp"
+                app:iconHeight="25dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_add_amenities"/>
+
           <!-- Parking -->
             <!-- Covered Parking -->
             <com.example.houserentalapp.presentation.ui.reusable.CounterView
-                android:id="@+id/coveredParkingContainer"
-                android:layout_width="match_parent"
+                android:id="@+id/coveredParkingCounter"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:label="@string/covered_parking"
@@ -442,13 +482,13 @@
                 app:iconWidth="25dp"
                 app:iconHeight="25dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnFurnishingDetails"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bathRoomCounter"/>
 
             <!-- Open Parking -->
             <com.example.houserentalapp.presentation.ui.reusable.CounterView
-                android:id="@+id/openParkingContainer"
-                android:layout_width="match_parent"
+                android:id="@+id/openParkingCounter"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 app:label="@string/open_parking"
@@ -459,24 +499,24 @@
                 app:iconWidth="25dp"
                 app:iconHeight="25dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/coveredParkingContainer"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/coveredParkingCounter"/>
 
           <!-- Pet Allowed -->
             <TextView
                 android:id="@+id/tvPetFriendly"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center_vertical"
                 android:text="@string/pet_friendly"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/openParkingContainer" />
+                app:layout_constraintTop_toBottomOf="@+id/openParkingCounter" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPetFriendlyYes"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -491,7 +531,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnPetFriendlyNo"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -505,7 +545,7 @@
           <!-- Tenant Type -->
             <TextView
                 android:id="@+id/tvTenantType"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -515,7 +555,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnFamily"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -528,7 +568,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnBachelors"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -553,7 +593,7 @@
 
                 <TextView
                     android:id="@+id/tvPreferredBachelor"
-                    style="@style/TextAppearance.Label"
+                    style="@style/TextAppearance.App.LabelMedium"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_columnSpan="2"
@@ -563,7 +603,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_open_for_both"
-                    style="@style/Widget.Custom.OutlinedButton"
+                    style="@style/Widget.App.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
@@ -573,7 +613,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOnlyMen"
-                    style="@style/Widget.Custom.OutlinedButton"
+                    style="@style/Widget.App.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -583,7 +623,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnOnlyWomen"
-                    style="@style/Widget.Custom.OutlinedButton"
+                    style="@style/Widget.App.OutlinedButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -596,7 +636,7 @@
             <!-- Built-Up Area -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilBuiltUpArea"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -620,7 +660,7 @@
           <!-- Available From -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilAvailableFrom"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -643,7 +683,7 @@
           <!-- Budget Details -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPrice"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -665,7 +705,7 @@
           <!-- Maintenance Charges -->
             <TextView
                 android:id="@+id/tvMaintenanceSeparate"
-                style="@style/TextAppearance.Label"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -675,7 +715,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnIncludeInRent"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -688,7 +728,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSeparate"
-                style="@style/Widget.Custom.OutlinedButton"
+                style="@style/Widget.App.OutlinedButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -703,10 +743,10 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_maintenance_charge"
                 android:visibility="gone"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:hint="@string/maintenance_charges_per_month"
                 app:hintAnimationEnabled="true"
                 app:counterEnabled="false"
@@ -726,16 +766,17 @@
           <!-- Security Deposit -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSecurityDeposit"
-                style="@style/Widget.Custom.TextInputLayout.OutlinedBox"
+                style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:hint="@string/security_deposit"
                 app:hintAnimationEnabled="true"
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge"
-                app:layout_constraintBottom_toTopOf="@+id/btnUploadImages" >
+                app:layout_constraintBottom_toTopOf="@+id/tvPropertyImages" >
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etSecurityDeposit"
@@ -746,44 +787,69 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnUploadImages"
-                style="@style/AppTheme.Button.TextButton"
+        <!-- Property Images -->
+            <TextView
+                android:id="@+id/tvPropertyImages"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+ Add Property Images"
-                app:layout_constraintTop_toBottomOf="@+id/til_maintenance_charge"
+                android:layout_marginTop="4dp"
+                android:text="Property Images"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilSecurityDeposit" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cvUploadImages"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="@color/primary_blue_very_light"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUploadImages"
+                    style="@style/Widget.App.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="14sp"
+                    app:rippleColor="@android:color/transparent"
+                    android:drawableTop="@drawable/images_24"
+                    android:text="@string/add_property_images" />
+
+            </androidx.cardview.widget.CardView>
+
+            <LinearLayout
+                android:id="@+id/ll_uploaded_images"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="125dp"
+                android:layout_marginTop="4dp"
+                android:visibility="gone"
+                android:gravity="center_vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/primary_blue" />
+
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_submit"
+        android:id="@+id/btn_post_property"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
         android:text="@string/post_property" />
-
-      <!-- Scrollable Form Content -->
-<!--        <com.google.android.material.textfield.TextInputLayout-->
-<!--            android:id="@+id/tilBHK"-->
-<!--            style="@style/Widget.Custom.TextInputLayout.OutlinedBox.ExposedDropdownMenu"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:hint="@string/bhk">-->
-
-<!--            <AutoCompleteTextView-->
-<!--                android:id="@+id/actvBHK"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:inputType="none"-->
-<!--                android:focusable="false" />-->
-
-<!--                            </com.google.android.material.textfield.TextInputLayout>-->
 </LinearLayout>

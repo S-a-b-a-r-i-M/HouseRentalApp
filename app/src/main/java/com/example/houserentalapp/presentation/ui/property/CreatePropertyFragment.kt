@@ -86,12 +86,6 @@ class CreatePropertyFragment : Fragment() {
 
     private lateinit var mainActivity: MainActivity
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = requireActivity() as MainActivity
-        mainActivity.hideBottomNav()
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -102,6 +96,10 @@ class CreatePropertyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Hide Bottom nav. Note: This will make issues if you put this into onAttach()
+        mainActivity = context as MainActivity
+        mainActivity.hideBottomNav()
+
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
@@ -142,7 +140,7 @@ class CreatePropertyFragment : Fragment() {
         with(binding) {
             formTextInputFieldInfoSet.forEach {
                 observeValue(it.field, it.editText)
-                if (it.field.isRequired)
+                if (it.isRequired)
                     observeError(it.field) { error -> it.inputLayout.error = error }
             }
         }
@@ -332,7 +330,8 @@ class CreatePropertyFragment : Fragment() {
                 add(TextInputFieldInfo(
                     PropertyFormField.DESCRIPTION,
                     tilPropertyDes,
-                    etPropertyDes
+                    etPropertyDes,
+                    false
                 ))
                 add(TextInputFieldInfo(
                     PropertyFormField.AVAILABLE_FROM,
@@ -381,13 +380,12 @@ class CreatePropertyFragment : Fragment() {
     private fun setRequiredFieldIndicator() {
         with(binding) {
             formTextInputFieldInfoSet.forEach {
-                if (it.field.isRequired)
-                    it.inputLayout.hint = getRequiredStyleLabel(it.inputLayout.hint.toString())
+                if (it.isRequired)
+                    it.inputLayout.hint = getRequiredStyleLabel(it.inputLayout.hint.toString(), mainActivity)
             }
 
             formSGButtonsInfoSet.forEach {
-                if (it.field.isRequired)
-                    it.label.text = getRequiredStyleLabel(it.label.text.toString())
+                it.label.text = getRequiredStyleLabel(it.label.text.toString(), mainActivity)
             }
         }
     }
@@ -652,7 +650,8 @@ class CreatePropertyFragment : Fragment() {
     }
 
     private fun onRentSelectChange(isSelected: Boolean) {
-        binding.tilPrice.hint = getRequiredStyleLabel(if (isSelected) "₹ Monthly Rent" else "Budget")
+        val text = if (isSelected) "₹ Monthly Rent" else "Budget"
+        binding.tilPrice.hint = getRequiredStyleLabel(text, mainActivity)
     }
 
     private fun onBachelorsSelectChange(isSelected: Boolean) {
@@ -678,11 +677,13 @@ class CreatePropertyFragment : Fragment() {
         val field: PropertyFormField,
         val inputLayout: TextInputLayout,
         val editText: TextInputEditText,
+        val isRequired: Boolean = true
     )
 
     private data class SelectableGroupedButtonsInfo (
         val field: PropertyFormField,
         val label: TextView,
-        val groupedButtons: SingleSelectableGroupedButtons
+        val groupedButtons: SingleSelectableGroupedButtons,
+        val isRequired: Boolean = true
     )
 }

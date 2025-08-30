@@ -14,15 +14,13 @@ class FiltersFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding
     private lateinit var mainActivity: MainActivity
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = context as MainActivity
-        mainActivity.hideBottomNav()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
+
+        // Hide Bottom nav.
+        mainActivity = context as MainActivity
+        mainActivity.hideBottomNav()
 
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)

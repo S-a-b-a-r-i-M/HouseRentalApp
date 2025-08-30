@@ -40,7 +40,7 @@
 
         <TextView
             android:id="@+id/tvHeader"
-            style="@style/TextAppearance.Body1"
+            style="@style/TextAppearance.App.Body1"
             android:layout_marginTop="2dp"
             android:text="@string/property_name"
             android:textStyle="normal"
@@ -49,14 +49,14 @@
 
         <TextView
             android:id="@+id/tvBody1"
-            style="@style/TextAppearance.Body3"
+            style="@style/TextAppearance.App.Body3"
             android:text="@string/street_name_locality_city"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <TextView
             android:id="@+id/tvBody2"
-            style="@style/TextAppearance.Body1"
+            style="@style/TextAppearance.App.Body1"
             android:layout_marginTop="2dp"
             android:text="@string/price_maintenance_month"
             android:textColor="@color/black"
@@ -65,7 +65,7 @@
 
         <TextView
             android:id="@+id/tvFooter"
-            style="@style/TextAppearance.Body3"
+            style="@style/TextAppearance.App.Body3"
             android:layout_marginTop="2dp"
             android:textColor="@color/gray_dark"
             android:text="@string/bhk_property_type_un_furnished_1000_sq_ft"

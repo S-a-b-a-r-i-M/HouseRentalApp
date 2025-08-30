@@ -17,7 +17,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
             app:contentScrim="@color/white">
 
           <!-- ViewPager2 with parallax effect -->
@@ -48,17 +48,17 @@
                         layout="@layout/back_button" />
 
                     <TextView
-                        style="@style/TextAppearance.Toolbar"
+                        style="@style/TextAppearance.App.Toolbar"
                         android:textColor="@color/gray_dark"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="8dp"
-                        android:text="Property Name" />
+                        android:text="@string/property_name" />
 
                     <ImageButton
-                        android:id="@+id/ibtnSort"
+                        android:id="@+id/ibtnShortlists"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:layout_marginStart="10dp"
@@ -78,27 +78,26 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior" >
 
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="12dp">
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginVertical="8dp">
 
           <!-- Summary Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                android:layout_marginVertical="8dp">
+                app:cardCornerRadius="8dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:paddingHorizontal="4dp"
-                    android:paddingVertical="8dp">
+                    android:padding="6dp">
 
                     <androidx.constraintlayout.widget.Guideline
                         android:id="@+id/guideline"
@@ -115,11 +114,11 @@
                         app:layout_constraintGuide_percent="0.60" />
 
                     <TextView
-                        android:id="@+id/tvPropertyType"
-                        style="@style/TextAppearance.Body1"
+                        android:id="@+id/tvPropertyName"
+                        style="@style/TextAppearance.App.Body1"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Property Name"
+                        android:text="@string/property_name"
                         android:textColor="@color/gray_dark"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
                         app:layout_constraintStart_toStartOf="parent"
@@ -127,67 +126,68 @@
 
                     <TextView
                         android:id="@+id/tvAddress"
-                        style="@style/TextAppearance.Body2"
+                        style="@style/TextAppearance.App.Body2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:paddingVertical="4dp"
-                        android:text="locality, city"
+                        android:text="@string/locality_city"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvPropertyType" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvPropertyName" />
 
                     <TextView
                         android:id="@+id/tvFurnishingType"
-                        style="@style/TextAppearance.LabelSmall"
+                        style="@style/TextAppearance.App.LabelSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center"
-                        android:text="furnished"
+                        android:maxLines="1"
+                        android:text="@string/furnished"
                         app:drawableTopCompat="@drawable/outline_chair_24"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@id/tvBuiltArea"
+                        app:layout_constraintHorizontal_weight="1.25"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
 
                     <TextView
                         android:id="@+id/tvBuiltArea"
-                        style="@style/TextAppearance.LabelSmall"
+                        style="@style/TextAppearance.App.LabelSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"
-                        android:drawableTop="@drawable/outline_aspect_ratio_24"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center"
                         android:text="1024 sq.ft"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/tvPreferredTenant"
+                        app:drawableTopCompat="@drawable/outline_aspect_ratio_24"
+                        app:layout_constraintEnd_toStartOf="@+id/tvBHK"
+                        app:layout_constraintHorizontal_weight="1"
                         app:layout_constraintStart_toEndOf="@+id/tvFurnishingType"
                         app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
 
                     <TextView
-                        android:id="@+id/tvPreferredTenant"
-                        style="@style/TextAppearance.LabelSmall"
+                        android:id="@+id/tvBHK"
+                        style="@style/TextAppearance.App.LabelSmall"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
-                        android:layout_marginTop="4dp"
-                        android:drawableTop="@drawable/outline_family_filled"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginTop="10dp"
                         android:gravity="center"
-                        android:text="Anyone"
-                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:text="@string/bhk"
+                        android:ellipsize="start"
+                        app:drawableTopCompat="@drawable/outline_meeting_room_24"
                         app:layout_constraintEnd_toStartOf="@+id/guideline"
+                        app:layout_constraintHorizontal_weight="1"
                         app:layout_constraintStart_toEndOf="@id/tvBuiltArea"
                         app:layout_constraintTop_toBottomOf="@+id/tvAddress" />
 
-
                     <TextView
                         android:id="@+id/tvTitleRent"
-                        style="@style/TextAppearance.Label"
+                        style="@style/TextAppearance.App.LabelMedium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Rent"
+                        android:text="@string/rent"
                         android:textAlignment="center"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -195,7 +195,7 @@
 
                     <TextView
                         android:id="@+id/tvRent"
-                        style="@style/TextAppearance.Body2"
+                        style="@style/TextAppearance.App.Body2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:paddingBottom="4dp"
@@ -237,22 +237,22 @@
 
                     <TextView
                         android:id="@+id/tvMaintenance"
-                        android:layout_width="0dp"
+                        style="@style/TextAppearance.App.Body2"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/outline_build_circle_24"
-                        android:gravity="center"
+                        android:drawablePadding="4dp"
                         android:paddingHorizontal="10dp"
                         android:paddingVertical="4dp"
-                        android:text="included"
+                        android:text="@string/included"
                         android:textColor="@color/gray_dark"
+                        app:drawableStartCompat="@drawable/outline_build_circle_24"
                         app:layout_constraintBottom_toTopOf="@id/hGuideline"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toBottomOf="@+id/card1HSeparater1" />
 
                     <TextView
                         android:id="@+id/tvTitleSecurityDeposit"
-                        style="@style/TextAppearance.Label"
+                        style="@style/TextAppearance.App.LabelMedium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -264,7 +264,7 @@
 
                     <TextView
                         android:id="@+id/tvSecurityDeposit"
-                        style="@style/TextAppearance.Body2"
+                        style="@style/TextAppearance.App.Body2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="1,50,000"
@@ -283,7 +283,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="8dp"
-                android:layout_marginVertical="8dp">
+                android:layout_marginTop="8dp">
 
                 <!-- Make it one ConstraintLayout -->
                 <LinearLayout
@@ -294,7 +294,7 @@
                     android:paddingVertical="8dp">
 
                     <TextView
-                        style="@style/TextAppearance.Body2"
+                        style="@style/TextAppearance.App.Body2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingVertical="4dp"
@@ -397,11 +397,11 @@
                             app:layout_constraintVertical_bias="0.0" />
 
                         <TextView
-                            android:id="@+id/tvOverviewPropertyType"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tv_property_type"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Individual House"
+                            android:text="@string/independent_house"
                             app:layout_constraintBottom_toTopOf="@+id/tvOverviewPropertyTypeLabel"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgPropertyType"
@@ -409,48 +409,48 @@
 
                         <TextView
                             android:id="@+id/tvOverviewPropertyTypeLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Property Type"
+                            android:text="@string/property_type"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgPropertyType"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPropertyType" />
+                            app:layout_constraintTop_toBottomOf="@+id/tv_property_type" />
 
                         <!-- Cell 0, 1 - BHK -->
                         <ImageView
-                            android:id="@+id/imgBHK"
+                            android:id="@+id/imgTenantType"
                             android:layout_width="wrap_content"
                             android:layout_height="0dp"
                             android:paddingHorizontal="10dp"
-                            android:src="@drawable/outline_meeting_room_24"
+                            android:src="@drawable/outline_family_filled"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
                             app:layout_constraintStart_toStartOf="@+id/vGuideline2"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.0" />
 
                         <TextView
-                            android:id="@+id/tvOverviewBHK"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvPreferredTenant"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="2 BHK"
-                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewBHKLabel"
+                            android:text="Family, Bachelors(Open for both)"
+                            app:layout_constraintBottom_toTopOf="@+id/tvOverviewTenantType"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/imgBHK"
+                            app:layout_constraintStart_toEndOf="@+id/imgTenantType"
                             app:layout_constraintTop_toTopOf="parent" />
 
                         <TextView
-                            android:id="@+id/tvOverviewBHKLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            android:id="@+id/tvOverviewTenantType"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="BHK"
+                            android:text="@string/preferred_tenant"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline3"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/imgBHK"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewBHK" />
+                            app:layout_constraintStart_toEndOf="@+id/imgTenantType"
+                            app:layout_constraintTop_toBottomOf="@+id/tvPreferredTenant" />
 
                         <!-- Cell 1, 0 - Pet -->
                         <ImageView
@@ -464,11 +464,11 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
 
                         <TextView
-                            android:id="@+id/tvOverviewPetAllowed"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvIsPetAllowed"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Yes"
+                            android:text="@string/yes"
                             app:layout_constraintBottom_toTopOf="@id/tvOverviewPetAllowedLabel"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgPet"
@@ -476,14 +476,14 @@
 
                         <TextView
                             android:id="@+id/tvOverviewPetAllowedLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Pet Allowed"
+                            android:text="@string/pet_allowed"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgPet"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPetAllowed" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvIsPetAllowed" />
 
                         <!-- Cell 1, 1 - Bathroom -->
                         <ImageView
@@ -497,8 +497,8 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline3" />
 
                         <TextView
-                            android:id="@+id/tvOverviewBathroom"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvBathroomCount"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="2"
@@ -509,14 +509,14 @@
 
                         <TextView
                             android:id="@+id/tvOverviewBathroomLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Bathroom"
+                            android:text="@string/bathroom"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline4"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgBathroom"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewBathroom" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvBathroomCount" />
 
                         <!-- Cell 2, 0 - Posted On -->
                         <ImageView
@@ -530,8 +530,8 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
 
                         <TextView
-                            android:id="@+id/tvOverviewPostedOn"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvPostedOn"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="16/08/2025"
@@ -542,14 +542,14 @@
 
                         <TextView
                             android:id="@+id/tvOverviewPostedOnLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Posted On"
+                            android:text="@string/posted_on"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgPostedOn"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPostedOn" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvPostedOn" />
 
                         <!-- Cell 2, 1 - AvailableFrom -->
                         <ImageView
@@ -563,8 +563,8 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline4" />
 
                         <TextView
-                            android:id="@+id/tvOverviewAvailableFrom"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvAvailableFrom"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="01/09/2025"
@@ -575,14 +575,14 @@
 
                         <TextView
                             android:id="@+id/tvOverviewAvailableFromLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Available From"
+                            android:text="@string/available_from"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline5"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgAvailableFrom"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewPostedOn" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvPostedOn" />
 
                       <!-- Cell 3, 0 - Covered Parking -->
                         <ImageView
@@ -596,11 +596,11 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline5" />
 
                         <TextView
-                            android:id="@+id/tvOverviewCoveredParking"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvCoveredParking"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Covered: 2"
+                            android:text="0"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgCoveredParking"
                             app:layout_constraintTop_toTopOf="@+id/hGuideline5"
@@ -608,14 +608,14 @@
 
                         <TextView
                             android:id="@+id/tvOverviewCoveredParkingLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Parking"
+                            android:text="@string/covered_parking"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
                             app:layout_constraintEnd_toStartOf="@+id/vGuideline2"
                             app:layout_constraintStart_toEndOf="@+id/imgCoveredParking"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewCoveredParking" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvCoveredParking" />
 
                       <!-- Cell 3, 1 - Open Parking -->
                         <ImageView
@@ -629,11 +629,11 @@
                             app:layout_constraintTop_toTopOf="@+id/hGuideline5" />
 
                         <TextView
-                            android:id="@+id/tvOverviewOpenParking"
-                            style="@style/TextAppearance.Body3"
+                            android:id="@+id/tvOpenParking"
+                            style="@style/TextAppearance.App.Body3"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Open: 1"
+                            android:text="0"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgOpenParking"
                             app:layout_constraintTop_toTopOf="@+id/hGuideline5"
@@ -641,21 +641,21 @@
 
                         <TextView
                             android:id="@+id/tvOverviewOpenLabel"
-                            style="@style/TextAppearance.LabelSmall"
+                            style="@style/TextAppearance.App.LabelSmall"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Open Parking"
+                            android:text="@string/open_parking"
                             app:layout_constraintBottom_toTopOf="@+id/hGuideline6"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/imgOpenParking"
-                            app:layout_constraintTop_toBottomOf="@+id/tvOverviewOpenParking" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvOpenParking" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
                     <TextView
                         android:id="@+id/tvDescriptionLabel"
-                        style="@style/TextAppearance.Label"
+                        style="@style/TextAppearance.App.LabelMedium"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingVertical="4dp"
@@ -666,11 +666,10 @@
                   <!-- TODO: See More and See Less -->
                     <TextView
                         android:id="@+id/tvDescription"
-                        style="@style/TextAppearance.Body3"
-                        android:layout_width="wrap_content"
+                        style="@style/TextAppearance.App.Body3"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingHorizontal="4dp"
-                        android:text="Property, in the broad sense, describes anything that a person, group of people, or entity owns. It includes real property, personal property, private property, government-owned property, and more. Real property is one of the most familiar types of."
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -680,49 +679,50 @@
 
           <!-- Amenities -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cvAmenities"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"
-                android:layout_marginVertical="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="60dp">
 
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <LinearLayout
+                    android:id="@+id/llAmenities"
+                    android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:paddingHorizontal="4dp"
                     android:paddingVertical="8dp">
 
                     <TextView
-                        android:id="@+id/textView2"
-                        style="@style/TextAppearance.Body2"
+                        android:id="@+id/tvAmenitiesTitle"
+                        style="@style/TextAppearance.App.Body2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingVertical="4dp"
-                        android:text="@string/amenities_u"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        android:text="@string/amenities_u" />
 
-                    <HorizontalScrollView
-                        android:id="@+id/hscrlFlatAmenities"
+                    <GridLayout
+                        android:id="@+id/grids_of_internal_amenities"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginVertical="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+                        android:layout_height="wrap_content"
+                        android:columnCount="3" />
 
-
-                    <HorizontalScrollView
-                        android:id="@+id/hscrlSocialAmenities"
+                    <View
+                        android:id="@+id/amenitiesSeparator"
+                        style="@style/Separator"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:layout_marginVertical="10dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/hscrlFlatAmenities" />
+                        android:layout_height="0.25dp"
+                        android:visibility="gone"
+                        android:layout_marginVertical="4dp" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                    <GridLayout
+                        android:id="@+id/gridsOfSocialAmenities"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="3" />
+
+                </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
@@ -732,7 +732,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_gravity="bottom" >
 
         <com.google.android.material.button.MaterialButton
@@ -742,7 +742,7 @@
             android:layout_gravity="center"
             android:layout_marginVertical="5dp"
             android:layout_marginHorizontal="30dp"
-            android:text="I'm Interested" />
+            android:text="@string/i_m_interested" />
 
     </androidx.cardview.widget.CardView>
 

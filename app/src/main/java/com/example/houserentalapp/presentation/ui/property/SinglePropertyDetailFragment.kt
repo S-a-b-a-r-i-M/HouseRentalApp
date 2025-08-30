@@ -1,28 +1,40 @@
 package com.example.houserentalapp.presentation.ui.property
 
+import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.GridLayout
+import android.widget.TextView
+import androidx.core.view.setMargins
+import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
+import com.example.houserentalapp.domain.model.Amenity
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.utils.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 class SinglePropertyDetailFragment : Fragment() {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var viewModel: SinglePropertyDetailViewModel
-    private lateinit var adapter: PropertyImageViewAdapter
+    private lateinit var adapter: PropertyImagesViewAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +48,7 @@ class SinglePropertyDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSinglePropertyDetailBinding.bind(view)
 
-        val propertyId = arguments?.getLong("property_id") ?: run {
+        val propertyId = arguments?.getLong("propertyId") ?: run {
             logError("Selected property id is not found in bundle")
             parentFragmentManager.popBackStack()
         }
@@ -58,7 +70,7 @@ class SinglePropertyDetailFragment : Fragment() {
 
     fun setupUI() {
         with(binding) {
-            adapter = PropertyImageViewAdapter()
+            adapter = PropertyImagesViewAdapter()
             viewPager2.adapter = adapter
         }
     }
@@ -78,20 +90,135 @@ class SinglePropertyDetailFragment : Fragment() {
         }
     }
 
+    @SuppressLint("UseCompatTextViewDrawableApis") // Im suppressing the warning because my min sdk is > 23
+    private fun getAmenityView(amenity: Amenity): TextView {
+        val fourDpInPx = 4.dpToPx(requireActivity())
+        val drawable = getAmenityDrawable(amenity)
+
+        return TextView(context).apply {
+            text = if (amenity.type == AmenityType.INTERNAL_COUNTABLE)
+                "${amenity.name} : ${amenity.count}"
+            else
+                amenity.name
+            gravity = Gravity.CENTER
+            setTextAppearance(R.style.TextAppearance_App_LabelMedium)
+            setPadding(fourDpInPx)
+
+            // Add Drawable At the top
+            setCompoundDrawablesWithIntrinsicBounds(0, drawable, 0, 0)
+            setCompoundDrawableTintList(
+                ColorStateList.valueOf(context.resources.getColor(R.color.gray_dark))
+            )
+
+            // Add Layout Params
+            setLayoutParams(
+                GridLayout.LayoutParams().apply {
+                    width = 0
+                    height = GridLayout.LayoutParams.WRAP_CONTENT
+                    columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                    setMargins(fourDpInPx)
+                }
+            )
+        }
+    }
+
+    private fun bindPropertyDetails(property: Property) {
+        // Load Images
+        adapter.setPropertyImages(property.images)
+
+        with(binding) {
+            tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
+            tvAddress.text = property.address.let { "${it.streetName}, ${it.locality}, ${it.city}" }
+            tvFurnishingType.text = property.furnishingType.readable
+            tvBuiltArea.text = "${property.builtUpArea} sq.ft."
+            tvPreferredTenant.text = property.preferredTenantType.joinToString(",") { it.readable }
+            tvRent.text = "₹ ${property.price}"
+            tvMaintenance.text = if (property.isMaintenanceSeparate)
+                "₹ ${property.maintenanceCharges}"
+            else
+                "included"
+            tvSecurityDeposit.text = "₹ ${property.securityDepositAmount}"
+
+            // Card 2 Details
+            tvPropertyType.text = property.type.readable
+            tvBHK.text = property.bhk.readable
+            tvIsPetAllowed.text = if (property.isPetAllowed) "Yes allowed" else "Not allowed"
+            tvBathroomCount.text = property.bathRoomCount.toString()
+            tvPostedOn.text = property.createdAt.fromEpoch()
+            tvAvailableFrom.text = property.availableFrom.fromEpoch()
+            tvOpenParking.text = property.countOfOpenParking.toString()
+            tvCoveredParking.text = property.countOfCoveredParking.toString()
+            if (property.description != null && property.description.isNotBlank())
+                tvDescription.text = property.description
+            else
+                tvDescription.apply {
+                    text = context.getString(R.string.no_description)
+                    gravity = Gravity.CENTER
+                    textAlignment = View.TEXT_ALIGNMENT_CENTER
+                    setTextAppearance(R.style.TextAppearance_App_Body2)
+                    setTextColor(context.resources.getColor(R.color.gray_medium))
+                }
+
+            // Amenities Details
+            if (property.amenities.isNotEmpty()) {
+                val internalAmenities = mutableListOf<Amenity>()
+                val internalCountableAmenities = mutableListOf<Amenity>()
+                val socialAmenities = mutableListOf<Amenity>()
+
+                property.amenities.forEach {
+                    when (it.type) {
+                        AmenityType.INTERNAL -> internalAmenities.add(it)
+                        AmenityType.INTERNAL_COUNTABLE -> internalCountableAmenities.add(it)
+                        AmenityType.SOCIAL -> socialAmenities.add(it)
+                    }
+                }
+
+                internalCountableAmenities.forEach {
+                    gridsOfInternalAmenities.addView(getAmenityView(it))
+                }
+                internalAmenities.forEach {
+                    gridsOfInternalAmenities.addView(getAmenityView(it))
+                }
+                socialAmenities.forEach {
+                    gridsOfSocialAmenities.addView(getAmenityView(it))
+                }
+
+                // Separator
+                amenitiesSeparator.visibility = if (
+                    (internalAmenities.isNotEmpty() || internalCountableAmenities.isNotEmpty()) &&
+                    socialAmenities.isNotEmpty()
+                )
+                    View.VISIBLE
+                else
+                    View.GONE
+
+            } else {
+                val textView = TextView(context).apply {
+                    text = context.getString(R.string.no_amenities_available)
+                    gravity = Gravity.CENTER
+                    setTextAppearance(R.style.TextAppearance_App_Body2)
+                    setTextColor(context.resources.getColor(R.color.gray_medium))
+                }
+
+                llAmenities.addView(textView)
+            }
+        }
+    }
+
     fun setObservers() {
         with(binding) {
             viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
                 when(result) {
                     is ResultUI.Error -> {
-
+                        logInfo("error.... ${result.message}")
                     }
                     ResultUI.Loading -> {
-
+                        logInfo("loading....")
                     }
-                    is ResultUI.Success<Property> ->
-                        adapter.setPropertyImages(result.data.images)
+                    is ResultUI.Success<Property> -> {
+                        bindPropertyDetails(result.data)
+                    }
                 }
-
             }
         }
     }

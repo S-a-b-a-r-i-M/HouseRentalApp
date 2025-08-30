@@ -28,18 +28,9 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <ImageButton
-                    android:id="@+id/hamburgerImgBtn"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:src="@drawable/outline_menu_24"
-                    app:tint="@color/icon_button_color"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/hamburger" />
-
                 <TextView
                     android:id="@+id/titleTV"
-                    style="@style/TextAppearance.Toolbar"
+                    style="@style/TextAppearance.App.Toolbar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -48,7 +39,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnPostProperty"
-                    style="@style/AppTheme.Button.TextButton"
+                    style="@style/Widget.App.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/post_property" />

@@ -33,12 +33,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        logInfo("<-------- onCreate ---------->")
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
+        logInfo("<-------- MainActivity onCreate ---------->")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        enableEdgeToEdge()
         setWindowInsets()
 
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
