@@ -10,6 +10,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.createPropertiesListViewModel

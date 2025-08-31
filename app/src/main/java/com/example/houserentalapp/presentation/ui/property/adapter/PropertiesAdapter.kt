@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.property
+package com.example.houserentalapp.presentation.ui.property.adapter
 
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx

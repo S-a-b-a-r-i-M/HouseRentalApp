@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.property
+package com.example.houserentalapp.presentation.ui.property.adapter
 
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater

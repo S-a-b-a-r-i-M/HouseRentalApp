@@ -15,15 +15,17 @@ import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import java.sql.SQLException
 import com.example.houserentalapp.data.local.db.entity.PropertyAddressEntity
 import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
+import com.example.houserentalapp.data.mapper.PropertyImageMapper
+import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.domain.model.Pagination
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
 class PropertyDao(private val dbHelper: DatabaseHelper) {
-    val writableDB: SQLiteDatabase
+    private val writableDB: SQLiteDatabase
         get() = dbHelper.writableDatabase
 
-    val readableDB: SQLiteDatabase
+    private val readableDB: SQLiteDatabase
         get() = dbHelper.readableDatabase
 
     // -------------- CREATE --------------
@@ -170,16 +172,12 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             limit
         ).use { cursor ->
             val propertySummaries = mutableListOf<PropertySummaryEntity>()
-            with(cursor) {
-                while (moveToNext()) {
-                    val summary = mapCursorToPropertySummaryEntity(this)
-                    // Read Primary Image
-                     val imagesEntity = getPropertyImages(db, summary.id)
 
-                    propertySummaries.add(
-                        mapCursorToPropertySummaryEntity(cursor).copy(images = imagesEntity)
-                    )
-                }
+            while (cursor.moveToNext()) {
+                val summary = PropertyMapper.toPropertySummaryEntity(cursor)
+                val imagesEntity = getPropertyImages(db, summary.id)
+                // Add Summary + Images
+                propertySummaries.add(summary.copy(images = imagesEntity))
             }
 
             return Pair(propertySummaries, totalRecords)
@@ -222,29 +220,8 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             null
         ).use { cursor ->
             val images = mutableListOf<PropertyImageEntity>()
-            with(cursor) {
-                while (moveToNext()) {
-                    images.add(
-                        PropertyImageEntity(
-                            id = getLong(
-                                getColumnIndexOrThrow(
-                                    PropertyImagesTable.COLUMN_ID
-                                )
-                            ),
-                            imageAddress = getString(
-                                getColumnIndexOrThrow(
-                                    PropertyImagesTable.COLUMN_IMAGE_ADDRESS
-                                )
-                            ),
-                            isPrimary = getInt(
-                                getColumnIndexOrThrow(
-                                    PropertyImagesTable.COLUMN_IS_PRIMARY
-                                )
-                            ) == 1,
-                        )
-                    )
-                }
-            }
+            while (cursor.moveToNext())
+                images.add(PropertyImageMapper.toEntity(cursor))
 
             return images
         }
@@ -486,29 +463,6 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 ),
                 images = emptyList(), // Will be populated separately
                 createdAt = getLong(getColumnIndexOrThrow(PropertyTable.COLUMN_CREATED_AT))
-            )
-        }
-    }
-
-    private fun mapCursorToPropertySummaryEntity(cursor: Cursor): PropertySummaryEntity {
-        with(cursor) {
-            return PropertySummaryEntity(
-                id = getLong(getColumnIndexOrThrow(PropertyTable.COLUMN_ID)),
-                name = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_NAME)),
-                description = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_DESCRIPTION)),
-                lookingTo = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOOKING_TO)),
-                type = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_TYPE)),
-                furnishingType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_FURNISHING_TYPE)),
-                bhk = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_BHK)),
-                builtUpArea = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_BUILT_UP_AREA)),
-                viewCount = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_VIEW_COUNT)),
-                price = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_PRICE)),
-                address = PropertyAddressEntity(
-                    streetName = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_STREET_NAME)),
-                    locality = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOCALITY)),
-                    city = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_CITY))
-                ),
-                images = emptyList(), // Will be populated separately
             )
         }
     }

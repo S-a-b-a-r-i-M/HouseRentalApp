@@ -19,7 +19,6 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import kotlin.coroutines.coroutineContext
 
 class PropertyRepoImpl(private val context: Context) : PropertyRepo {
     private val propertyDao = PropertyDao(DatabaseHelper.getInstance(context))
@@ -101,7 +100,7 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
                 val (summariesEntity, count) = propertyDao.getPropertySummariesWithFilter(
                     filters, pagination
                 )
-                val summariesDomain = summariesEntity.map { PropertyMapper.toPropertySummary(it) }
+                val summariesDomain = summariesEntity.map { PropertyMapper.toPropertySummaryDomain(it) }
                 logInfo("getPropertySummaries retrieved ${summariesDomain.size} summaries")
                 Result.Success(summariesDomain, meta = mapOf("total_records" to count))
             }

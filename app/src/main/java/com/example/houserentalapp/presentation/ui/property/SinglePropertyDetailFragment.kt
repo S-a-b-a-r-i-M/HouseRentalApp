@@ -22,6 +22,7 @@ import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
