@@ -24,7 +24,6 @@ import com.google.android.material.checkbox.MaterialCheckBox
 class AmenitiesBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentAmenitiesBottomSheetBinding? = null
     private val binding get() = _binding!!
-
     private val viewModel: CreatePropertyViewModel by activityViewModels {
         createPropertyViewModelFactory()
     }
@@ -147,26 +146,29 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
 
     private fun observeViewModel() {
         // Internal Countable Amenities
-        CountableInternalAmenity.entries.forEach { amenity ->
-            viewModel.getInternalCountableAmenity(amenity).observe(viewLifecycleOwner) { count ->
-                logInfo("<------- Observing CountableInternalAmenity, $amenity: $count ----->")
-                countableIntAmenitiesViewMap.getValue(amenity).count = count
+        viewModel.icAmenityMap.observe(viewLifecycleOwner) { map ->
+            logInfo("<------- Observing CountableInternalAmenity, $map ----->")
+            map.forEach { (amenity, count) ->
+                val counterView = countableIntAmenitiesViewMap.getValue(amenity)
+                if (counterView.count != count) counterView.count = count
             }
         }
 
         // Internal Amenities
-        InternalAmenity.entries.forEach { amenity ->
-            viewModel.getInternalAmenity(amenity).observe(viewLifecycleOwner) { isSelected ->
-                logInfo("<------- Observing InternalAmenity, $amenity: $isSelected ----->")
-                internalAmenitiesViewMap.getValue(amenity).isChecked = isSelected
+        viewModel.internalAmenityMap.observe(viewLifecycleOwner) { map ->
+            logInfo("<------- Observing InternalAmenity, $map ----->")
+            map.forEach { (amenity, isChecked) ->
+                val checkBox = internalAmenitiesViewMap.getValue(amenity)
+                if (checkBox.isChecked != isChecked) checkBox.isChecked = isChecked
             }
         }
 
         // Social Amenities
-        SocialAmenity.entries.forEach { amenity ->
-            viewModel.getSocialAmenity(amenity).observe(viewLifecycleOwner) { isSelected ->
-                logInfo("<------- Observing SocialAmenity, $amenity: $isSelected ----->")
-                socialAmenitiesViewMap.getValue(amenity).isChecked = isSelected
+        viewModel.socialAmenityMap.observe(viewLifecycleOwner) { map ->
+            logInfo("<------- Observing SocialAmenity, $map ----->")
+            map.forEach { (amenity, isChecked) ->
+                val checkBox = socialAmenitiesViewMap.getValue(amenity)
+                if (checkBox.isChecked != isChecked) checkBox.isChecked = isChecked
             }
         }
     }

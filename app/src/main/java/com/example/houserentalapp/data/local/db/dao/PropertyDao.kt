@@ -113,9 +113,8 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         amenities.forEach {
             val values = ContentValues().apply {
                 put(PropertyAmenitiesTable.COLUMN_PROPERTY_ID, propertyId)
-                put(PropertyAmenitiesTable.COLUMN_AMENITY, it.amenity)
-                put(PropertyAmenitiesTable.COLUMN_AMENITY_TYPE, it.amenityType)
-                put(PropertyAmenitiesTable.COLUMN_AMENITY, it.amenity)
+                put(PropertyAmenitiesTable.COLUMN_AMENITY, it.name)
+                put(PropertyAmenitiesTable.COLUMN_AMENITY_TYPE, it.type)
                 put(PropertyAmenitiesTable.COLUMN_COUNT, it.count)
             }
 
@@ -291,12 +290,12 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                                     PropertyAmenitiesTable.COLUMN_ID
                                 )
                             ),
-                            amenity = getString(
+                            name = getString(
                                 getColumnIndexOrThrow(
                                     PropertyAmenitiesTable.COLUMN_AMENITY
                                 )
                             ),
-                            amenityType = getString(
+                            type = getString(
                                 getColumnIndexOrThrow(
                                     PropertyAmenitiesTable.COLUMN_AMENITY_TYPE
                                 )

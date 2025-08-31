@@ -18,7 +18,7 @@ data class  Property (
     val kind: PropertyKind,
     val type: PropertyType,
     val furnishingType: FurnishingType,
-    val amenities: List<Amenity>, // On-hold
+    val amenities: List<AmenityDomain>, // On-hold
     val preferredTenantType: List<TenantType>,
     val preferredBachelorType: String? = BachelorType.BOTH.readable,
     val transactionType: PropertyTransactionType?, // Specific to Sell

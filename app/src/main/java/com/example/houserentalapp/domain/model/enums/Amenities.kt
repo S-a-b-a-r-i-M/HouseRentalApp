@@ -1,9 +1,8 @@
 package com.example.houserentalapp.domain.model.enums
 
-import androidx.annotation.DrawableRes
-import com.example.houserentalapp.R
+interface AmenityEnum : ReadableEnum
 
-enum class SocialAmenity(override val readable: String) : ReadableEnum {
+enum class SocialAmenity(override val readable: String) : AmenityEnum {
     POWER_BACKUP("Power Backup"),
     SWIMMING_POOL("Swimming Pool"),
     GYM("Gym"),
@@ -18,7 +17,7 @@ enum class SocialAmenity(override val readable: String) : ReadableEnum {
     }
 }
 
-enum class InternalAmenity(override val readable: String) : ReadableEnum {
+enum class InternalAmenity(override val readable: String) : AmenityEnum {
     WIFI("WiFi"),
     SOFA("Sofa"),
     FRIDGE("Fridge"),
@@ -33,8 +32,7 @@ enum class InternalAmenity(override val readable: String) : ReadableEnum {
     }
 }
 
-
-enum class CountableInternalAmenity(override val readable: String) : ReadableEnum {
+enum class CountableInternalAmenity(override val readable: String) : AmenityEnum {
     AC("AC"),
     TV("TV"),
     BED("Bed"),
