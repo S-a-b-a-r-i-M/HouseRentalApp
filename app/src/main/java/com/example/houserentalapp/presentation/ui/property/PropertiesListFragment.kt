@@ -85,8 +85,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 adapter = propertiesAdapter
                 addOnScrollListener(scrollListener)
             }
-
-
         }
     }
 

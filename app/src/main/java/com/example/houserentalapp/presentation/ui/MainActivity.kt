@@ -20,8 +20,7 @@ import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
 /* Pending Things
     Existing fix:
-        1. TODO: Create Property -> Add more images, enhance the counter view design
-        2. TODO: Check Toolbar implementation
+        1. TODO: Create Property -> images(add more, storage) , enhance the counter view design
     New:
         1. TODO: Favourites page -> move and remove properties
         2. TODO: Filters
@@ -112,6 +111,21 @@ class MainActivity : AppCompatActivity() {
     ) {
         supportFragmentManager.beginTransaction().apply {
             replace(containerId, fragment)
+            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+            commit()
+        }
+    }
+
+    fun addFragment(
+        fragment: Fragment,
+        pushToBackStack: Boolean = false,
+        containerId: Int = binding.pageFragmentContainer.id
+    ) {
+        // EXISTING FRAGMENT
+        val existingFragment = supportFragmentManager.findFragmentById(containerId)
+
+        supportFragmentManager.beginTransaction().apply {
+            add(containerId, fragment)
             if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
             commit()
         }

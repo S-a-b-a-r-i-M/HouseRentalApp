@@ -35,8 +35,8 @@ import kotlinx.coroutines.launch
 class CreatePropertyViewModel(
     private val createPropertyUseCase: CreatePropertyUseCase
 ) : ViewModel() {
-    private val _createPropertyResult = MutableLiveData<ResultUI<Long>>()
-    val createPropertyResult: LiveData<ResultUI<Long>> = _createPropertyResult
+    private val _createPropertyResult = MutableLiveData<ResultUI<Long>?>()
+    val createPropertyResult: LiveData<ResultUI<Long>?> = _createPropertyResult
 
     private val formDataMap = PropertyFormField.entries.associateWith {
         MutableLiveData<String?>(null)
@@ -46,24 +46,25 @@ class CreatePropertyViewModel(
         MutableLiveData<String?>(null)
     }
 
-    private val _icAmenityMap = MutableLiveData<Map<CountableInternalAmenity, Int>>(emptyMap())
-    val icAmenityMap: LiveData<Map<CountableInternalAmenity, Int>> = _icAmenityMap
-    private val _internalAmenityMap = MutableLiveData<Set<InternalAmenity>>(emptySet())
-    val internalAmenityMap: LiveData<Set<InternalAmenity>> = _internalAmenityMap
-    private val _socialAmenityMap = MutableLiveData<Set<SocialAmenity>>(emptySet())
-    val socialAmenityMap: LiveData<Set<SocialAmenity>> = _socialAmenityMap
-
     private val _imageUris = MutableLiveData<List<Uri>>(emptyList())
     val imageUris: LiveData<List<Uri>> = _imageUris
+
+    // Amenities
+    private val _icAmenityMap = MutableLiveData<Map<CountableInternalAmenity, Int>>(emptyMap())
+    val icAmenityMap: LiveData<Map<CountableInternalAmenity, Int>> = _icAmenityMap
+    private val _internalAmenitySet = MutableLiveData<Set<InternalAmenity>>(emptySet())
+    val internalAmenitySet: LiveData<Set<InternalAmenity>> = _internalAmenitySet
+    private val _socialAmenitySet = MutableLiveData<Set<SocialAmenity>>(emptySet())
+    val socialAmenitySet: LiveData<Set<SocialAmenity>> = _socialAmenitySet
 
     fun getFormDataMap(field: PropertyFormField) : LiveData<String?> = formDataMap.getValue(field)
 
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
 
-    fun updateFormValue(field: PropertyFormField, value: Any) {
+    fun updateFormValue(field: PropertyFormField, value: String) {
         val formFieldData = formDataMap.getValue(field)
         val formFieldErr = formErrorMap.getValue(field)
-        formFieldData.value = value as String
+        formFieldData.value = value
         if (formFieldErr.value != null) formFieldErr.value = null
     }
 
@@ -79,7 +80,7 @@ class CreatePropertyViewModel(
     }
 
     fun onInternalAmenityChanged(amenity: InternalAmenity, value: Boolean) {
-        _internalAmenityMap.value = _internalAmenityMap.value!!.toMutableSet().apply {
+        _internalAmenitySet.value = _internalAmenitySet.value!!.toMutableSet().apply {
             if (value)
                 add(amenity)
             else
@@ -88,7 +89,7 @@ class CreatePropertyViewModel(
     }
 
     fun onSocialAmenityChanged(amenity: SocialAmenity, value: Boolean) {
-        _socialAmenityMap.value = _socialAmenityMap.value!!.apply {
+        _socialAmenitySet.value = _socialAmenitySet.value!!.apply {
             if (value)
                 this + amenity
             else
@@ -141,7 +142,28 @@ class CreatePropertyViewModel(
     }
 
     fun resetForm() {
+        // Reset Main Result
+        _createPropertyResult.value = null
 
+        // Reset Form Data
+        formDataMap.forEach { (key, _) ->
+            formDataMap.getValue(key).value = null
+        }
+
+        // Reset Images
+        _imageUris.value = emptyList()
+
+        // Reset Form Error
+        formErrorMap.forEach { (key, _) ->
+            formErrorMap.getValue(key).value = null
+        }
+
+        // Reset Amenities
+        _icAmenityMap.value = emptyMap()
+        _internalAmenitySet.value = emptySet()
+        _socialAmenitySet.value = emptySet()
+
+        logInfo("Form reset is done.")
     }
 
     private fun checkValidation(): Boolean {
@@ -257,7 +279,7 @@ class CreatePropertyViewModel(
         }
 
         // Add Internal Amenities
-        internalAmenityMap.value!!.forEach { intAmenity ->
+        internalAmenitySet.value!!.forEach { intAmenity ->
             amenities.add(AmenityDomain(
                 id = null,
                 name = intAmenity,
@@ -266,7 +288,7 @@ class CreatePropertyViewModel(
         }
 
         // Add Internal Amenities
-        socialAmenityMap.value!!.forEach { socialAmenity ->
+        socialAmenitySet.value!!.forEach { socialAmenity ->
             amenities.add(AmenityDomain(
                 id = null,
                 name = socialAmenity,

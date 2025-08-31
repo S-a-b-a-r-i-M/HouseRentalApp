@@ -1,16 +1,13 @@
 package com.example.houserentalapp.presentation.ui.property
 
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -46,20 +43,28 @@ import com.google.android.material.textfield.TextInputLayout
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class CreatePropertyFragment : Fragment() {
+/* TODO:
+    1. FIX: Property description, issue: horizontal scroll
+    2. Reset Form
+    3. Validation for Maintenance charges
+    4. Image Upload (Click From Camera , Upload From Gallery)
+    5. Change toolbar implementation to built in
+*/
 
-    private var _binding: FragmentCreatePropertyBinding? = null
-    private val binding: FragmentCreatePropertyBinding
-        get() = _binding!!
+class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
+    private lateinit var binding: FragmentCreatePropertyBinding
+    private lateinit var mainActivity: MainActivity
+
     private val amenitiesBottomSheet by lazy { AmenitiesBottomSheet() }
     private val imagesBottomSheet by lazy { PropertyImagesBottomSheet() }
+    private val myDatePicker by lazy { getDatePicker() }
     private val viewModel: CreatePropertyViewModel by activityViewModels {
         createPropertyViewModelFactory()
     }
-    private val formTextInputFieldInfoSet = mutableSetOf<TextInputFieldInfo>()
-    private val formCounterViewSet = mutableSetOf<Pair<PropertyFormField, CounterView>>()
-    private val formSGButtonsInfoSet = mutableSetOf<SelectableGroupedButtonsInfo>()
-    private val myDatePicker by lazy { getDatePicker() }
+
+    private val formTextInputFieldInfoList = mutableListOf<TextInputFieldInfo>()
+    private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
+    private val formSGButtonsInfoList = mutableListOf<SelectableGroupedButtonsInfo>()
 
     private val imagesPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -84,18 +89,9 @@ class CreatePropertyFragment : Fragment() {
         }
     }
 
-    private lateinit var mainActivity: MainActivity
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        _binding = FragmentCreatePropertyBinding.inflate(layoutInflater)
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding = FragmentCreatePropertyBinding.bind(view)
         mainActivity = context as MainActivity
 
         // Set up UI
@@ -106,10 +102,6 @@ class CreatePropertyFragment : Fragment() {
 
         // Observe View Model
         observeViewModel()
-
-        /* TODO
-         * 1. Image Upload (Click From Camera , Upload From Gallery)
-         */
     }
 
     private fun observeEditTextFields() {
@@ -133,7 +125,7 @@ class CreatePropertyFragment : Fragment() {
         }
 
         with(binding) {
-            formTextInputFieldInfoSet.forEach {
+            formTextInputFieldInfoList.forEach {
                 observeValue(it.field, it.editText)
                 if (it.isRequired)
                     observeError(it.field) { error -> it.inputLayout.error = error }
@@ -155,7 +147,7 @@ class CreatePropertyFragment : Fragment() {
         )
 
         with(binding) {
-            formSGButtonsInfoSet.forEach {
+            formSGButtonsInfoList.forEach {
                 observeError(it.field) { error ->
                     it.label.setTextColor(getErrorState(error))
                 }
@@ -248,7 +240,14 @@ class CreatePropertyFragment : Fragment() {
         observeImageUri()
 
         with(binding) {
-            // Parking
+            // Counter Views
+            formCounterViewList.forEach { (field, counterView) ->
+                viewModel.getFormDataMap(field).observe(viewLifecycleOwner) { count ->
+                    counterView.count = count?.toIntOrNull() ?: 0
+                }
+            }
+
+            /*
             viewModel.getFormDataMap(PropertyFormField.COVERED_PARKING_COUNT)
                 .observe(viewLifecycleOwner) { count ->
                     coveredParkingCounter.count = count?.toIntOrNull() ?: 0
@@ -264,11 +263,14 @@ class CreatePropertyFragment : Fragment() {
                 .observe(viewLifecycleOwner) { count ->
                     bathRoomCounter.count = count?.toIntOrNull() ?: 0
                 }
+             */
 
             // Creation Result
             viewModel.createPropertyResult.observe(viewLifecycleOwner) { result ->
+                if (result == null) return@observe
+
                 when(result) {
-                    is ResultUI.Success<*> -> {
+                    is ResultUI.Success<Long> -> {
                         hideProgressBar()
                         hideError()
 
@@ -281,7 +283,7 @@ class CreatePropertyFragment : Fragment() {
                         showError()
                         requireActivity().showToast("Failed ❌")
                     }
-                    ResultUI.Loading -> {
+                    is ResultUI.Loading -> {
                         hideError()
                         showProgressBar()
                     }
@@ -321,7 +323,7 @@ class CreatePropertyFragment : Fragment() {
     private fun groupRelatedFields() {
         // Grouping Related Fields with views
         with(binding) {
-            formTextInputFieldInfoSet.apply {
+            formTextInputFieldInfoList.apply {
                 add(TextInputFieldInfo(
                     PropertyFormField.NAME,
                     tilPropertyName,
@@ -369,7 +371,7 @@ class CreatePropertyFragment : Fragment() {
                 ))
             }
 
-            formCounterViewSet.apply {
+            formCounterViewList.apply {
                 add(Pair(PropertyFormField.COVERED_PARKING_COUNT, coveredParkingCounter))
                 add(Pair(PropertyFormField.OPEN_PARKING_COUNT, openParkingCounter))
                 add(Pair(PropertyFormField.BATH_ROOM_COUNT, bathRoomCounter))
@@ -379,13 +381,18 @@ class CreatePropertyFragment : Fragment() {
 
     private fun setRequiredFieldIndicator() {
         with(binding) {
-            formTextInputFieldInfoSet.forEach {
+            formTextInputFieldInfoList.forEach {
                 if (it.isRequired)
-                    it.inputLayout.hint = getRequiredStyleLabel(it.inputLayout.hint.toString(), mainActivity)
+                    it.inputLayout.hint = getRequiredStyleLabel(
+                        it.inputLayout.hint.toString(), mainActivity
+                    )
             }
 
-            formSGButtonsInfoSet.forEach {
-                it.label.text = getRequiredStyleLabel(it.label.text.toString(), mainActivity)
+            formSGButtonsInfoList.forEach {
+                if (it.isRequired)
+                    it.label.text = getRequiredStyleLabel(
+                        it.label.text.toString(), mainActivity
+                    )
             }
         }
     }
@@ -401,80 +408,76 @@ class CreatePropertyFragment : Fragment() {
     }
 
     private fun setupSingleSelectableGroupedButtons() {
-        fun getSingleSelectableGroupedButtons(buttons: List<MaterialButton>) {
-
-        }
-
         with(binding) {
             // LOOKING TO
             val sgbLookingTo = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnRent, ::onRentSelectChange),
-                    SelectableMaterialButtonData(btnSell)
+                    SelectableButtonData(btnRent, ::onRentSelectChange),
+                    SelectableButtonData(btnSell)
                 )
             )
 
             // PROPERTY TYPE
             val sgbPropertyType = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnApartment),
-                    SelectableMaterialButtonData(btnVilla),
-                    SelectableMaterialButtonData(btnIndependentHouse),
-                    SelectableMaterialButtonData(btnFormHouse),
-                    SelectableMaterialButtonData(btnStudio),
-                    SelectableMaterialButtonData(btnOther),
+                    SelectableButtonData(btnApartment),
+                    SelectableButtonData(btnVilla),
+                    SelectableButtonData(btnIndependentHouse),
+                    SelectableButtonData(btnFormHouse),
+                    SelectableButtonData(btnStudio),
+                    SelectableButtonData(btnOther),
                 )
             )
 
             // BHK
             val sgbBhk = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btn1BHK),
-                    SelectableMaterialButtonData(btn2BHK),
-                    SelectableMaterialButtonData(btn3BHK),
-                    SelectableMaterialButtonData(btn4BHK),
-                    SelectableMaterialButtonData(btn5AboveBHK),
+                    SelectableButtonData(btn1BHK),
+                    SelectableButtonData(btn2BHK),
+                    SelectableButtonData(btn3BHK),
+                    SelectableButtonData(btn4BHK),
+                    SelectableButtonData(btn5AboveBHK),
                 )
             )
 
             // FURNISHING TYPE
             val sgbFurnishingType = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnFullyFurnished),
-                    SelectableMaterialButtonData(btnSemiFurnished),
-                    SelectableMaterialButtonData(btnUnFurnished),
+                    SelectableButtonData(btnFullyFurnished),
+                    SelectableButtonData(btnSemiFurnished),
+                    SelectableButtonData(btnUnFurnished),
                 )
             )
 
             // PET FRIENDLY
             val sgbPetFriendly = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnPetFriendlyYes),
-                    SelectableMaterialButtonData(btnPetFriendlyNo),
+                    SelectableButtonData(btnPetFriendlyYes),
+                    SelectableButtonData(btnPetFriendlyNo),
                 )
             )
 
             // PREFERRED BACHELOR TYPE
             val sgbBachelorType = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnOpenForBoth),
-                    SelectableMaterialButtonData(btnOnlyMen),
-                    SelectableMaterialButtonData(btnOnlyWomen)
+                    SelectableButtonData(btnOpenForBoth),
+                    SelectableButtonData(btnOnlyMen),
+                    SelectableButtonData(btnOnlyWomen)
                 )
             )
 
             // Maintenance Charge
             val sgbIsMaintenanceSeparate = SingleSelectableGroupedButtons(
                 listOf(
-                    SelectableMaterialButtonData(btnIncludeInRent),
-                    SelectableMaterialButtonData(
+                    SelectableButtonData(btnIncludeInRent),
+                    SelectableButtonData(
                         btnSeparate,
-                        onSelectChange = ::onMaintenanceSeparateSelect,
+                        ::onMaintenanceSeparateSelect,
                     )
                 )
             )
 
-            formSGButtonsInfoSet.apply {
+            formSGButtonsInfoList.apply {
                 add(SelectableGroupedButtonsInfo(
                     PropertyFormField.LOOKING_TO, tvLookingTo, sgbLookingTo
                 ))
@@ -509,7 +512,7 @@ class CreatePropertyFragment : Fragment() {
                 }
             }
 
-            formTextInputFieldInfoSet.forEach{
+            formTextInputFieldInfoList.forEach{
                 onStartTyping(it.editText, it.field)
             }
         }
@@ -528,14 +531,14 @@ class CreatePropertyFragment : Fragment() {
         }
 
         with(binding) {
-            formSGButtonsInfoSet.forEach {
+            formSGButtonsInfoList.forEach {
                 setOnOptionSelectedListener(it.groupedButtons, it.field)
             }
 
             btnRent.performClick() // As of now only supporting Rent
             btnSell.apply {
                 isClickable = false
-                btnSell.alpha = 0.5f
+                alpha = 0.5f
             }
         }
     }
@@ -578,13 +581,15 @@ class CreatePropertyFragment : Fragment() {
     private fun setCounterViewsListeners() {
         with(binding) {
             // Parking, BathRoom
-            formCounterViewSet.forEach { (field, counterView) ->
+            formCounterViewList.forEach { (field, counterView) ->
                 counterView.apply {
                     onCountIncrementListener = {
-                        viewModel.updateFormValue(field , 1)
+                        val newValue = (viewModel.getFormDataMap(field).value?.toIntOrNull() ?: 0) + 1
+                        viewModel.updateFormValue(field , newValue.toString())
                     }
                     onCountDecrementListener = {
-                        viewModel.updateFormValue(field , -1)
+                        val newValue = (viewModel.getFormDataMap(field).value?.toIntOrNull() ?: 0) - 1
+                        viewModel.updateFormValue(field , newValue.toString())
                     }
                 }
             }
@@ -666,6 +671,10 @@ class CreatePropertyFragment : Fragment() {
     private fun onMaintenanceSeparateSelect(isSelected: Boolean) {
         logInfo("<------------ onMaintenanceSeparateSelect: $isSelected ------------>")
         binding.tilMaintenanceCharge.visibility = if (isSelected) View.VISIBLE else View.GONE
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onDetach() {

@@ -3,18 +3,18 @@ package com.example.houserentalapp.presentation.ui.property
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.google.android.material.button.MaterialButton
 
-data class SelectableMaterialButtonData(
+data class SelectableButtonData(
     val button: MaterialButton,
     val onSelectChange: (Boolean) -> Unit = { }
 )
 
 // TODO-DOUBT: Will it lead to any kind of memory leaks ?
-class SingleSelectableGroupedButtons(buttonsData: List<SelectableMaterialButtonData>) {
+class SingleSelectableGroupedButtons(buttonsData: List<SelectableButtonData>) {
 
-    private var selectedButtonData: SelectableMaterialButtonData? = null
-    private var onOptionSelectedListener: ((SelectableMaterialButtonData) -> Unit)? = null
+    private var selectedButtonData: SelectableButtonData? = null
+    private var onOptionSelectedListener: ((SelectableButtonData) -> Unit)? = null
 
-    fun setOnOptionSelectedListener(onSelect: (SelectableMaterialButtonData) -> Unit) {
+    fun setOnOptionSelectedListener(onSelect: (SelectableButtonData) -> Unit) {
         this.onOptionSelectedListener = onSelect
     }
 

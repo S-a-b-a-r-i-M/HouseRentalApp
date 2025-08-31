@@ -155,7 +155,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         }
 
         // Internal Amenities
-        viewModel.internalAmenityMap.observe(viewLifecycleOwner) { set ->
+        viewModel.internalAmenitySet.observe(viewLifecycleOwner) { set ->
             logInfo("<------- Observing InternalAmenity, $set ----->")
             set.forEach { amenity ->
                 internalAmenitiesViewMap.getValue(amenity).isChecked = true
@@ -163,7 +163,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         }
 
         // Social Amenities
-        viewModel.socialAmenityMap.observe(viewLifecycleOwner) { set ->
+        viewModel.socialAmenitySet.observe(viewLifecycleOwner) { set ->
             logInfo("<------- Observing SocialAmenity, $set ----->")
             set.forEach { amenity->
                 socialAmenitiesViewMap.getValue(amenity).isChecked = true

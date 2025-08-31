@@ -7,11 +7,10 @@ enum class PropertyFormField {
     KIND,
     TYPE,
     FURNISHING_TYPE,
-    AMENITIES,
     PREFERRED_TENANT_TYPE,
     PREFERRED_BACHELOR_TYPE,
-    TRANSACTION_TYPE,
-    AGE_OF_PROPERTY,
+//    TRANSACTION_TYPE,
+//    AGE_OF_PROPERTY,
     COVERED_PARKING_COUNT,
     OPEN_PARKING_COUNT,
     AVAILABLE_FROM,
@@ -27,8 +26,3 @@ enum class PropertyFormField {
     LOCALITY,
     CITY
 }
-
-data class NewPropertyImageModel (
-    val imageAddress: String? = null,
-    val isPrimary: Boolean? = null
-)

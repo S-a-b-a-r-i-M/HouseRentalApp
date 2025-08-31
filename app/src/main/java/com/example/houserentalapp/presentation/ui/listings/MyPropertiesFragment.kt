@@ -5,11 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentMyPropertyBinding
+import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
-import com.example.houserentalapp.presentation.utils.extensions.addFragment
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class MyPropertyFragment : Fragment() {
@@ -34,8 +33,7 @@ class MyPropertyFragment : Fragment() {
     fun setupListeners() {
         binding.addPropertyBtn.setOnClickListener {
             logInfo("addProperty clicked requireActivity : ${requireActivity()}--------->")
-            (requireActivity() as AppCompatActivity).addFragment(
-                R.id.main,
+            (requireActivity() as MainActivity).addFragment(
                 CreatePropertyFragment(),
                 true
             )
