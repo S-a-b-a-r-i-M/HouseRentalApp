@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.houserentalapp.domain.model.Amenity
+import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertyAddress
@@ -46,17 +46,12 @@ class CreatePropertyViewModel(
         MutableLiveData<String?>(null)
     }
 
-    private val internalCountableAmenityMap = CountableInternalAmenity.entries.associateWith {
-        MutableLiveData<Int>(0)
-    }
-
-    private val internalAmenityMap = InternalAmenity.entries.associateWith {
-        MutableLiveData<Boolean>(false)
-    }
-
-    private val socialAmenityMap = SocialAmenity.entries.associateWith {
-        MutableLiveData<Boolean>(false)
-    }
+    private val _icAmenityMap = MutableLiveData<Map<CountableInternalAmenity, Int>>(emptyMap())
+    val icAmenityMap: LiveData<Map<CountableInternalAmenity, Int>> = _icAmenityMap
+    private val _internalAmenityMap = MutableLiveData<Set<InternalAmenity>>(emptySet())
+    val internalAmenityMap: LiveData<Set<InternalAmenity>> = _internalAmenityMap
+    private val _socialAmenityMap = MutableLiveData<Set<SocialAmenity>>(emptySet())
+    val socialAmenityMap: LiveData<Set<SocialAmenity>> = _socialAmenityMap
 
     private val _imageUris = MutableLiveData<List<Uri>>(emptyList())
     val imageUris: LiveData<List<Uri>> = _imageUris
@@ -66,22 +61,39 @@ class CreatePropertyViewModel(
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
 
     fun updateFormValue(field: PropertyFormField, value: Any) {
-        if (field == PropertyFormField.COVERED_PARKING_COUNT ||
-            field == PropertyFormField.OPEN_PARKING_COUNT ||
-            field == PropertyFormField.BATH_ROOM_COUNT
-        ) {
-            val valueInt = value as? Int ?: run {
-                logError("updateFormValue -> $field, given value is not a integer")
-                return
-            }
-            updateCounterValue(field, valueInt)
-            return
-        }
-
         val formFieldData = formDataMap.getValue(field)
         val formFieldErr = formErrorMap.getValue(field)
         formFieldData.value = value as String
         if (formFieldErr.value != null) formFieldErr.value = null
+    }
+
+    fun updateInternalCountableAmenity(amenity: CountableInternalAmenity, updateValue: Int) {
+        val mutableMap = _icAmenityMap.value!!.toMutableMap()
+        val newValue = mutableMap.getOrDefault(amenity, 0) + updateValue
+        if (newValue == 0)
+            mutableMap.remove(amenity)
+        else
+            mutableMap.put(amenity, newValue)
+
+        _icAmenityMap.value = mutableMap
+    }
+
+    fun onInternalAmenityChanged(amenity: InternalAmenity, value: Boolean) {
+        _internalAmenityMap.value = _internalAmenityMap.value!!.toMutableSet().apply {
+            if (value)
+                add(amenity)
+            else
+                remove(amenity)
+        }
+    }
+
+    fun onSocialAmenityChanged(amenity: SocialAmenity, value: Boolean) {
+        _socialAmenityMap.value = _socialAmenityMap.value!!.apply {
+            if (value)
+                this + amenity
+            else
+                this - amenity
+        }
     }
 
     fun setPropertyImages(imageUris: List<Uri>) {
@@ -96,35 +108,6 @@ class CreatePropertyViewModel(
 
         currentImages.remove(imageUri)
         _imageUris.value = currentImages
-    }
-
-    private fun updateCounterValue(field: PropertyFormField, updateValue: Int) {
-        formDataMap.getValue(field).apply {
-            value = ((value?.toIntOrNull() ?: 0) + updateValue).toString()
-        }
-    }
-
-    fun getInternalCountableAmenity(amenity: CountableInternalAmenity): LiveData<Int> =
-        internalCountableAmenityMap.getValue(amenity)
-
-    fun updateInternalCountableAmenity(amenity: CountableInternalAmenity, updateValue: Int) {
-        internalCountableAmenityMap.getValue(amenity).apply {
-            value = (value ?: 0) + updateValue
-        }
-    }
-
-    fun getInternalAmenity(amenity: InternalAmenity): LiveData<Boolean> =
-        internalAmenityMap.getValue(amenity)
-
-    fun onInternalAmenityChanged(amenity: InternalAmenity, value: Boolean) {
-        internalAmenityMap.getValue(amenity).value = value
-    }
-
-    fun getSocialAmenity(amenity: SocialAmenity): LiveData<Boolean> =
-        socialAmenityMap.getValue(amenity)
-
-    fun onSocialAmenityChanged(amenity: SocialAmenity, value: Boolean) {
-        socialAmenityMap.getValue(amenity).value = value
     }
 
     fun createProperty() {
@@ -224,13 +207,17 @@ class CreatePropertyViewModel(
             }
 
         // IS_MAINTENANCE_SEPARATE Validation
-        val isMaintenanceSeparateValue = validateField(PropertyFormField.IS_MAINTENANCE_SEPARATE) { value ->
+        val maintenanceSeparate = validateField(PropertyFormField.IS_MAINTENANCE_SEPARATE) { value ->
             if (value == null) "select one" else null
-        } as? Boolean
+        } as String
 
         // MAINTENANCE_CHARGES Validation
         validateField(PropertyFormField.MAINTENANCE_CHARGES) { value ->
-            if (isMaintenanceSeparateValue == true && value == null) "enter valid input" else null
+            if (maintenanceSeparate.lowercase() == "separate" &&
+                (value !is String || value.toIntOrNull() == null))
+                "enter valid input"
+            else
+                null
         }
 
         // Int Input Validations
@@ -256,39 +243,33 @@ class CreatePropertyViewModel(
         return isValidationSuccess
     }
 
-    private fun buildAmenities(): List<Amenity> {
-        val amenities = mutableListOf<Amenity>()
+    private fun buildAmenities(): List<AmenityDomain> {
+        val amenities = mutableListOf<AmenityDomain>()
 
         // Add Countable Internal Amenities
-        internalCountableAmenityMap.filter {
-            (_, count) -> count.value!! > 0
-        }.forEach { (icAmenity, count) ->
-            amenities.add(Amenity(
+        icAmenityMap.value!!.forEach { (icAmenity, count) ->
+            amenities.add(AmenityDomain(
                 id = null,
-                name = icAmenity.readable,
+                name = icAmenity,
                 type = AmenityType.INTERNAL_COUNTABLE,
-                count = count.value
+                count = count
             ))
         }
 
         // Add Internal Amenities
-        internalAmenityMap.filter {
-            (_, isSelected) -> isSelected.value == true
-        }.forEach { (intAmenity) ->
-            amenities.add(Amenity(
+        internalAmenityMap.value!!.forEach { intAmenity ->
+            amenities.add(AmenityDomain(
                 id = null,
-                name = intAmenity.readable,
+                name = intAmenity,
                 type = AmenityType.INTERNAL,
             ))
         }
 
         // Add Internal Amenities
-        socialAmenityMap.filter {
-            (_, count) -> count.value == true
-        }.forEach { (socialAmenity) ->
-            amenities.add(Amenity(
+        socialAmenityMap.value!!.forEach { socialAmenity ->
+            amenities.add(AmenityDomain(
                 id = null,
-                name = socialAmenity.readable,
+                name = socialAmenity,
                 type = AmenityType.SOCIAL,
             ))
         }
@@ -315,10 +296,11 @@ class CreatePropertyViewModel(
                 ).value!!.toInt() else 0
 
                 val address = PropertyAddress(
-                    streetName = getValue(PropertyFormField.STREET).value ?: "",
+                    streetName = getValue(PropertyFormField.STREET).value!!,
                     locality = getValue(PropertyFormField.LOCALITY).value!!,
                     city = getValue(PropertyFormField.CITY).value!!
                 )
+
                 val propertyImages = _imageUris.value?.map {
                     PropertyImage(null, "", ImageSource.Uri(it), false)
                 } ?: emptyList()

@@ -155,20 +155,18 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         }
 
         // Internal Amenities
-        viewModel.internalAmenityMap.observe(viewLifecycleOwner) { map ->
-            logInfo("<------- Observing InternalAmenity, $map ----->")
-            map.forEach { (amenity, isChecked) ->
-                val checkBox = internalAmenitiesViewMap.getValue(amenity)
-                if (checkBox.isChecked != isChecked) checkBox.isChecked = isChecked
+        viewModel.internalAmenityMap.observe(viewLifecycleOwner) { set ->
+            logInfo("<------- Observing InternalAmenity, $set ----->")
+            set.forEach { amenity ->
+                internalAmenitiesViewMap.getValue(amenity).isChecked = true
             }
         }
 
         // Social Amenities
-        viewModel.socialAmenityMap.observe(viewLifecycleOwner) { map ->
-            logInfo("<------- Observing SocialAmenity, $map ----->")
-            map.forEach { (amenity, isChecked) ->
-                val checkBox = socialAmenitiesViewMap.getValue(amenity)
-                if (checkBox.isChecked != isChecked) checkBox.isChecked = isChecked
+        viewModel.socialAmenityMap.observe(viewLifecycleOwner) { set ->
+            logInfo("<------- Observing SocialAmenity, $set ----->")
+            set.forEach { amenity->
+                socialAmenitiesViewMap.getValue(amenity).isChecked = true
             }
         }
     }
