@@ -9,7 +9,11 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.R
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.ActivityMainBinding
+import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.usecase.PropertyShortlistsUseCase
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
@@ -17,6 +21,7 @@ import com.example.houserentalapp.presentation.ui.shortlisted.ShortlistsFragment
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
+import kotlinx.coroutines.runBlocking
 
 /* Pending Things
     Existing fix:

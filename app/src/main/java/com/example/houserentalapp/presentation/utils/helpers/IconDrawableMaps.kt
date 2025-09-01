@@ -2,12 +2,12 @@ package com.example.houserentalapp.presentation.utils.helpers
 
 import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.AmenityDomain
-import com.example.houserentalapp.domain.model.enums.AmenityEnum
+import com.example.houserentalapp.domain.model.enums.AmenityBaseEnum
 import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 
-val amenityDrawables = mapOf<AmenityEnum, Int>(
+val amenityDrawables = mapOf<AmenityBaseEnum, Int>(
     // SocialAmenity
     SocialAmenity.POWER_BACKUP to R.drawable.outline_power_24,
     SocialAmenity.SWIMMING_POOL to R.drawable.outline_pool_24,

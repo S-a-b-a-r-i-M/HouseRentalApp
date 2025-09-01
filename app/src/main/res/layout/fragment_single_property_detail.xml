@@ -59,8 +59,9 @@
             android:layout_marginHorizontal="12dp"
             android:layout_marginVertical="8dp">
 
-          <!-- Summary Card -->
+          <!-- Basic Details Card -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/basicDetailsCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp">
@@ -251,6 +252,7 @@
 
           <!-- OverView -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/overviewDetailsCard"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="8dp"
@@ -650,7 +652,7 @@
 
           <!-- Amenities -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cvAmenities"
+                android:id="@+id/amenitiesCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="8dp"

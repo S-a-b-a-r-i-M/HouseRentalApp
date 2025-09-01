@@ -5,9 +5,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.TextView
 import androidx.core.view.setMargins
@@ -16,7 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
-import com.example.houserentalapp.domain.model.Amenity
+import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
@@ -32,18 +30,10 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
-class SinglePropertyDetailFragment : Fragment() {
+class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var viewModel: SinglePropertyDetailViewModel
     private lateinit var adapter: PropertyImagesViewAdapter
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_single_property_detail, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,15 +44,13 @@ class SinglePropertyDetailFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
 
-        logInfo("Selected property id : $propertyId")
-
         setupUI()
         setupViewModel()
-
         setListeners()
         setObservers()
 
-        if (savedInstanceState == null)
+        // Initial Fetch
+        if (viewModel.propertyResult.value !is ResultUI.Success)
             viewModel.loadProperty(propertyId as Long)
     }
 
@@ -98,15 +86,15 @@ class SinglePropertyDetailFragment : Fragment() {
     }
 
     @SuppressLint("UseCompatTextViewDrawableApis") // Im suppressing the warning because my min sdk is > 23
-    private fun getAmenityView(amenity: Amenity): TextView {
+    private fun getAmenityView(amenity: AmenityDomain): TextView {
         val fourDpInPx = 4.dpToPx(requireActivity())
         val drawable = getAmenityDrawable(amenity)
 
         return TextView(context).apply {
             text = if (amenity.type == AmenityType.INTERNAL_COUNTABLE)
-                "${amenity.name} : ${amenity.count}"
+                "${amenity.name.readable} : ${amenity.count}"
             else
-                amenity.name
+                amenity.name.readable
             gravity = Gravity.CENTER
             setTextAppearance(R.style.TextAppearance_App_LabelMedium)
             setPadding(fourDpInPx)
@@ -129,9 +117,8 @@ class SinglePropertyDetailFragment : Fragment() {
         }
     }
 
-    private fun bindPropertyMinDetails(property: Property) {
+    private fun bindBasicCardDetails(property: Property) {
         with(binding) {
-            collapsingTBarLayout.title = property.name
             tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
             tvAddress.text = property.address.let { "${it.streetName}, ${it.locality}, ${it.city}" }
             tvFurnishingType.text = property.furnishingType.readable
@@ -146,7 +133,7 @@ class SinglePropertyDetailFragment : Fragment() {
         }
     }
 
-    private fun bindPropertyOverviewDetails(property: Property) {
+    private fun bindOverviewCardDetails(property: Property) {
         with(binding) {
             tvPropertyType.text = property.type.readable
             tvBHK.text = property.bhk.readable
@@ -169,7 +156,7 @@ class SinglePropertyDetailFragment : Fragment() {
         }
     }
 
-    private fun bindPropertyAmenitiesDetails(amenities: List<Amenity>) {
+    private fun bindAmenitiesCardDetails(amenities: List<AmenityDomain>) {
         with(binding) {
             if (amenities.isEmpty()) {
                 val textView = TextView(context).apply {
@@ -183,9 +170,9 @@ class SinglePropertyDetailFragment : Fragment() {
                 return
             }
 
-            val internalAmenities = mutableListOf<Amenity>()
-            val internalCountableAmenities = mutableListOf<Amenity>()
-            val socialAmenities = mutableListOf<Amenity>()
+            val internalAmenities = mutableListOf<AmenityDomain>()
+            val internalCountableAmenities = mutableListOf<AmenityDomain>()
+            val socialAmenities = mutableListOf<AmenityDomain>()
 
             amenities.forEach {
                 when (it.type) {
@@ -221,23 +208,24 @@ class SinglePropertyDetailFragment : Fragment() {
         adapter.setPropertyImages(property.images)
 
         // Load Details
-        bindPropertyMinDetails(property)
-        bindPropertyOverviewDetails(property)
-        bindPropertyAmenitiesDetails(property.amenities)
+        binding.collapsingTBarLayout.title = property.name
+        bindBasicCardDetails(property)
+        bindOverviewCardDetails(property)
+        bindAmenitiesCardDetails(property.amenities)
     }
 
     fun setObservers() {
         with(binding) {
             viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
                 when(result) {
+                    is ResultUI.Success<Property> -> {
+                        bindPropertyDetails(result.data)
+                    }
                     is ResultUI.Error -> {
                         logInfo("error.... ${result.message}")
                     }
                     ResultUI.Loading -> {
                         logInfo("loading....")
-                    }
-                    is ResultUI.Success<Property> -> {
-                        bindPropertyDetails(result.data)
                     }
                 }
             }

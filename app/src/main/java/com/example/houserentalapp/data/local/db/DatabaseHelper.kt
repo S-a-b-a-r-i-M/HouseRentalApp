@@ -10,6 +10,7 @@ import com.example.houserentalapp.data.local.db.tables.UserInterestedPropertyTab
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
     context, DATABASE_NAME, null, DATABASE_VERSION
@@ -25,6 +26,17 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
                 INSTANCE ?: DatabaseHelper(context).also { INSTANCE = it }
             }
         }
+    }
+
+    override fun onOpen(db: SQLiteDatabase?) {
+        super.onOpen(db)
+        /*
+        Runs every time the database is opened (app start, reconnection)
+        This is the critical one - without it, foreign keys won't work during normal app usage
+        SQLite forgets this setting when the connection closes
+         */
+        db?.execSQL("PRAGMA foreign_keys = ON")
+        logInfo("Foreign key constraints enabled")
     }
 
     override fun onCreate(db: SQLiteDatabase?) {

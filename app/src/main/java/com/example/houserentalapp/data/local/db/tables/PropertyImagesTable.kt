@@ -6,7 +6,7 @@ object PropertyImagesTable {
     const val COLUMN_PROPERTY_ID = "property_id"
     const val COLUMN_IMAGE_ADDRESS = "image_address"
     const val COLUMN_IS_PRIMARY = "is_primary"
-    const val CREATED_AT = "created_at"
+    const val COLUMN_CREATED_AT = "created_at"
 
     const val CREATE_TABLE = """
         CREATE TABLE $TABLE_NAME (
@@ -14,7 +14,7 @@ object PropertyImagesTable {
             $COLUMN_PROPERTY_ID INTEGER,
             $COLUMN_IMAGE_ADDRESS TEXT NOT NULL,
             $COLUMN_IS_PRIMARY INTEGER DEFAULT 0,
-            $CREATED_AT INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+            $COLUMN_CREATED_AT INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
             FOREIGN KEY($COLUMN_PROPERTY_ID) 
             REFERENCES ${PropertyTable.TABLE_NAME}(${PropertyTable.COLUMN_ID}) ON DELETE CASCADE
         )

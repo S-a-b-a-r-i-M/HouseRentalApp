@@ -283,7 +283,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         showError()
                         requireActivity().showToast("Failed ❌")
                     }
-                    is ResultUI.Loading -> {
+                    ResultUI.Loading -> {
                         hideError()
                         showProgressBar()
                     }

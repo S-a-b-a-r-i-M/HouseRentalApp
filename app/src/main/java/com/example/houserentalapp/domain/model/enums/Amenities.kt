@@ -1,8 +1,8 @@
 package com.example.houserentalapp.domain.model.enums
 
-interface AmenityEnum : ReadableEnum
+interface AmenityBaseEnum : ReadableEnum
 
-enum class SocialAmenity(override val readable: String) : AmenityEnum {
+enum class SocialAmenity(override val readable: String) : AmenityBaseEnum {
     POWER_BACKUP("Power Backup"),
     SWIMMING_POOL("Swimming Pool"),
     GYM("Gym"),
@@ -17,7 +17,7 @@ enum class SocialAmenity(override val readable: String) : AmenityEnum {
     }
 }
 
-enum class InternalAmenity(override val readable: String) : AmenityEnum {
+enum class InternalAmenity(override val readable: String) : AmenityBaseEnum {
     WIFI("WiFi"),
     SOFA("Sofa"),
     FRIDGE("Fridge"),
@@ -32,7 +32,7 @@ enum class InternalAmenity(override val readable: String) : AmenityEnum {
     }
 }
 
-enum class CountableInternalAmenity(override val readable: String) : AmenityEnum {
+enum class CountableInternalAmenity(override val readable: String) : AmenityBaseEnum {
     AC("AC"),
     TV("TV"),
     BED("Bed"),

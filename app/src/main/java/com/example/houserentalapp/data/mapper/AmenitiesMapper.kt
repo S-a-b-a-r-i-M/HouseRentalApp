@@ -2,7 +2,7 @@ package com.example.houserentalapp.data.mapper
 
 import com.example.houserentalapp.data.local.db.entity.PropertyAmenityEntity
 import com.example.houserentalapp.domain.model.AmenityDomain
-import com.example.houserentalapp.domain.model.enums.AmenityEnum
+import com.example.houserentalapp.domain.model.enums.AmenityBaseEnum
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
@@ -27,7 +27,7 @@ object AmenitiesMapper {
                     throw IllegalArgumentException("Amenity id is required for domain model.")
 
                 val amenityType = AmenityType.valueOf(it.type)
-                val amenityName: AmenityEnum = when(amenityType) {
+                val amenityName: AmenityBaseEnum = when(amenityType) {
                     AmenityType.INTERNAL -> InternalAmenity.fromString(it.name)
                     AmenityType.INTERNAL_COUNTABLE -> CountableInternalAmenity.fromString(it.name)
                     AmenityType.SOCIAL -> SocialAmenity.fromString(it.name)

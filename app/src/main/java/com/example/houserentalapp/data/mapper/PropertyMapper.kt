@@ -1,7 +1,10 @@
 package com.example.houserentalapp.data.mapper
 
+import android.database.Cursor
+import com.example.houserentalapp.data.local.db.entity.PropertyAddressEntity
 import com.example.houserentalapp.data.local.db.entity.PropertyEntity
 import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
+import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.enums.BHK
@@ -83,7 +86,7 @@ object PropertyMapper {
         )
     }
 
-    fun toPropertySummary(entity: PropertySummaryEntity): PropertySummary {
+    fun toPropertySummaryDomain(entity: PropertySummaryEntity): PropertySummary {
         return PropertySummary(
             id = entity.id,
             name = entity.name,
@@ -98,5 +101,28 @@ object PropertyMapper {
             images = entity.images.map { PropertyImageMapper.toDomain(it) },
             viewCount = entity.viewCount
         )
+    }
+
+    fun toPropertySummaryEntity(cursor: Cursor): PropertySummaryEntity {
+        with(cursor) {
+            return PropertySummaryEntity(
+                id = getLong(getColumnIndexOrThrow(PropertyTable.COLUMN_ID)),
+                name = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_NAME)),
+                description = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_DESCRIPTION)),
+                lookingTo = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOOKING_TO)),
+                type = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_TYPE)),
+                furnishingType = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_FURNISHING_TYPE)),
+                bhk = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_BHK)),
+                builtUpArea = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_BUILT_UP_AREA)),
+                viewCount = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_VIEW_COUNT)),
+                price = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_PRICE)),
+                address = PropertyAddressEntity(
+                    streetName = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_STREET_NAME)),
+                    locality = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOCALITY)),
+                    city = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_CITY))
+                ),
+                images = emptyList(), // Will be populated separately
+            )
+        }
     }
 }

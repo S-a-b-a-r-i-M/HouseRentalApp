@@ -8,6 +8,10 @@ import android.view.ViewGroup
 import com.example.houserentalapp.R
 
 
+/*  TODO:
+     1. Right swipe to remove,
+ */
+
 class ShortlistsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -5,6 +5,8 @@ import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
+import com.example.houserentalapp.presentation.utils.extensions.logError
+import org.json.JSONArray
 
 object PropertyImageMapper {
     fun fromDomain(image: PropertyImage): PropertyImageEntity {
@@ -46,6 +48,31 @@ object PropertyImageMapper {
                     )
                 ) == 1,
             )
+        }
+    }
+
+    fun toEntityFromJson(imagesJson: String): List<PropertyImageEntity> {
+        if (imagesJson.isBlank() || imagesJson == "[]") return emptyList()
+
+        try {
+            val jsonArray = JSONArray(imagesJson)
+            val imagesEntity = mutableListOf<PropertyImageEntity>()
+
+            for (i in 0 until jsonArray.length()) {
+                val imageObject = jsonArray.getJSONObject(i)
+
+                imagesEntity.add(
+                    PropertyImageEntity (
+                        id = imageObject.getLong(PropertyImagesTable.COLUMN_ID),
+                        imageAddress = imageObject.getString(PropertyImagesTable.COLUMN_IMAGE_ADDRESS),
+                        isPrimary = imageObject.getInt(PropertyImagesTable.COLUMN_IS_PRIMARY) == 1
+                    )
+                )
+            }
+            return imagesEntity
+        } catch (e: Exception) {
+            logError("Error parsing images JSON: $e")
+            return emptyList()
         }
     }
 }
