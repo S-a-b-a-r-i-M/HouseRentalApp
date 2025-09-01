@@ -9,19 +9,20 @@ import com.example.houserentalapp.domain.utils.Result
 
 /* TODO
  * 1. Implement Search History
- * 2. User Activity as a Tenant (viewed, shortlisted, interested)
  */
 
 interface UserPropertyRepo {
     // CREATE
-    suspend fun addToFavourites(userId: Long, propertyId: Long): Result<Boolean>
-
-    suspend fun storeUserAction(userId: Long, propertyId: Long, action: UserActionEnum): Result<Boolean>
+    suspend fun storeUserAction(userId: Long, propertyId: Long, action: UserActionEnum): Result<Long>
 
     suspend fun storeInterestedProperty(userId: Long, propertyId: Long): Result<PropertyLead>
 
     // READ
-    suspend fun getFavourites(userId: Long, pagination: Pagination): Result<List<PropertySummary>>
+    suspend fun getPropertyListByUserAction(
+        userId: Long,
+        pagination: Pagination,
+        action: UserActionEnum
+    ): Result<List<PropertySummary>>
 
     suspend fun getUserActions(userId: Long): Result<List<UserActionData>>
 
@@ -31,5 +32,5 @@ interface UserPropertyRepo {
     suspend fun updateLead(leadId: Long, updateFields: Map<String, Any>): Result<Boolean>
 
     // DELETE
-    suspend fun deleteFromFavourites(userId: Long, propertyId: Long): Result<Boolean>
+    suspend fun deleteUserAction(userId: Long, propertyId: Long, action: UserActionEnum): Result<Boolean>
 }

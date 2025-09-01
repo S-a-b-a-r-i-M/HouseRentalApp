@@ -10,5 +10,6 @@ enum class LeadStatus {
 
 enum class UserActionEnum {
     VIEW,
-    SHORTLISTED
+    SHORTLISTED,
+    INTERESTED
 }
