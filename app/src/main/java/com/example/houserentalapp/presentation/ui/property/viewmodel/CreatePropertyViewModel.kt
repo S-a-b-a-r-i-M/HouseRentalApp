@@ -232,16 +232,17 @@ class CreatePropertyViewModel(
         // IS_MAINTENANCE_SEPARATE Validation
         val maintenanceSeparate = validateField(PropertyFormField.IS_MAINTENANCE_SEPARATE) { value ->
             if (value == null) "select one" else null
-        } as String
+        } as? String
 
         // MAINTENANCE_CHARGES Validation
-        validateField(PropertyFormField.MAINTENANCE_CHARGES) { value ->
-            if (maintenanceSeparate.lowercase() == "separate" &&
-                (value !is String || value.toIntOrNull() == null))
-                "enter valid input"
-            else
-                null
-        }
+        if (maintenanceSeparate != null)
+            validateField(PropertyFormField.MAINTENANCE_CHARGES) { value ->
+                if (maintenanceSeparate.lowercase() == "separate" &&
+                    (value !is String || value.toIntOrNull() == null))
+                    "enter valid input"
+                else
+                    null
+            }
 
         // Int Input Validations
         listOf(PropertyFormField.BUILT_UP_AREA, PropertyFormField.PRICE, PropertyFormField.SECURITY_DEPOSIT).forEach {

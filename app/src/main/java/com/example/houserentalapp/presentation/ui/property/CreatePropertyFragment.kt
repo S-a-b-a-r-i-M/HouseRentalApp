@@ -626,7 +626,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun getDatePicker():  MaterialDatePicker<Long> {
         // TO DISABLE PAST DATES
         val calendarConstraints = CalendarConstraints.Builder()
-            .setValidator(DateValidatorPointForward.from(System.currentTimeMillis()))
+            .setValidator(
+                DateValidatorPointForward.from(
+                    System.currentTimeMillis() - (24 * 60 * 60 * 1000)
+                )
+            )
 
         val datePicker = MaterialDatePicker.Builder.datePicker()
             .setCalendarConstraints(calendarConstraints.build())
