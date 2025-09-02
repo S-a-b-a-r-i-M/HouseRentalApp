@@ -7,38 +7,47 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertySummary
+import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
 import com.example.houserentalapp.domain.utils.Result
+import com.example.houserentalapp.presentation.enums.PropertyFiltersField
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 
-class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewModel() {
+class PropertiesListViewModel(
+    private val getPropertyUC: GetPropertyUseCase,
+    private val tenantRelatedPropertyUC: TenantRelatedPropertyUseCase,
+    private val currentUser: User
+) : ViewModel() {
     private val _propertySummariesResult = MutableLiveData<ResultUI<List<PropertySummary>>>()
     val propertySummariesResult: LiveData<ResultUI<List<PropertySummary>>> = _propertySummariesResult
-
     private val propertySummaryList: MutableList<PropertySummary> = mutableListOf() // Used to hold Property Summary Data
-    private val filters = MutableLiveData<Map<String, Any>>()
+    private val _filters = MutableLiveData<Map<PropertyFiltersField, Any>>()
+    val filters: LiveData<Map<PropertyFiltersField, Any>> = _filters
     private var hasMore: Boolean = true
     private var offset: Int = 0
     private val limit: Int = 10
 
-    init {
-        // Initial fetch
-        if (propertySummaryList.isEmpty())
-            loadPropertySummaries()
-        // Load Filters
-    }
-
-    fun loadPropertySummaries() {
+    fun loadPropertySummaries(onlyShortlistedRecords: Boolean) {
         if (!hasMore) return
         _propertySummariesResult.value = ResultUI.Loading
         viewModelScope.launch {
             try {
-                when (val result = useCase.getPropertySummaries(
-                    filters.value ?: mutableMapOf(), Pagination(offset, limit)
-                )) {
+                val pagination = Pagination(offset, limit)
+                val result = if (onlyShortlistedRecords) // Get Only Shortlisted Properties
+                    tenantRelatedPropertyUC.getPropertySummariesByUserAction(
+                        currentUser.id,
+                        UserActionEnum.SHORTLISTED,
+                        pagination
+                    )
+                else // Get Properties With Filters
+                    getPropertyUC.getPropertySummaries(getStringFilters(), pagination)
+
+                when (result) {
                     is Result.Success<List<PropertySummary>> -> {
                         propertySummaryList.addAll(result.data)
                         _propertySummariesResult.value = ResultUI.Success(propertySummaryList)
@@ -64,6 +73,8 @@ class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewMod
         }
     }
 
+    private fun getStringFilters() = _filters.value?.mapKeys { it.key.name } ?: mutableMapOf()
+
     // Will get triggered by filters modification
     fun refresh() {
         offset = 0
@@ -77,12 +88,14 @@ class PropertiesListViewModel(private val useCase: GetPropertyUseCase) : ViewMod
 
 
 class PropertiesListViewModelFactory(
-    private val useCase: GetPropertyUseCase
+    private val getPropertyUC: GetPropertyUseCase,
+    private val tenantRelatedPropertyUC: TenantRelatedPropertyUseCase,
+    private val currentUser: User
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PropertiesListViewModel::class.java))
-            return PropertiesListViewModel(useCase) as T
+            return PropertiesListViewModel(getPropertyUC, tenantRelatedPropertyUC, currentUser) as T
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

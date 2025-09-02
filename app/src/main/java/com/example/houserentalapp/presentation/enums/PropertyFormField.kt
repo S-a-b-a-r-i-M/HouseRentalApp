@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.property.viewmodel
+package com.example.houserentalapp.presentation.enums
 
 enum class PropertyFormField {
     NAME,

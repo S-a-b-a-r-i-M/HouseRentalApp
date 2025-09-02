@@ -23,8 +23,7 @@ class AuthActivity : AppCompatActivity() {
         setContentView(binding.root)
         setWindowInsets()
 
-        startActivity(Intent(this, MainActivity::class.java))
-        finish()
+        navigateToMain()
     }
 
     fun setWindowInsets() {
@@ -35,5 +34,12 @@ class AuthActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, imeInsets.bottom)
             insets
         }
+    }
+
+    fun navigateToMain() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.putExtra(MainActivity.CURRENT_USER_ID_KEY, 1)
+        startActivity(intent)
+        finish()
     }
 }

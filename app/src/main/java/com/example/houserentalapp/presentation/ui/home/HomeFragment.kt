@@ -33,10 +33,12 @@ class HomeFragment : Fragment() {
         val mainActivity = context as MainActivity
         with(binding) {
             searchBar.setOnClickListener {
-                mainActivity.loadFragment(
-                    PropertiesListFragment(),
-                    true
-                )
+                val destinationFragment = PropertiesListFragment()
+                destinationFragment.arguments = Bundle().apply {
+                    putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+                }
+
+                mainActivity.loadFragment(destinationFragment, true)
             }
 
             btnPostProperty.setOnClickListener {

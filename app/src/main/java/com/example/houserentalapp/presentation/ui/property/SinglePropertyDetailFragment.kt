@@ -13,11 +13,14 @@ import androidx.core.view.setPadding
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
+import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
@@ -25,6 +28,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePrope
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
@@ -34,15 +38,28 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var viewModel: SinglePropertyDetailViewModel
     private lateinit var adapter: PropertyImagesViewAdapter
+    private lateinit var mainActivity: MainActivity
+    private var propertyId: Long = -1L
+    private var hideBottomNav = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSinglePropertyDetailBinding.bind(view)
+        mainActivity = context as MainActivity
 
-        val propertyId = arguments?.getLong("propertyId") ?: run {
+        propertyId = arguments?.getLong(PROPERTY_ID_KEY) ?: run {
             logError("Selected property id is not found in bundle")
             parentFragmentManager.popBackStack()
+            return
         }
+        hideBottomNav = arguments?.getBoolean(HIDE_BOTTOM_NAV_KEY) ?: hideBottomNav
+        val isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
+
+        logDebug("Received arguments \n" +
+                "$PROPERTY_ID_KEY: $propertyId" +
+                "$HIDE_BOTTOM_NAV_KEY: $hideBottomNav" +
+                "$IS_TENANT_VIEW_KEY: $isTenantView"
+        )
 
         setupUI()
         setupViewModel()
@@ -51,38 +68,59 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
         // Initial Fetch
         if (viewModel.propertyResult.value !is ResultUI.Success)
-            viewModel.loadProperty(propertyId as Long)
+            viewModel.loadProperty(propertyId, isTenantView)
     }
 
     fun setupUI() {
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
+
+        // Handle Bottom Nav Visibility
+        if (hideBottomNav)
+            mainActivity.hideBottomNav()
+
         with(binding) {
+            // Image ViewPager 2
             adapter = PropertyImagesViewAdapter()
             viewPager2.adapter = adapter
         }
     }
 
     fun setupViewModel() {
-        val mainActivity = requireActivity() as MainActivity
-        val useCase = GetPropertyUseCase(PropertyRepoImpl(mainActivity))
-        val factory = SinglePropertyDetailViewModelFactory(useCase)
-        viewModel = ViewModelProvider(mainActivity, factory).get(SinglePropertyDetailViewModel::class.java)
+        val context = requireActivity()
+        val getPropertyUseCase = GetPropertyUseCase(PropertyRepoImpl(context))
+        val propertyUserActionUseCase = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(context))
+        val factory = SinglePropertyDetailViewModelFactory(
+            getPropertyUseCase,
+            propertyUserActionUseCase,
+            mainActivity.getCurrentUser()
+        )
+        viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
     }
 
     fun setListeners() {
         with(binding) {
+          // ToolBar Listeners
             toolbar.setNavigationOnClickListener {
                 parentFragmentManager.popBackStack()
             }
 
             toolbar.setOnMenuItemClickListener { item ->
                 if(item.itemId == R.id.tbar_shortlist)
-                    logInfo("tbar_shortlist clicked")
+                    viewModel.toggleFavourite(propertyId)
 
                 true
             }
         }
+    }
+
+    fun updateShortlistIcon(isShortlisted: Boolean) {
+        val icon = if (isShortlisted)
+            R.drawable.baseline_favorite_filled_primary_color
+        else
+            R.drawable.outline_favorite
+
+        binding.toolbar.menu.findItem(R.id.tbar_shortlist).setIcon(icon)
     }
 
     @SuppressLint("UseCompatTextViewDrawableApis") // Im suppressing the warning because my min sdk is > 23
@@ -203,22 +241,22 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
     }
 
-    private fun bindPropertyDetails(property: Property) {
+    private fun bindPropertyDetails(propertyUI: PropertyWithActionsUI) {
         // Load Images
-        adapter.setPropertyImages(property.images)
+        adapter.setPropertyImages(propertyUI.property.images)
 
         // Load Details
-        binding.collapsingTBarLayout.title = property.name
-        bindBasicCardDetails(property)
-        bindOverviewCardDetails(property)
-        bindAmenitiesCardDetails(property.amenities)
+        binding.collapsingTBarLayout.title = propertyUI.property.name
+        bindBasicCardDetails(propertyUI.property)
+        bindOverviewCardDetails(propertyUI.property)
+        bindAmenitiesCardDetails(propertyUI.property.amenities)
     }
 
     fun setObservers() {
         with(binding) {
             viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
                 when(result) {
-                    is ResultUI.Success<Property> -> {
+                    is ResultUI.Success<PropertyWithActionsUI> -> {
                         bindPropertyDetails(result.data)
                     }
                     is ResultUI.Error -> {
@@ -229,6 +267,22 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                     }
                 }
             }
+
+            viewModel.isShortlisted.observe(viewLifecycleOwner) {
+                updateShortlistIcon(it)
+            }
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        if (hideBottomNav) // Only Show if we hide it
+            mainActivity.showBottomNav()
+    }
+
+    companion object {
+        const val PROPERTY_ID_KEY = "propertyId"
+        const val IS_TENANT_VIEW_KEY = "isTenantView"
+        const val HIDE_BOTTOM_NAV_KEY = "hideBottomNav"
     }
 }

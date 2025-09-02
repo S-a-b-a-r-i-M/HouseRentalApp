@@ -4,6 +4,7 @@ import android.content.Context
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.UserPropertyDao
 import com.example.houserentalapp.data.mapper.PropertyMapper
+import com.example.houserentalapp.data.mapper.UserActionMapper
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertyLead
 import com.example.houserentalapp.domain.model.PropertySummary
@@ -47,26 +48,43 @@ class UserPropertyRepoImpl(private val context: Context) : UserPropertyRepo {
     }
 
     // -------------- READ --------------
-    override suspend fun getPropertyListByUserAction(
+    override suspend fun getPropertySummariesByUserAction(
         userId: Long, pagination: Pagination, action: UserActionEnum
     ): Result<List<PropertySummary>> {
         return try {
-            val summariesEntity = userPropertyDao.getPropertySummariesByUserAction(
-                userId, pagination, action
-            )
-            logDebug("PropertiesByUserAction: ${action.name} count ${summariesEntity.size}")
+            withContext(Dispatchers.IO) {
+                val summariesEntity = userPropertyDao.getPropertySummariesByUserAction(
+                    userId, pagination, action
+                )
+                logDebug("PropertiesByUserAction: ${action.name} count ${summariesEntity.size}")
 
-            // Convert to domain
-            val summariesDomain = summariesEntity.map { PropertyMapper.toPropertySummaryDomain(it) }
-            return Result.Success(summariesDomain)
+                // Convert to domain
+                val summariesDomain =
+                    summariesEntity.map { PropertyMapper.toPropertySummaryDomain(it) }
+                Result.Success(summariesDomain)
+            }
         } catch (exp: Exception) {
             logError("Error reading PropertyListByUserAction", exp)
             Result.Error(exp.message.toString())
         }
     }
 
-    override suspend fun getUserActions(userId: Long): Result<List<UserActionData>> {
-        TODO("Not yet implemented")
+    override suspend fun getUserActions(
+        userId: Long, propertyIds: List<Long>
+    ): Result<List<UserActionData>> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val userActionEntity = userPropertyDao.getUserActions(userId, propertyIds)
+                logDebug("getUserActions: count ${userActionEntity.size}")
+
+                // Convert to domain
+                val userActionDomain = userActionEntity.map { UserActionMapper.toDomain(it) }
+                Result.Success(userActionDomain)
+            }
+        } catch (exp: Exception) {
+            logError("Error reading UserActions", exp)
+            Result.Error(exp.message.toString())
+        }
     }
 
     override suspend fun getLeads(

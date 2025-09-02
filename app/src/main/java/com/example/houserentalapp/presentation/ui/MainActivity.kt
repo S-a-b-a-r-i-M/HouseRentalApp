@@ -3,25 +3,23 @@ package com.example.houserentalapp.presentation.ui
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.ActivityMainBinding
-import com.example.houserentalapp.domain.model.Pagination
-import com.example.houserentalapp.domain.usecase.PropertyShortlistsUseCase
+import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
-import com.example.houserentalapp.presentation.ui.shortlisted.ShortlistsFragment
+import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
+import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
-import kotlinx.coroutines.runBlocking
 
 /* Pending Things
     Existing fix:
@@ -35,6 +33,7 @@ import kotlinx.coroutines.runBlocking
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var currentUser: User
 
     // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
     private val backPressedCallback = object : OnBackPressedCallback(true){
@@ -55,6 +54,22 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setWindowInsets()
 
+        // Get Current User ID
+        val currentUserId = intent.getIntExtra(CURRENT_USER_ID_KEY, -1)
+        if (currentUserId == -1) {
+            logError("Current User id is not found in intent")
+            OnBackPressedDispatcher().onBackPressed()
+            return
+        }
+        // Fetch Current User From ViewModel
+        currentUser = User(
+            id = 2,
+            name = "Tenant",
+            phone = "9988776655",
+            email = "tenent@gmail.com",
+            createdAt = 123465689L
+        )
+
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
 
         setBottomNavigation()
@@ -71,6 +86,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
+
+    fun getCurrentUser() = currentUser
 
     private fun scrollToFocusedView() {
         val currentFocus = currentFocus
@@ -91,7 +108,14 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                 }
                 R.id.bnav_shortlists -> {
-                    loadFragment(ShortlistsFragment())
+                    val destinationFragment = PropertiesListFragment()
+                    destinationFragment.arguments = Bundle().apply {
+                        putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, false)
+                        putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
+                        putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
+                        putBoolean(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
+                    }
+                    loadFragment(destinationFragment)
                 }
                 R.id.bnav_listings -> {
                     loadFragment(ListingsFragment())
@@ -142,5 +166,9 @@ class MainActivity : AppCompatActivity() {
 
     fun hideBottomNav() {
         binding.bottomNavigationContainer.visibility = View.GONE
+    }
+
+    companion object {
+        const val CURRENT_USER_ID_KEY = "currentUserId"
     }
 }

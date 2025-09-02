@@ -22,7 +22,7 @@ import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
-import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertyFormField
+import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.ui.reusable.CounterView
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory

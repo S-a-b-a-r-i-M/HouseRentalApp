@@ -1,9 +1,11 @@
 package com.example.houserentalapp.data.local.db.dao
 
 import android.content.ContentValues
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
+import com.example.houserentalapp.data.local.db.entity.UserActionEntity
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
@@ -67,7 +69,6 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    // TODO: Apply the Where
     fun getPropertySummariesByUserAction(
         userId: Long,
         pagination: Pagination,
@@ -93,7 +94,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             LEFT JOIN ${PropertyImagesTable.TABLE_NAME} as pi ON pi.${PropertyImagesTable.COLUMN_PROPERTY_ID} = p.${PropertyTable.COLUMN_ID}
             WHERE ${UserPropertyActionTable.COLUMN_TENANT_ID} = ? AND ${UserPropertyActionTable.COLUMN_ACTION} = ?
             GROUP BY p.${PropertyTable.COLUMN_ID}
-            ORDER BY p.${PropertyTable.COLUMN_CREATED_AT} DESC
+            ORDER BY p.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC
             LIMIT ${pagination.limit} OFFSET ${pagination.offset}
         """.trimIndent()
 
@@ -117,14 +118,59 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
 //                val columnValue = when (it.getType(i)) {
 //                    Cursor.FIELD_TYPE_INTEGER -> it.getInt(i).toString()
 //                    Cursor.FIELD_TYPE_FLOAT -> it.getFloat(i).toString()
-//                    Cursor.FIELD_TYPE_STRING -> it.getString(i)
 //                    Cursor.FIELD_TYPE_BLOB -> "BLOB[${it.getBlob(i).size} bytes]"
 //                    Cursor.FIELD_TYPE_NULL -> "NULL"
 //                    else -> it.getString(i) ?: "NULL"
 //                }
 //                println("$columnName: $columnValue")
 //            }
-//            println()
+        }
+    }
+
+    fun getUserActions(userId: Long, propertyIds: List<Long>): List<UserActionEntity> {
+        val idPlaceHolders = propertyIds.joinToString(",") { "?" }
+        val whereClause = """
+            ${UserPropertyActionTable.COLUMN_TENANT_ID} = ? AND
+            ${UserPropertyActionTable.COLUMN_PROPERTY_ID} IN ($idPlaceHolders)
+            """.trimIndent()
+
+        val whereArgs = arrayOf(userId.toString()) + propertyIds.map { it.toString() }
+
+        readableDB.query(
+            UserPropertyActionTable.TABLE_NAME,
+            null,
+            whereClause,
+            whereArgs,
+            null, null, null,
+        ).use { cursor ->
+            val userActionEntityList = mutableListOf<UserActionEntity>()
+            while (cursor.moveToNext())
+                userActionEntityList.add(parseUserActionEntity(cursor))
+
+            return userActionEntityList
+        }
+    }
+
+    fun getUserActions(userId: Long, propertyId: Long): List<UserActionEntity> {
+        val whereClause = """
+            ${UserPropertyActionTable.COLUMN_TENANT_ID} = ? AND
+            ${UserPropertyActionTable.COLUMN_PROPERTY_ID} == ?
+            """.trimIndent()
+
+        val whereArgs = arrayOf(userId.toString(), propertyId.toString())
+
+        readableDB.query(
+            UserPropertyActionTable.TABLE_NAME,
+            null,
+            whereClause,
+            whereArgs,
+            null, null, null,
+        ).use { cursor ->
+            val userActionEntityList = mutableListOf<UserActionEntity>()
+            while (cursor.moveToNext())
+                userActionEntityList.add(parseUserActionEntity(cursor))
+
+            return userActionEntityList
         }
     }
 
@@ -144,4 +190,20 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             UserPropertyActionTable.TABLE_NAME, whereClause, whereArgs
         ) > 0
     }
+
+    // Helpers
+    fun parseUserActionEntity(cursor: Cursor) = UserActionEntity(
+            id = cursor.getLong(cursor.getColumnIndexOrThrow(
+                UserPropertyActionTable.COLUMN_ID
+            )),
+            propertyId = cursor.getLong(cursor.getColumnIndexOrThrow(
+                UserPropertyActionTable.COLUMN_PROPERTY_ID
+            )),
+            action = cursor.getString(cursor.getColumnIndexOrThrow(
+                UserPropertyActionTable.COLUMN_ACTION
+            )),
+            createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(
+                UserPropertyActionTable.COLUMN_CREATED_AT
+            ))
+        )
 }

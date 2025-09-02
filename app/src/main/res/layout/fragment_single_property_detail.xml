@@ -22,7 +22,7 @@
             app:title="@string/property_name"
             app:titleCollapseMode="scale"
             app:titleTextEllipsize="end"
-            app:collapsedTitleTextColor="@color/gray_dark"
+            app:collapsedTitleTextColor="@color/primary_blue"
             app:expandedTitleTextColor="@android:color/transparent"
             app:contentScrim="@color/white">
 
@@ -715,7 +715,7 @@
             android:layout_gravity="center"
             android:layout_marginVertical="5dp"
             android:layout_marginHorizontal="30dp"
-            android:text="@string/i_m_interested" />
+            android:text="@string/view_contact_number" />
 
     </androidx.cardview.widget.CardView>
 

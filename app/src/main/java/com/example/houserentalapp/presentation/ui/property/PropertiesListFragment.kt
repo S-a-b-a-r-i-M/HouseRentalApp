@@ -3,17 +3,21 @@ package com.example.houserentalapp.presentation.ui.property
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
+import com.example.houserentalapp.data.repo.PropertyRepoImpl
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.PropertySummary
+import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
+import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
-import com.example.houserentalapp.presentation.utils.extensions.createPropertiesListViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
@@ -23,19 +27,32 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
     private lateinit var mainActivity: MainActivity
     private lateinit var propertiesAdapter: PropertiesAdapter
-    private val propertiesListViewModel: PropertiesListViewModel by activityViewModels {
-        createPropertiesListViewModel()
-    }
+    private lateinit var propertiesListViewModel: PropertiesListViewModel
+
     private var isScrolling: Boolean = false
+    private var hideBottomNav = false
+    private var onlyShortlisted = false
+    private var hideToolBar = false
+    private var hideFabButton = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
-        mainActivity = requireActivity() as MainActivity
+        // mainActivity = requireActivity() as MainActivity // Crashing on quick rotations
+        mainActivity = context as MainActivity
+
+        hideBottomNav = arguments?.getBoolean(HIDE_BOTTOM_NAV_KEY) ?: false
+        hideToolBar = arguments?.getBoolean(HIDE_TOOLBAR_KEY) ?: false
+        hideFabButton = arguments?.getBoolean(HIDE_FAB_BUTTON_KEY) ?: false
+        onlyShortlisted = arguments?.getBoolean(ONLY_SHORTLISTED_KEY) ?: false
 
         setupUI()
+        setupViewModel()
         setupListeners()
         setupObservers()
+
+        if (propertiesListViewModel.propertySummariesResult.value !is ResultUI.Success)
+            propertiesListViewModel.loadPropertySummaries(onlyShortlisted)
     }
 
     private val scrollListener = object : RecyclerView.OnScrollListener() {
@@ -65,15 +82,16 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 val shouldLoadMore = (lastVisibleItemPosition + 1) >= totalItemCount
                 if (shouldLoadMore) {
                     logInfo("<----------- from onScroll State changed ---------->")
-                    propertiesListViewModel.loadPropertySummaries()
+                    propertiesListViewModel.loadPropertySummaries(onlyShortlisted)
                 }
             }
         }
     }
 
     fun setupUI() {
-        // Hide Bottom Nav
-        mainActivity.hideBottomNav()
+        if (hideBottomNav)
+            mainActivity.hideBottomNav()
+
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
@@ -85,7 +103,25 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 adapter = propertiesAdapter
                 addOnScrollListener(scrollListener)
             }
+
+            if (hideToolBar)
+                toolBarLayout.visibility = View.GONE
+
+            if (hideFabButton)
+                fabShortlists.visibility = View.GONE
         }
+    }
+
+    fun setupViewModel() {
+        val mainActivity = requireActivity() as MainActivity
+        val getPropertyUC = GetPropertyUseCase(PropertyRepoImpl(mainActivity))
+        val tenantRelatedPropertyUC = TenantRelatedPropertyUseCase(
+            UserPropertyRepoImpl(mainActivity)
+        )
+        val currentUser = mainActivity.getCurrentUser()
+        val factory = PropertiesListViewModelFactory(getPropertyUC, tenantRelatedPropertyUC, currentUser)
+        propertiesListViewModel = ViewModelProvider(this, factory)
+            .get(PropertiesListViewModel::class.java)
     }
 
     fun setupListeners() {
@@ -98,7 +134,11 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     private fun handleOnPropertyClick(propertyId: Long) {
         val destinationFragment = SinglePropertyDetailFragment()
-        destinationFragment.arguments = Bundle().apply { putLong("propertyId", propertyId) }
+        destinationFragment.arguments = Bundle().apply {
+            putLong(SinglePropertyDetailFragment.PROPERTY_ID_KEY, propertyId)
+            putBoolean(SinglePropertyDetailFragment.IS_TENANT_VIEW_KEY, true)
+            putBoolean(SinglePropertyDetailFragment.HIDE_BOTTOM_NAV_KEY, true)
+        }
         mainActivity.loadFragment(destinationFragment, true)
     }
 
@@ -133,6 +173,14 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     override fun onDetach() {
         super.onDetach()
-        mainActivity.showBottomNav()
+        if (hideBottomNav) // Only Show if we hide it
+            mainActivity.showBottomNav()
+    }
+
+    companion object {
+        const val HIDE_BOTTOM_NAV_KEY = "hideBottomNav"
+        const val ONLY_SHORTLISTED_KEY = "onlyShortlisted"
+        const val HIDE_TOOLBAR_KEY = "hideToolBar"
+        const val HIDE_FAB_BUTTON_KEY= "hideFabButton"
     }
 }

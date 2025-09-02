@@ -18,13 +18,13 @@ interface UserPropertyRepo {
     suspend fun storeInterestedProperty(userId: Long, propertyId: Long): Result<PropertyLead>
 
     // READ
-    suspend fun getPropertyListByUserAction(
+    suspend fun getPropertySummariesByUserAction(
         userId: Long,
         pagination: Pagination,
         action: UserActionEnum
     ): Result<List<PropertySummary>>
 
-    suspend fun getUserActions(userId: Long): Result<List<UserActionData>>
+    suspend fun getUserActions(userId: Long, propertyIds: List<Long>): Result<List<UserActionData>>
 
     suspend fun getLeads(landlordId: Long, pagination: Pagination): Result<List<PropertyLead>> // Have to write join query
 
