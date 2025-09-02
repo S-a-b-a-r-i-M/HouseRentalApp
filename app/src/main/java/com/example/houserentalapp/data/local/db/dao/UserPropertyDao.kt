@@ -39,14 +39,18 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- READ --------------
-    fun getShortlistedPropertyIds(userId: Long, pagination: Pagination): List<Long> {
+    fun getPropertiesShortlistedState(userId: Long, propertyIds: List<Long>): Map<Long, Boolean> {
+        val propertyIdsPlaceHolder = propertyIds.joinToString(",") { "?" }
         val whereClause = """
             ${UserPropertyActionTable.COLUMN_TENANT_ID} = ? AND
-            ${UserPropertyActionTable.COLUMN_ACTION} = ?
+            ${UserPropertyActionTable.COLUMN_ACTION} = ? AND
+            ${UserPropertyActionTable.COLUMN_PROPERTY_ID} IN ($propertyIdsPlaceHolder)
         """.trimIndent()
-        val whereArgs = arrayOf(userId.toString(), UserActionEnum.SHORTLISTED.name)
+        val whereArgs = arrayOf(
+            userId.toString(),
+            UserActionEnum.SHORTLISTED.name
+        ) + propertyIds.map { it.toString() }
         val orderBy = "${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
-        val limit = "${pagination.offset}, ${pagination.limit}"
 
         readableDB.query(
             UserPropertyActionTable.TABLE_NAME,
@@ -54,18 +58,22 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             whereClause,
             whereArgs,
             null, null,
-            orderBy,
-            limit
+            orderBy
         ).use { cursor ->
-            val propertyIds = mutableListOf<Long>()
+            val shortlistedIdsSet = mutableSetOf<Long>()
             while (cursor.moveToNext()) {
-                propertyIds.add(
-                    cursor.getLong(
-                        cursor.getColumnIndexOrThrow(UserPropertyActionTable.COLUMN_PROPERTY_ID)
+                shortlistedIdsSet.add(
+                    cursor.getLong(0
+//                        cursor.getColumnIndexOrThrow(
+//                            UserPropertyActionTable.COLUMN_PROPERTY_ID
+//                        )
                     )
                 )
             }
-            return propertyIds
+
+            val resultMap = mutableMapOf<Long, Boolean>()
+            propertyIds.forEach { resultMap.put(it, shortlistedIdsSet.contains(it)) }
+            return resultMap
         }
     }
 

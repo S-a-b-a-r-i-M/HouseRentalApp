@@ -10,6 +10,7 @@ import android.widget.GridLayout
 import android.widget.TextView
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
@@ -24,6 +25,7 @@ import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
+import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
@@ -37,10 +39,12 @@ import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomP
 class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var viewModel: SinglePropertyDetailViewModel
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var adapter: PropertyImagesViewAdapter
     private lateinit var mainActivity: MainActivity
+
     private var propertyId: Long = -1L
-    private var hideBottomNav = false
+    private var isTenantView = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,12 +56,10 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             parentFragmentManager.popBackStack()
             return
         }
-        hideBottomNav = arguments?.getBoolean(HIDE_BOTTOM_NAV_KEY) ?: hideBottomNav
-        val isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
+        isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
 
         logDebug("Received arguments \n" +
                 "$PROPERTY_ID_KEY: $propertyId" +
-                "$HIDE_BOTTOM_NAV_KEY: $hideBottomNav" +
                 "$IS_TENANT_VIEW_KEY: $isTenantView"
         )
 
@@ -75,9 +77,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
-        // Handle Bottom Nav Visibility
-        if (hideBottomNav)
-            mainActivity.hideBottomNav()
+        mainActivity.hideBottomNav()
 
         with(binding) {
             // Image ViewPager 2
@@ -274,15 +274,8 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        if (hideBottomNav) // Only Show if we hide it
-            mainActivity.showBottomNav()
-    }
-
     companion object {
         const val PROPERTY_ID_KEY = "propertyId"
         const val IS_TENANT_VIEW_KEY = "isTenantView"
-        const val HIDE_BOTTOM_NAV_KEY = "hideBottomNav"
     }
 }

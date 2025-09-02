@@ -13,24 +13,37 @@
         android:layout_height="match_parent"
         android:padding="5dp">
 
-        <HorizontalScrollView
-            android:id="@+id/scrlImageView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/imageContainer"
-                android:orientation="horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            <HorizontalScrollView
+                android:id="@+id/scrlImageView"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
+                <LinearLayout
+                    android:id="@+id/imageContainer"
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            </LinearLayout>
+            </HorizontalScrollView>
 
-        </HorizontalScrollView>
+            <ImageButton
+                android:id="@+id/ibtnShortlist"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/baseline_favorite_filled"
+                app:tint="@color/gray_medium"
+                android:layout_gravity="top|end"
+                android:contentDescription="@string/shortlist" />
+
+        </FrameLayout>
 
         <View
             android:layout_width="match_parent"

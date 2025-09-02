@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import android.util.Log
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.PropertyDao
+import com.example.houserentalapp.data.local.db.dao.UserPropertyDao
 import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
 import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.domain.model.ImageSource
@@ -21,7 +22,9 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 class PropertyRepoImpl(private val context: Context) : PropertyRepo {
+    private val dbHelper = DatabaseHelper.getInstance(context)
     private val propertyDao = PropertyDao(DatabaseHelper.getInstance(context))
+    private val userPropertyDao = UserPropertyDao(dbHelper)
 
     // -------------- CREATE --------------
     // SAVE INTO INTERNAL STORAGE
@@ -91,18 +94,58 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
             Result.Error(e.message.toString())
         }
     }
-
+    /*
     override suspend fun getPropertySummaries(
-        filters: Map<String, Any>, pagination: Pagination
-    ): Result<List<PropertySummary>> {
+        userId: Long,
+        filters: Map<String, Any>,
+        pagination: Pagination
+    ): Result<List<Pair<PropertySummary, Boolean>>> {
         return try {
             withContext(Dispatchers.IO) {
-                val (summariesEntity, count) = propertyDao.getPropertySummariesWithFilter(
+                val (summariesEntity, _) = propertyDao.getPropertySummariesWithFilter(
                     filters, pagination
                 )
-                val summariesDomain = summariesEntity.map { PropertyMapper.toPropertySummaryDomain(it) }
-                logInfo("getPropertySummaries retrieved ${summariesDomain.size} summaries")
-                Result.Success(summariesDomain, meta = mapOf("total_records" to count))
+                logInfo("getPropertySummaries retrieved ${summariesEntity.size} summaries")
+
+                // Get Property Shortlisted State
+                val shortlistedMap = userPropertyDao.getPropertiesShortlistedState(
+                    userId, summariesEntity.map { it.id }
+                )
+                logInfo("${shortlistedMap.size} Property Shortlisted State retrieved")
+
+                val resultList = summariesEntity.map {
+                    val domain = PropertyMapper.toPropertySummaryDomain(it)
+                    val isShortlisted = shortlistedMap.getValue(it.id)
+                    Pair(domain, isShortlisted)
+                }
+
+                Result.Success(resultList)
+            }
+        } catch (e: Exception) {
+            logError("Error reading property summaries", e)
+            Result.Error(e.message.toString())
+        }
+    }
+    */
+
+    override suspend fun getPropertySummaries(
+        userId: Long,
+        filters: Map<String, Any>,
+        pagination: Pagination
+    ): Result<List<Pair<PropertySummary, Boolean>>> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val summariesWithShortlistState = propertyDao.getPropertySummariesWithFilterV2(
+                    userId, filters, pagination
+                )
+                logInfo("getPropertySummaries retrieved ${summariesWithShortlistState.size} summaries")
+
+                val resultList = summariesWithShortlistState.map { (entity, isShortlisted) ->
+                    val domain = PropertyMapper.toPropertySummaryDomain(entity)
+                    Pair(domain, isShortlisted)
+                }
+
+                Result.Success(resultList)
             }
         } catch (e: Exception) {
             logError("Error reading property summaries", e)

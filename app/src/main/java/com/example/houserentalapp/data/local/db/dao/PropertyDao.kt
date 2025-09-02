@@ -15,9 +15,12 @@ import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import java.sql.SQLException
 import com.example.houserentalapp.data.local.db.entity.PropertyAddressEntity
 import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
+import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.mapper.PropertyImageMapper
 import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.model.enums.UserActionEnum
+import com.example.houserentalapp.presentation.enums.PropertyFiltersField
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -154,16 +157,17 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         filters: Map<String, Any>, pagination: Pagination
     ): Pair<List<PropertySummaryEntity>, Int> {
         val (whereClause, whereArgs) = buildWhere(filters)
+        val whereClauseString = whereClause.joinToString(" AND ")
         val orderBy = "${PropertyTable.COLUMN_CREATED_AT} DESC"
         val limit = "${pagination.offset}, ${pagination.limit}"
         val db = readableDB
         // Get Total Records count with filters
-        val totalRecords = getPropertiesCount(db, whereClause, whereArgs)
+        val totalRecords = getPropertiesCount(db, whereClauseString, whereArgs)
 
         db.query(
             PropertyTable.TABLE_NAME,
             null,
-            whereClause,
+            whereClauseString,
             whereArgs,
             null,
             null,
@@ -180,6 +184,72 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             }
 
             return Pair(propertySummaries, totalRecords)
+        }
+    }
+
+    fun getPropertySummariesWithFilterV2(
+        userId: Long,
+        filters: Map<String, Any>,
+        pagination: Pagination
+    ): List<Pair<PropertySummaryEntity, Boolean>> {
+        val (whereClause, whereArgs) = buildWhere(filters)
+        val whereConditions = if (whereClause.isNotEmpty())
+            whereClause.joinToString(" AND ")
+        else " 1 = 1 "
+
+        val p = PropertyTable.TABLE_NAME
+        val pi = PropertyImagesTable.TABLE_NAME
+        val upa = UserPropertyActionTable.TABLE_NAME
+
+        var orderBy = "$p.${PropertyTable.COLUMN_CREATED_AT} DESC"
+        var joinType = "LEFT JOIN"
+        if (PropertyFiltersField.ONLY_SHORTLISTS.name in filters) {
+            joinType = "JOIN"
+            orderBy = "$upa.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
+        }
+
+        val query = """
+            SELECT 
+                $p.*,
+                CASE
+                    WHEN COUNT($pi.${PropertyTable.COLUMN_ID}) > 0 THEN
+                        '[' || GROUP_CONCAT(
+                            json_object(
+                                '${PropertyImagesTable.COLUMN_ID}', $pi.${PropertyImagesTable.COLUMN_ID},
+                                '${PropertyImagesTable.COLUMN_IMAGE_ADDRESS}', $pi.${PropertyImagesTable.COLUMN_IMAGE_ADDRESS},
+                                '${PropertyImagesTable.COLUMN_IS_PRIMARY}', $pi.${PropertyImagesTable.COLUMN_IS_PRIMARY},
+                                '${PropertyImagesTable.COLUMN_CREATED_AT}', $pi.${PropertyImagesTable.COLUMN_CREATED_AT}
+                            )
+                        ) || ']'
+                    ELSE '[]'
+                END as images,
+                CASE 
+                    WHEN MAX($upa.${UserPropertyActionTable.COLUMN_ID}) IS NOT NULL THEN 1 ELSE 0 
+                END as isShortlisted
+            FROM $p
+            LEFT JOIN $pi ON $pi.${PropertyImagesTable.COLUMN_PROPERTY_ID} = $p.${PropertyTable.COLUMN_ID}
+            $joinType $upa
+                ON $upa.${UserPropertyActionTable.COLUMN_TENANT_ID} = $userId AND 
+                   $upa.${UserPropertyActionTable.COLUMN_PROPERTY_ID} = $p.${PropertyTable.COLUMN_ID} AND
+                   $upa.${UserPropertyActionTable.COLUMN_ACTION} = '${UserActionEnum.SHORTLISTED.name}' 
+            WHERE $whereConditions
+            GROUP BY $p.${PropertyTable.COLUMN_ID}
+            ORDER BY $orderBy
+            LIMIT ${pagination.limit} OFFSET ${pagination.offset}
+        """.trimIndent()
+
+        readableDB.rawQuery(query, whereArgs).use { cursor ->
+            val result = mutableListOf<Pair<PropertySummaryEntity, Boolean>>()
+            while (cursor.moveToNext()) {
+                val summaryEntity = PropertyMapper.toPropertySummaryEntity(cursor)
+                val imagesJsonString = cursor.getString(cursor.getColumnIndexOrThrow("images"))
+                val imagesEntity = PropertyImageMapper.toEntityFromJson(imagesJsonString)
+                val isShortListed = cursor.getInt(cursor.getColumnIndexOrThrow("isShortlisted")) == 1
+
+                result.add(Pair(summaryEntity.copy(images = imagesEntity), isShortListed))
+            }
+
+            return result
         }
     }
 
@@ -223,47 +293,6 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 images.add(PropertyImageMapper.toEntity(cursor))
 
             return images
-        }
-    }
-
-    private fun getPropertyPrimaryImage(db: SQLiteDatabase, propertyId: Long): PropertyImageEntity {
-        val whereClause = "${PropertyImagesTable.COLUMN_PROPERTY_ID} = ? AND ${PropertyImagesTable.COLUMN_IS_PRIMARY} = 1"
-        val whereValue = arrayOf(propertyId.toString())
-
-        db.query(
-            PropertyImagesTable.TABLE_NAME,
-            null,
-            whereClause,
-            whereValue,
-            null,
-            null,
-            null
-        ).use { cursor ->
-            with(cursor) {
-                if (moveToFirst()) {
-                    return PropertyImageEntity(
-                        id = getLong(
-                            getColumnIndexOrThrow(
-                                PropertyImagesTable.COLUMN_ID
-                            )
-                        ),
-                        imageAddress = getString(
-                            getColumnIndexOrThrow(
-                                PropertyImagesTable.COLUMN_IMAGE_ADDRESS
-                            )
-                        ),
-                        isPrimary = getInt(
-                            getColumnIndexOrThrow(
-                                PropertyImagesTable.COLUMN_IS_PRIMARY
-                            )
-                        ) == 1,
-                    )
-                }
-
-
-            }
-
-            throw SQLException("Primary image is not found for propertyId: $propertyId")
         }
     }
 
@@ -316,7 +345,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
 
     private fun buildWhere(
         filters: Map<String, Any>, onlyAvailable: Boolean = true
-    ): Pair<String, Array<String>> {
+    ): Pair<List<String>, Array<String>> {
         val clauses = mutableListOf<String>()
         val args = mutableListOf<String>()
 
@@ -369,11 +398,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         if (onlyAvailable)
             clauses.add("${PropertyTable.COLUMN_IS_AVAILABLE} = 1")
 
-        return Pair(
-            clauses.joinToString(" AND "),
-//            if (clauses.isNotEmpty()) clauses.joinToString(" AND ") else "1",
-            args.toTypedArray()
-        )
+        return Pair(clauses, args.toTypedArray())
     }
 
     // -------------- UPDATE --------------
