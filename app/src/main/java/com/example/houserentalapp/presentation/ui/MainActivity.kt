@@ -5,6 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,6 +17,7 @@ import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
+import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
@@ -34,6 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var currentUser: User
+    private val sharedDataViewModel: SharedDataViewModel by viewModels()
 
     // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
     private val backPressedCallback = object : OnBackPressedCallback(true){
@@ -63,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         }
         // Fetch Current User From ViewModel
         currentUser = User(
-            id = 2,
+            id = 1,
             name = "Tenant",
             phone = "9988776655",
             email = "tenent@gmail.com",
@@ -71,6 +74,12 @@ class MainActivity : AppCompatActivity() {
         )
 
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
+
+//        runBlocking {
+//            UserRepoImpl(this@MainActivity).createUser(
+//                "Sabari", "", "", ""
+//            )
+//        }
 
         setBottomNavigation()
         if (savedInstanceState == null)
@@ -108,14 +117,13 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                 }
                 R.id.bnav_shortlists -> {
-                    val destinationFragment = PropertiesListFragment()
-                    destinationFragment.arguments = Bundle().apply {
-                        putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, false)
-                        putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
-                        putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
-                        putBoolean(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
+                    sharedDataViewModel.fPropertiesListMap.apply {
+                        put(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, false)
+                        put(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
+                        put(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
+                        put(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
                     }
-                    loadFragment(destinationFragment)
+                    loadFragment(PropertiesListFragment())
                 }
                 R.id.bnav_listings -> {
                     loadFragment(ListingsFragment())

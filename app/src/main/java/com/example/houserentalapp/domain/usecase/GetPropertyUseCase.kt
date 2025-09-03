@@ -9,10 +9,12 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 
 class GetPropertyUseCase(private val propertyRepo: PropertyRepo) {
     suspend fun getPropertySummaries(
-        filters: Map<String, Any>, pagination: Pagination
-    ): Result<List<PropertySummary>> {
+        userId: Long,
+        filters: Map<String, Any>,
+        pagination: Pagination
+    ): Result<List<Pair<PropertySummary, Boolean>>> {
         return try {
-            return propertyRepo.getPropertySummaries(filters, pagination)
+            return propertyRepo.getPropertySummaries(userId, filters, pagination)
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while fetching property summaries")
             Result.Error(exp.message.toString())

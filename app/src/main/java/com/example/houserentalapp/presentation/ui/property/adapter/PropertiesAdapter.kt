@@ -1,16 +1,18 @@
 package com.example.houserentalapp.presentation.ui.property.adapter
 
+import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
-import com.example.houserentalapp.domain.model.PropertySummary
+import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
@@ -19,16 +21,15 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 import java.io.File
 
-
-class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>()
-//    : ListAdapter<PropertySummary, PropertiesAdapter.ViewHolder>(DiffCallBack())
-{
+class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Long) -> Unit)? = null)
+    : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private var imageContainer: LinearLayout = itemView.findViewById(R.id.imageContainer)
         private var tvHeader: TextView = itemView.findViewById(R.id.tvHeader)
         private var tvBody1: TextView = itemView.findViewById(R.id.tvBody1)
         private var tvBody2: TextView = itemView.findViewById(R.id.tvBody2)
         private var tvFooter: TextView = itemView.findViewById(R.id.tvFooter)
+        private var ibtnShortlist: ImageButton = itemView.findViewById(R.id.ibtnShortlist)
 
         private fun getShapableImageView(imageWidth: Int) : ShapeableImageView {
             return ShapeableImageView(itemView.context).apply {
@@ -49,9 +50,10 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
             }
         }
 
-        fun bind(summary: PropertySummary) {
+        fun bind(summaryUI: PropertySummaryUI) {
             val screenWidth = itemView.context.resources.displayMetrics.widthPixels
             val imageWidth = (screenWidth / 2.2).toInt()
+            val summary = summaryUI.summary
 
             // Add images programmatically
             if (summary.images.isNotEmpty())
@@ -79,35 +81,18 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
                 }
             else // Add Place Holder Image
                 repeat(2) {
-                val shapableImageView = ShapeableImageView(itemView.context).apply {
-                    scaleType = ImageView.ScaleType.CENTER_CROP
-                    setImageResource(
-                        listOf(R.drawable.interior, R.drawable.room_1, R.drawable.room_2, R.drawable.room_3).random()
-                    )
-                    shapeAppearanceModel = ShapeAppearanceModel.builder().apply {
-                        setAllCornerSizes(24f)
-                    }.build()
-
-
-                    val marginInPx = 5.dpToPx(itemView.context)
-                    setLayoutParams(
-                        LinearLayout.LayoutParams(
-                            imageWidth,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                        ).apply {
-                            setMargins(marginInPx, 0, marginInPx, 0)
-                        }
-                    )
-                }
+                val shapableImageView = getShapableImageView(imageWidth)
+                shapableImageView.setImageResource(
+                    listOf(R.drawable.interior, R.drawable.room_1).random()
+                )
                 imageContainer.addView(shapableImageView)
             }
 
-            with(summary) {
-                tvHeader.text = "${summary.name} (${summary.bhk.readable})"
-                tvBody1.text = "${summary.address.city}, ${summary.address.locality}"
-                tvBody2.text = "${summary.price}"
-                tvFooter.text = "${summary.bhk.readable} | ${summary.furnishingType.readable} | ${summary.builtUpArea} sq.ft."
-            }
+            tvHeader.text = "${summary.name} (${summary.bhk.readable})"
+            tvBody1.text = "${summary.address.city}, ${summary.address.locality}"
+            tvBody2.text = "${summary.price}"
+            tvFooter.text = "${summary.bhk.readable} | ${summary.furnishingType.readable} | ${summary.builtUpArea} sq.ft."
+            bindShortlistData(summaryUI.isShortListed)
 
             // Set On Click
             imageContainer.setOnClickListener {
@@ -118,24 +103,65 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
                 logInfo("Property ${summary.id} Clicked")
                 onClick(summary.id)
             }
+            ibtnShortlist.setOnClickListener {
+                if(onShortlistToggle == null) return@setOnClickListener
+
+                it.isEnabled = false // Disable immediately
+
+                shortlistToggledPropertyId = summary.id
+                onShortlistToggle(summary.id)
+
+                // Re-enable after delay
+                it.postDelayed({it.isEnabled = true}, 1000)
+            }
+        }
+
+        fun bindShortlistData(isShortListed: Boolean) {
+            ibtnShortlist.imageTintList = if (isShortListed)
+                ColorStateList.valueOf(itemView.context.getColor(R.color.primary_blue))
+            else
+                ColorStateList.valueOf(itemView.context.getColor(R.color.gray_medium))
         }
     }
 
-    private var dataList: MutableList<PropertySummary> = mutableListOf()
+    private var dataList: MutableList<PropertySummaryUI> = mutableListOf()
+    private var shortlistToggledPropertyId: Long? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.single_property_summary_layout, parent, false)
+        logInfo("<-------- onCreateViewHolder --------> ")
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(dataList[position])
+        logInfo("<------- onBindViewHolder --------> ")
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any?>) {
+        if (payloads.isNotEmpty() && SHORTLIST == payloads[0]) {
+            holder.bindShortlistData(dataList[position].isShortListed)
+            return
+        }
+
+        onBindViewHolder(holder, position) // FallBack
     }
 
     override fun getItemCount() = dataList.size
 
-    fun setDataList(newDataList: List<PropertySummary>) {
+    fun setDataList(newDataList: List<PropertySummaryUI>) {
+        if (shortlistToggledPropertyId != null && newDataList.size == dataList.size) {
+            val oldListIdx = dataList.indexOfFirst { it.summary.id == shortlistToggledPropertyId }
+            val newListIdx = newDataList.indexOfFirst { it.summary.id == shortlistToggledPropertyId }
+            shortlistToggledPropertyId = null // Make it null
+            if (oldListIdx != -1 && newListIdx != -1) {
+                dataList[oldListIdx] = newDataList[newListIdx]
+                notifyItemChanged(oldListIdx, SHORTLIST)
+                return
+            }
+        }
+
         val diffCallBack = PropertiesDiffCallBack(dataList, newDataList)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
@@ -144,24 +170,27 @@ class PropertiesAdapter(val onClick: (Long) -> Unit) : RecyclerView.Adapter<Prop
         diffResult.dispatchUpdatesTo(this)
     }
 
-
-    fun appendDataList(newDataList: List<PropertySummary>) {
+    fun appendDataList(newDataList: List<PropertySummaryUI>) {
         val startPosition = newDataList.size
         dataList.addAll(newDataList)
         notifyItemRangeInserted(startPosition ,newDataList.size)
     }
+
+    companion object {
+        private const val SHORTLIST = "shortlist"
+    }
 }
 
 class PropertiesDiffCallBack(
-    private val oldList: List<PropertySummary>,
-    private val newList: List<PropertySummary>,
+    private val oldList: List<PropertySummaryUI>,
+    private val newList: List<PropertySummaryUI>,
 ) : DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
 
     override fun getNewListSize() = newList.size
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].id == newList[newItemPosition].id
+        return oldList[oldItemPosition].summary.id == newList[newItemPosition].summary.id
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

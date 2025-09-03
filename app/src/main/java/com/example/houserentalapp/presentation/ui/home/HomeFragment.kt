@@ -5,15 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentHomeBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
+import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 
 class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -33,12 +36,14 @@ class HomeFragment : Fragment() {
         val mainActivity = context as MainActivity
         with(binding) {
             searchBar.setOnClickListener {
-                val destinationFragment = PropertiesListFragment()
-                destinationFragment.arguments = Bundle().apply {
-                    putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+                sharedDataViewModel.fPropertiesListMap.apply {
+                    put(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+                    put(PropertiesListFragment.HIDE_TOOLBAR_KEY, false)
+                    put(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, false)
+                    put(PropertiesListFragment.ONLY_SHORTLISTED_KEY, false)
                 }
 
-                mainActivity.loadFragment(destinationFragment, true)
+                mainActivity.loadFragment(PropertiesListFragment(), true)
             }
 
             btnPostProperty.setOnClickListener {
