@@ -8,8 +8,12 @@ enum class LeadStatus {
     REJECTED,
 }
 
-enum class UserActionEnum {
-    VIEW,
-    SHORTLISTED,
-    INTERESTED
+enum class UserActionEnum(override val readable: String): ReadableEnum {
+    VIEW("view"),
+    SHORTLISTED("shortlisted"),
+    INTERESTED("interested");
+
+    companion object : ReadableEnum.Companion<UserActionEnum> {
+        override val values: Array<UserActionEnum> = entries.toTypedArray()
+    }
 }

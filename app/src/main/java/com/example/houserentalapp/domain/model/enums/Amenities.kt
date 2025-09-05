@@ -44,8 +44,12 @@ enum class CountableInternalAmenity(override val readable: String) : AmenityBase
     }
 }
 
-enum class AmenityType {
-    INTERNAL,
-    INTERNAL_COUNTABLE,
-    SOCIAL
+enum class AmenityType(override val readable: String): ReadableEnum {
+    INTERNAL("internal"),
+    INTERNAL_COUNTABLE("internal_countable"),
+    SOCIAL("social");
+
+    companion object : ReadableEnum.Companion<AmenityType> {
+        override val values: Array<AmenityType> = entries.toTypedArray()
+    }
 }

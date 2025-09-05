@@ -14,7 +14,7 @@ object AmenitiesMapper {
         return amenities.map {
             PropertyAmenityEntity(
                 name = it.name.readable,
-                type = it.type.name,
+                type = it.type.readable,
                 count = it.count
             )
         }
@@ -26,7 +26,7 @@ object AmenitiesMapper {
                 if(it.id == null)
                     throw IllegalArgumentException("Amenity id is required for domain model.")
 
-                val amenityType = AmenityType.valueOf(it.type)
+                val amenityType = AmenityType.fromString(it.type)
                 val amenityName: AmenityBaseEnum = when(amenityType) {
                     AmenityType.INTERNAL -> InternalAmenity.fromString(it.name)
                     AmenityType.INTERNAL_COUNTABLE -> CountableInternalAmenity.fromString(it.name)

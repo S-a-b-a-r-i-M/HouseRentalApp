@@ -5,7 +5,11 @@ import com.example.houserentalapp.R
 
 enum class PropertyKind(override val readable: String) : ReadableEnum {
     RESIDENTIAL("Residential"),
-    COMMERCIAL("Commercial")
+    COMMERCIAL("Commercial");
+
+    companion object : ReadableEnum.Companion<PropertyKind> {
+        override val values: Array<PropertyKind> = entries.toTypedArray()
+    }
 }
 
 enum class PropertyType(override val readable: String) : ReadableEnum {

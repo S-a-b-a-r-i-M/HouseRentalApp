@@ -15,7 +15,7 @@ object UserActionMapper {
     fun toDomain(entity: UserActionEntity) = UserActionData(
         id = entity.id,
         propertyId = entity.propertyId,
-        action = UserActionEnum.valueOf(entity.action),
+        action = UserActionEnum.fromString(entity.action),
         createdAt = entity.createdAt
     )
 }
