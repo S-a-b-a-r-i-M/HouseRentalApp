@@ -11,23 +11,24 @@ import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
-class MyPropertyFragment : Fragment() {
+class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
 
     private lateinit var binding: FragmentMyPropertyBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_property, container, false)
-    }
+    private lateinit var mainActivity: MainActivity
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMyPropertyBinding.bind(view)
+        mainActivity = context as MainActivity
 
-        // SET ADD PROPERTY BUTTON
+        setupUI()
         setupListeners()
+    }
+
+    fun setupUI() {
+        // Always show bottom nav
+        mainActivity.showBottomNav()
+
     }
 
     fun setupListeners() {

@@ -15,8 +15,8 @@
 
     <ImageButton
         android:id="@+id/ibtnDeleteImage"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:layout_margin="5dp"
         android:layout_gravity="top|end"
         android:src="@drawable/outline_delete_24"

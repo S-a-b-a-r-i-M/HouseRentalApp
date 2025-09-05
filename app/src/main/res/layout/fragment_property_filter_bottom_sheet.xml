@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@color/white_blue"
+    tools:context=".presentation.ui.property.PropertyFilterBottomSheet">
+
+  <!-- Close Btn -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/baseline_close_24"
+        app:backgroundTint="@color/icon_button_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+  <!-- BHK -->
+    <TextView
+        android:id="@+id/tvBHK"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/bhk"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnClose"/>
+
+    <HorizontalScrollView
+        android:id="@+id/listOfBHK"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:scrollbarThumbHorizontal="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvBHK">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupBHK"
+            style="@style/Widget.App.ChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip1BHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_1_bhk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip2BHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_2_bhk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip3BHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_3_bhk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip4BHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_4_bhk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip5BHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_5_bhk" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chip5aboveBHK"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/_5_above_bhk" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
+
+  <!-- Price Range -->
+    <TextView
+        android:id="@+id/tvBudget"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/budget"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/listOfBHK" />
+
+    <TextView
+        android:id="@+id/tvMinBudgetLabel"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="@string/min"
+        android:textStyle="normal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBudget" />
+
+    <TextView
+        android:id="@+id/tvMinBudget"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="1.2 K"
+        android:textColor="@color/primary_blue_dark"
+        app:layout_constraintStart_toEndOf="@id/tvMinBudgetLabel"
+        app:layout_constraintTop_toBottomOf="@id/tvBudget"/>
+
+    <TextView
+        android:id="@+id/tvMaxBudgetLabel"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="@string/max"
+        android:textStyle="normal"
+        app:layout_constraintEnd_toStartOf="@id/tvMaxBudget"
+        app:layout_constraintTop_toBottomOf="@id/tvBudget" />
+
+    <TextView
+        android:id="@+id/tvMaxBudget"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:text="10.2 K"
+        android:textColor="@color/primary_blue_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvBudget"/>
+
+    <com.google.android.material.slider.RangeSlider
+        android:id="@+id/rSliderBudget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:valueFrom="10"
+        android:valueTo="1000"
+        app:labelBehavior="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvMinBudgetLabel" />
+
+  <!-- Type -->
+    <TextView
+        android:id="@+id/tvPropertyType"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/property_type"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rSliderBudget" />
+
+    <HorizontalScrollView
+        android:id="@+id/hScrollOfProperties"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:scrollbarThumbHorizontal="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPropertyType">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupProperties"
+            style="@style/Widget.App.ChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPropertyType">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipApartment"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/apartment" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipVilla"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/villa" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipIndependentHouse"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/independent_house" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFarmHouse"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/farm_house" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipStudio"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/studio" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipOther"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/other" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
+
+  <!-- Furnishing Type -->
+    <TextView
+        android:id="@+id/tvFurnishingType"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/furnishing_type"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hScrollOfProperties" />
+
+    <HorizontalScrollView
+        android:id="@+id/hScrollOfFurnishings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:scrollbarThumbHorizontal="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvFurnishingType">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipGroupFurnishings"
+            style="@style/Widget.App.ChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvPropertyType">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFurnished"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/furnished" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipSemiFurnished"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/semi_furnished" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipUnFurnished"
+                style="@style/Widget.App.Chip.Input.Elevated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/un_furnished" />
+
+        </com.google.android.material.chip.ChipGroup>
+
+    </HorizontalScrollView>
+
+  <!-- Tenant Type -->
+    <TextView
+        android:id="@+id/tvTenantType"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/preferred_tenant"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/hScrollOfFurnishings" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/chipGroupTenants"
+        style="@style/Widget.App.ChipGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTenantType">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipFamily"
+            style="@style/Widget.App.Chip.Input.Elevated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/family" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipBachelor"
+            style="@style/Widget.App.Chip.Input.Elevated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bachelors" />
+
+    </com.google.android.material.chip.ChipGroup>
+
+  <!-- Apply Filters Btn -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnApplyFilters"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/apply_filters"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="32dp"
+        app:layout_constraintTop_toBottomOf="@+id/chipGroupTenants"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

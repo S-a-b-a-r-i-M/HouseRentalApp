@@ -18,7 +18,7 @@ data class  Property (
     val kind: PropertyKind,
     val type: PropertyType,
     val furnishingType: FurnishingType,
-    val amenities: List<AmenityDomain>, // On-hold
+    val amenities: List<AmenityDomain>,
     val preferredTenantType: List<TenantType>,
     val preferredBachelorType: String? = BachelorType.BOTH.readable,
     val transactionType: PropertyTransactionType?, // Specific to Sell
@@ -28,7 +28,7 @@ data class  Property (
     val availableFrom: Long,
     val bhk: BHK,
     val builtUpArea: Int,
-    val bathRoomCount: Int = 0, // optional
+    val bathRoomCount: Int = 0,
     val isPetAllowed: Boolean,
     val isAvailable: Boolean,
     val viewCount: Int = 0,

@@ -6,10 +6,12 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyTable
+import com.example.houserentalapp.data.local.db.tables.SearchHistoryTable
 import com.example.houserentalapp.data.local.db.tables.UserInterestedPropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
+import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
@@ -49,6 +51,16 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
             it.execSQL(UserInterestedPropertyTable.CREATE_TABLE)
             it.execSQL(PropertyAmenitiesTable.CREATE_TABLE)
             it.execSQL(PropertyImagesTable.CREATE_TABLE)
+            it.execSQL(SearchHistoryTable.CREATE_TABLE)
+
+            // Insert dummy data
+            try {
+                insertInitialData(db)
+                logInfo("<---------------- Dummy data are inserted successfully ---------------->")
+            } catch (exp: Exception) {
+                logError("error on loading dummy data: ${exp.message.toString()}")
+            }
+
 
           // INDEX CREATION
 //            it.execSQL(UserTable.CREATE_INDEXES) // Let's see the performance without indexes first

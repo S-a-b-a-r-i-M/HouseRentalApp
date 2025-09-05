@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.model.User
@@ -22,21 +23,23 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
+import kotlinx.coroutines.runBlocking
 
-/* Pending Things
-    Existing fix:
-        1. TODO: Create Property -> images(add more, storage) , enhance the counter view design
-    New:
-        1. TODO: Favourites page -> move and remove properties
-        2. TODO: Filters
-        2. TODO: My Properties Page -> List of uploaded properties, edit status, edit details.
+/*  TODO:
+        Existing fix:
+        1. Create Property -> images(add more, storage) , enhance the counter view design, Global Error near button
+        2. Make Use Cases Single Responsibility
+        New:
+        1. Favourites page -> move and remove properties
+        2. Filters
+        3. My Properties Page -> List of uploaded properties, edit status, edit details.
  */
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var currentUser: User
-    private val sharedDataViewModel: SharedDataViewModel by viewModels()
+    val sharedDataViewModel: SharedDataViewModel by viewModels()
 
     // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
     private val backPressedCallback = object : OnBackPressedCallback(true){
@@ -67,9 +70,9 @@ class MainActivity : AppCompatActivity() {
         // Fetch Current User From ViewModel
         currentUser = User(
             id = 1,
-            name = "Tenant",
-            phone = "9988776655",
-            email = "tenent@gmail.com",
+            name = "Owner",
+            phone = "994979988",
+            email = "owner@gmail.com",
             createdAt = 123465689L
         )
 
@@ -117,12 +120,13 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                 }
                 R.id.bnav_shortlists -> {
-                    sharedDataViewModel.fPropertiesListMap.apply {
-                        put(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, false)
-                        put(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
-                        put(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
-                        put(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
+                    with(sharedDataViewModel) {
+                        resetPropertiesListStore()
+                        addToPropertiesListStore(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
+                        addToPropertiesListStore(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
+                        addToPropertiesListStore(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
                     }
+
                     loadFragment(PropertiesListFragment())
                 }
                 R.id.bnav_listings -> {
@@ -141,6 +145,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun showBottomNav() {
+        binding.bottomNavigationContainer.visibility = View.VISIBLE
+    }
+
+    fun hideBottomNav() {
+        binding.bottomNavigationContainer.visibility = View.GONE
+    }
+
     fun loadFragment(
         fragment: Fragment,
         pushToBackStack: Boolean = false,
@@ -156,24 +168,20 @@ class MainActivity : AppCompatActivity() {
     fun addFragment(
         fragment: Fragment,
         pushToBackStack: Boolean = false,
+        removeHistory: Boolean = false,
         containerId: Int = binding.pageFragmentContainer.id
     ) {
         // EXISTING FRAGMENT
         val existingFragment = supportFragmentManager.findFragmentById(containerId)
+
+        if (removeHistory)
+            supportFragmentManager.popBackStack(fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
 
         supportFragmentManager.beginTransaction().apply {
             add(containerId, fragment)
             if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
             commit()
         }
-    }
-
-    fun showBottomNav() {
-        binding.bottomNavigationContainer.visibility = View.VISIBLE
-    }
-
-    fun hideBottomNav() {
-        binding.bottomNavigationContainer.visibility = View.GONE
     }
 
     companion object {

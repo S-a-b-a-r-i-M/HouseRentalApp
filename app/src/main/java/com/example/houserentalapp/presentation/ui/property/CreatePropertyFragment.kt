@@ -23,7 +23,7 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
-import com.example.houserentalapp.presentation.ui.reusable.CounterView
+import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
@@ -309,8 +309,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun setupUI() {
-        // Hide Bottom nav.
+        // Always hide bottom nav
         mainActivity.hideBottomNav()
+
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 

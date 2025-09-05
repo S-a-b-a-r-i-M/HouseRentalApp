@@ -49,15 +49,13 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-<!--    TODO: Do i really need SearchBar here or normal design view is enough -->
     <com.google.android.material.search.SearchBar
         android:id="@+id/searchBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:hint="search city, locality"
+        android:hint="@string/search_city_locality"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBarLayout"

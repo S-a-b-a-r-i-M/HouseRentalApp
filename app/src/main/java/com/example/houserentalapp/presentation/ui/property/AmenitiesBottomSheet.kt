@@ -15,7 +15,7 @@ import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
-import com.example.houserentalapp.presentation.ui.reusable.CounterView
+import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.google.android.material.checkbox.MaterialCheckBox

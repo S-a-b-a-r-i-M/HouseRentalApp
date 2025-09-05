@@ -6,64 +6,56 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.PropertyUseCase
+import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
 import com.example.houserentalapp.domain.utils.Result
-import com.example.houserentalapp.presentation.enums.PropertyFiltersField
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 
 class PropertiesListViewModel(
-    private val getPropertyUC: GetPropertyUseCase,
+    private val getPropertyUC: PropertyUseCase,
     private val propertyUserActionUC: TenantRelatedPropertyUseCase,
+    private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
 ) : ViewModel() {
     private val _propertySummariesResult = MutableLiveData<ResultUI<List<PropertySummaryUI>>>()
     val propertySummariesResult: LiveData<ResultUI<List<PropertySummaryUI>>> = _propertySummariesResult
     private val propertySummaryUIList: MutableList<PropertySummaryUI> = mutableListOf() // Used to hold Property Summary Data
-    private val _filters = MutableLiveData<Map<PropertyFiltersField, Any>>(mutableMapOf())
-    val filters: LiveData<Map<PropertyFiltersField, Any>> = _filters
-    private var hasMore: Boolean = true
+
+    var hasMore: Boolean = true
+        private set
     private var offset: Int = 0
     private val limit: Int = 10
+    private var recentFilters: PropertyFilters? = null
 
-    fun addFilter(field: PropertyFiltersField, value: Any) {
-        val updatedFilters = _filters.value!!.toMutableMap().apply {
-            put(field, value)
+    fun loadPropertySummaries(filters: PropertyFilters?) {
+        val isFiltersChanged = recentFilters != filters
+        if (isFiltersChanged) {
+            // Reset data sets on filter change
+            reset()
+            recentFilters = filters
         }
-        _filters.value = updatedFilters
-    }
 
-    fun removeFilter(field: PropertyFiltersField) {
-        val updatedFilters = _filters.value!!.toMutableMap().apply { remove(field) }
-        _filters.value = updatedFilters
-    }
-
-    fun resetFilter(field: PropertyFiltersField) {
-        _filters.value = mutableMapOf()
-    }
-
-    fun loadPropertySummaries(onlyShortlistedRecords: Boolean) {
         if (!hasMore) return
         _propertySummariesResult.value = ResultUI.Loading
         viewModelScope.launch {
-            try {
-                if (onlyShortlistedRecords)
-                    addFilter(PropertyFiltersField.ONLY_SHORTLISTS, true)
-                else
-                    removeFilter(PropertyFiltersField.ONLY_SHORTLISTS)
+            if (isFiltersChanged && filters != null && filters.searchQuery.trim().isNotEmpty())
+                searchHistoryUC.storeSearchHistory(currentUser.id, filters)
 
+            try {
                 val result = getPropertyUC.getPropertySummaries(
                     currentUser.id,
-                    getStringFilters(),
-                    Pagination(offset, limit)
+                    Pagination(offset, limit),
+                    filters
                 )
 
                 when (result) {
@@ -90,8 +82,6 @@ class PropertiesListViewModel(
             }
         }
     }
-
-    private fun getStringFilters() = _filters.value?.mapKeys { it.key.name } ?: mutableMapOf()
 
     fun togglePropertyShortlist(propertyId: Long, onSuccess: (Boolean) -> Unit, onFailure: () -> Unit) {
         val propertyIdx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
@@ -129,19 +119,18 @@ class PropertiesListViewModel(
     }
 
     // Will get triggered by filters modification
-    fun refresh() {
+    private fun reset() {
         offset = 0
         hasMore = true
         propertySummaryUIList.clear()
         _propertySummariesResult.value = ResultUI.Success(emptyList())
     }
-
-    fun hasMore() = hasMore
 }
 
 class PropertiesListViewModelFactory(
-    private val getPropertyUC: GetPropertyUseCase,
+    private val getPropertyUC: PropertyUseCase,
     private val propertyUserActionUC: TenantRelatedPropertyUseCase,
+    private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
 ) : ViewModelProvider.Factory {
 
@@ -150,6 +139,7 @@ class PropertiesListViewModelFactory(
             return PropertiesListViewModel(
                 getPropertyUC,
                 propertyUserActionUC,
+                searchHistoryUC,
                 currentUser
             ) as T
 

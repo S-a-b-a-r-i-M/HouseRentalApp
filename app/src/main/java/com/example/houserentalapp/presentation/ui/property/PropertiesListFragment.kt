@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui.property
 
 import android.os.Bundle
+import android.text.TextUtils
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -10,13 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
+import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
-import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.PropertyUseCase
+import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAdapter
+import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
@@ -32,6 +37,8 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var propertiesAdapter: PropertiesAdapter
     private lateinit var propertiesListViewModel: PropertiesListViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val filtersViewModel: FiltersViewModel by activityViewModels()
+    private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
 
     private var isScrolling: Boolean = false
     private var hideBottomNav = false
@@ -42,21 +49,27 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
-        // mainActivity = requireActivity() as MainActivity // Crashing on quick rotations
+        // mainActivity = requireActivity() as MainActivity // Is Crashing on quick rotations ?
         mainActivity = context as MainActivity
 
-        hideBottomNav = sharedDataViewModel.fPropertiesListMap[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false
-        hideToolBar = sharedDataViewModel.fPropertiesListMap[HIDE_TOOLBAR_KEY] as? Boolean ?: false
-        hideFabButton = sharedDataViewModel.fPropertiesListMap[HIDE_FAB_BUTTON_KEY] as? Boolean ?: false
-        onlyShortlisted = sharedDataViewModel.fPropertiesListMap[ONLY_SHORTLISTED_KEY] as? Boolean ?: false
+        // Decisions based on received values
+        hideBottomNav = sharedDataViewModel.propertiesListStore[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false
+        hideToolBar = sharedDataViewModel.propertiesListStore[HIDE_TOOLBAR_KEY] as? Boolean ?: false
+        hideFabButton = sharedDataViewModel.propertiesListStore[HIDE_FAB_BUTTON_KEY] as? Boolean ?: false
+        onlyShortlisted = sharedDataViewModel.propertiesListStore[ONLY_SHORTLISTED_KEY] as? Boolean ?: false
 
         setupUI()
         setupViewModel()
         setupListeners()
         setupObservers()
 
+        // Initial Load Data
         if (propertiesListViewModel.propertySummariesResult.value !is ResultUI.Success)
-            propertiesListViewModel.loadPropertySummaries(onlyShortlisted)
+            loadProperties()
+    }
+
+    private fun loadProperties() {
+        propertiesListViewModel.loadPropertySummaries(filtersViewModel.filters.value)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -80,7 +93,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             }
             else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 isScrolling = false
-                if (!propertiesListViewModel.hasMore()) return
+                if (!propertiesListViewModel.hasMore) return
 
                 val lastVisibleItemPosition =
                     layoutManger.findLastCompletelyVisibleItemPosition() // index
@@ -91,7 +104,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 val shouldLoadMore = (lastVisibleItemPosition + 1) >= totalItemCount
                 if (shouldLoadMore) {
                     logInfo("<----------- from onScroll State changed ---------->")
-                    propertiesListViewModel.loadPropertySummaries(onlyShortlisted)
+                    loadProperties()
                 }
             }
         }
@@ -112,24 +125,36 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 ::handleOnPropertyClick, ::handleShortlistToggle
             )
             rvProperty.apply {
-                layoutManager = LinearLayoutManager(requireActivity())
+                layoutManager = LinearLayoutManager(mainActivity)
                 adapter = propertiesAdapter
                 addOnScrollListener(scrollListener)
             }
 
-            if (hideToolBar)
-                toolBarLayout.visibility = View.GONE
+            toolBarLayout.visibility = if (hideToolBar) View.GONE else View.VISIBLE
 
-            if (hideFabButton)
-                fabShortlists.visibility = View.GONE
+            fabShortlists.visibility = if (hideFabButton) View.GONE else View.VISIBLE
+
+            // If text view is not completely visible then scroll that
+            searchBar.textView.apply {
+                isSingleLine = true
+                ellipsize = TextUtils.TruncateAt.MARQUEE
+                isSelected = true
+                marqueeRepeatLimit = -1
+            }
         }
     }
 
     fun setupViewModel() {
-        val getPropertyUC = GetPropertyUseCase(PropertyRepoImpl(mainActivity))
+        val getPropertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
         val propertyUserActionUC = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(mainActivity))
+        val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
         val currentUser = mainActivity.getCurrentUser()
-        val factory = PropertiesListViewModelFactory(getPropertyUC, propertyUserActionUC, currentUser)
+        val factory = PropertiesListViewModelFactory(
+            getPropertyUC,
+            propertyUserActionUC,
+            searchHistoryUC,
+            currentUser
+        )
         propertiesListViewModel = ViewModelProvider(this, factory)
             .get(PropertiesListViewModel::class.java)
     }
@@ -138,6 +163,25 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         with(binding) {
             backImgBtn.root.setOnClickListener {
                 parentFragmentManager.popBackStack()
+            }
+
+            searchBar.setOnClickListener {
+                mainActivity.addFragment(SearchViewFragment(), true)
+            }
+
+            btnFilters.setOnClickListener {
+                filterBottomSheet.show(parentFragmentManager, "FilterBottomSheet")
+            }
+
+            fabShortlists.setOnClickListener {
+                with(sharedDataViewModel) {
+                    resetPropertiesListStore()
+                    addToPropertiesListStore(ONLY_SHORTLISTED_KEY, true)
+                    addToPropertiesListStore(HIDE_TOOLBAR_KEY, true)
+                    addToPropertiesListStore(HIDE_FAB_BUTTON_KEY, true)
+                }
+
+                mainActivity.loadFragment(PropertiesListFragment(), true)
             }
         }
     }
@@ -149,7 +193,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             putBoolean(SinglePropertyDetailFragment.IS_TENANT_VIEW_KEY, true)
         }
 
-        mainActivity.loadFragment(destinationFragment, true)
+        mainActivity.addFragment(destinationFragment, true)
     }
 
     private fun handleShortlistToggle(propertyId: Long) {
@@ -186,6 +230,18 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 }
             }
         }
+
+        filtersViewModel.filters.observe(viewLifecycleOwner) { filtersData ->
+            if (filtersData.searchQuery.isNotEmpty())
+                binding.searchBar.setText(filtersData.searchQuery)
+        }
+
+        filtersViewModel.applyFilters.observe(viewLifecycleOwner) { shouldLoad ->
+            if (shouldLoad) {
+                loadProperties()
+                filtersViewModel.onFiltersApplied()
+            }
+        }
     }
 
     fun showProgressBar() {
@@ -195,12 +251,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     fun hideProgressBar() {
         binding.progressBar.visibility = View.GONE
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        if (hideBottomNav) // Only Show if we hide it
-            mainActivity.showBottomNav()
     }
 
     companion object {

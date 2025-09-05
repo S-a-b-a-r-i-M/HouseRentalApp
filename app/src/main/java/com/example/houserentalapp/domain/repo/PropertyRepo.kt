@@ -2,6 +2,7 @@ package com.example.houserentalapp.domain.repo
 
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.utils.Result
 
@@ -15,8 +16,8 @@ interface PropertyRepo {
 
     suspend fun getPropertySummaries(
         userId: Long,
-        filters: Map<String, Any>,
-        pagination: Pagination
+        pagination: Pagination,
+        filters: PropertyFilters? = null
     ): Result<List<Pair<PropertySummary, Boolean>>>
 
     // UPDATE

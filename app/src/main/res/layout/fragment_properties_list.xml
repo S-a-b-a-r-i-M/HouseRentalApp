@@ -25,7 +25,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="55dp"
-                android:paddingHorizontal="12dp"
+                android:paddingHorizontal="8dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -39,6 +39,7 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:layout_margin="4dp">
 
                     <TextView
@@ -47,12 +48,25 @@
                         android:layout_height="match_parent"
                         android:gravity="center_vertical"
                         android:paddingHorizontal="5dp"
-                        android:text="Chennai | Madurai | Thirunelvali"
                         android:textColor="@color/gray_dark" />
 
                 </HorizontalScrollView>
 
+                <com.google.android.material.search.SearchBar
+                    android:id="@+id/searchBar"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_margin="4dp"
+                    android:hint="@string/search_city_locality"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/toolBarLayout"
+                    app:strokeColor="@color/primary_blue"
+                    app:strokeWidth="2dp" />
+
                 <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnFilters"
                     android:minWidth="60dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"

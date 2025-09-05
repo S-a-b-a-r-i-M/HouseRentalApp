@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.reusable
+package com.example.houserentalapp.presentation.ui.common
 
 import android.content.Context
 import android.content.res.ColorStateList

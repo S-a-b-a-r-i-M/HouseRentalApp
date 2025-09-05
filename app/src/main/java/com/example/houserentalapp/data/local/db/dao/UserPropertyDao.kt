@@ -28,7 +28,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
         val values = ContentValues().apply {
             put(UserPropertyActionTable.COLUMN_TENANT_ID, userId)
             put(UserPropertyActionTable.COLUMN_PROPERTY_ID, propertyId)
-            put(UserPropertyActionTable.COLUMN_ACTION, action.name)
+            put(UserPropertyActionTable.COLUMN_ACTION, action.readable)
         }
 
         val id = writableDb.insert(UserPropertyActionTable.TABLE_NAME, null, values)
@@ -48,7 +48,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
         """.trimIndent()
         val whereArgs = arrayOf(
             userId.toString(),
-            UserActionEnum.SHORTLISTED.name
+            UserActionEnum.SHORTLISTED.readable
         ) + propertyIds.map { it.toString() }
         val orderBy = "${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
 
@@ -106,7 +106,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             LIMIT ${pagination.limit} OFFSET ${pagination.offset}
         """.trimIndent()
 
-        val whereArgs = arrayOf(userId.toString(), action.name)
+        val whereArgs = arrayOf(userId.toString(), action.readable)
 
         readableDB.rawQuery(query, whereArgs).use { cursor ->
             val propertySummaries = mutableListOf<PropertySummaryEntity>()
@@ -192,7 +192,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             ${UserPropertyActionTable.COLUMN_PROPERTY_ID} = ? AND
             ${UserPropertyActionTable.COLUMN_ACTION} = ?
             """.trimIndent()
-        val whereArgs = arrayOf(userId.toString(), propertyId.toString(), action.name)
+        val whereArgs = arrayOf(userId.toString(), propertyId.toString(), action.readable)
 
         return writableDb.delete(
             UserPropertyActionTable.TABLE_NAME, whereClause, whereArgs

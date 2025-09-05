@@ -12,6 +12,7 @@ import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.repo.PropertyRepo
 import com.example.houserentalapp.domain.utils.Result
@@ -130,13 +131,13 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
 
     override suspend fun getPropertySummaries(
         userId: Long,
-        filters: Map<String, Any>,
-        pagination: Pagination
+        pagination: Pagination,
+        filters: PropertyFilters?
     ): Result<List<Pair<PropertySummary, Boolean>>> {
         return try {
             withContext(Dispatchers.IO) {
                 val summariesWithShortlistState = propertyDao.getPropertySummariesWithFilterV2(
-                    userId, filters, pagination
+                    userId, pagination, filters
                 )
                 logInfo("getPropertySummaries retrieved ${summariesWithShortlistState.size} summaries")
 

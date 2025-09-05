@@ -21,7 +21,7 @@ import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.domain.model.enums.TenantType
-import com.example.houserentalapp.domain.usecase.CreatePropertyUseCase
+import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.utils.helpers.toEpochSeconds
@@ -34,7 +34,7 @@ import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import kotlinx.coroutines.launch
 
 class CreatePropertyViewModel(
-    private val createPropertyUseCase: CreatePropertyUseCase
+    private val propertyUseCase: PropertyUseCase
 ) : ViewModel() {
     private val _createPropertyResult = MutableLiveData<ResultUI<Long>?>()
     val createPropertyResult: LiveData<ResultUI<Long>?> = _createPropertyResult
@@ -129,7 +129,7 @@ class CreatePropertyViewModel(
 
         viewModelScope.launch {
             _createPropertyResult.value = ResultUI.Loading
-            when (val result = createPropertyUseCase(property)) {
+            when (val result = propertyUseCase.createProperty(property)) {
                 is Result.Success<Long> -> {
                     _createPropertyResult.value = ResultUI.Success(result.data)
                     logInfo("Property(${result.data}) Created Successfully")
@@ -306,7 +306,7 @@ class CreatePropertyViewModel(
             with(formDataMap) {
                 val tenantTypes = getValue(PropertyFormField.PREFERRED_TENANT_TYPE).value!!
                     .split(",")
-                    .map { TenantType.fromString(it)!! }
+                    .map { TenantType.fromString(it) }
                 val bachelorType = if (TenantType.BACHELORS in tenantTypes)
                     getValue(PropertyFormField.PREFERRED_BACHELOR_TYPE).value!!
                 else
@@ -336,10 +336,10 @@ class CreatePropertyViewModel(
                     landlordId = 1,
                     name = getValue(PropertyFormField.NAME).value!!,
                     description = getValue(PropertyFormField.DESCRIPTION).value,
-                    lookingTo = LookingTo.fromString(getValue(PropertyFormField.LOOKING_TO).value!!)!!,
+                    lookingTo = LookingTo.fromString(getValue(PropertyFormField.LOOKING_TO).value!!),
                     kind = PropertyKind.COMMERCIAL,
-                    type = PropertyType.fromString(getValue(PropertyFormField.TYPE).value!!)!!,
-                    furnishingType = FurnishingType.fromString(getValue(PropertyFormField.FURNISHING_TYPE).value!!)!!,
+                    type = PropertyType.fromString(getValue(PropertyFormField.TYPE).value!!),
+                    furnishingType = FurnishingType.fromString(getValue(PropertyFormField.FURNISHING_TYPE).value!!),
                     amenities = amenities,
                     preferredTenantType = tenantTypes,
                     preferredBachelorType = bachelorType,
@@ -371,13 +371,13 @@ class CreatePropertyViewModel(
 
 
 class CreatePropertyViewModelFactory(
-    private val createPropertyUseCase: CreatePropertyUseCase
+    private val propertyUseCase: PropertyUseCase
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CreatePropertyViewModel::class.java))
-            return CreatePropertyViewModel(createPropertyUseCase) as T
+            return CreatePropertyViewModel(propertyUseCase) as T
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -9,7 +9,7 @@ import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
@@ -20,7 +20,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import kotlinx.coroutines.launch
 
 class SinglePropertyDetailViewModel(
-    private val getPropertyUC: GetPropertyUseCase,
+    private val getPropertyUC: PropertyUseCase,
     private val propertyUserActionUC: TenantRelatedPropertyUseCase,
     private val currentUser: User
 ) : ViewModel() {
@@ -123,7 +123,7 @@ class SinglePropertyDetailViewModel(
 }
 
 class SinglePropertyDetailViewModelFactory(
-    private val getPropertyUseCase: GetPropertyUseCase,
+    private val getPropertyUseCase: PropertyUseCase,
     private val propertyUserActionUseCase: TenantRelatedPropertyUseCase,
     private val currentUser: User
 ) : ViewModelProvider.Factory {

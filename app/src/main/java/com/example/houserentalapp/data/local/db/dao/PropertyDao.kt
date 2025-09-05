@@ -19,8 +19,9 @@ import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.mapper.PropertyImageMapper
 import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.model.PropertyFilters
+import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import com.example.houserentalapp.presentation.enums.PropertyFiltersField
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -153,59 +154,30 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    fun getPropertySummariesWithFilter(
-        filters: Map<String, Any>, pagination: Pagination
-    ): Pair<List<PropertySummaryEntity>, Int> {
-        val (whereClause, whereArgs) = buildWhere(filters)
-        val whereClauseString = whereClause.joinToString(" AND ")
-        val orderBy = "${PropertyTable.COLUMN_CREATED_AT} DESC"
-        val limit = "${pagination.offset}, ${pagination.limit}"
-        val db = readableDB
-        // Get Total Records count with filters
-        val totalRecords = getPropertiesCount(db, whereClauseString, whereArgs)
-
-        db.query(
-            PropertyTable.TABLE_NAME,
-            null,
-            whereClauseString,
-            whereArgs,
-            null,
-            null,
-            orderBy,
-            limit
-        ).use { cursor ->
-            val propertySummaries = mutableListOf<PropertySummaryEntity>()
-
-            while (cursor.moveToNext()) {
-                val summary = PropertyMapper.toPropertySummaryEntity(cursor)
-                val imagesEntity = getPropertyImages(db, summary.id)
-                // Add Summary + Images
-                propertySummaries.add(summary.copy(images = imagesEntity))
-            }
-
-            return Pair(propertySummaries, totalRecords)
-        }
-    }
-
     fun getPropertySummariesWithFilterV2(
         userId: Long,
-        filters: Map<String, Any>,
-        pagination: Pagination
+        pagination: Pagination,
+        filters: PropertyFilters?
     ): List<Pair<PropertySummaryEntity, Boolean>> {
-        val (whereClause, whereArgs) = buildWhere(filters)
-        val whereConditions = if (whereClause.isNotEmpty())
-            whereClause.joinToString(" AND ")
-        else " 1 = 1 "
-
         val p = PropertyTable.TABLE_NAME
         val pi = PropertyImagesTable.TABLE_NAME
         val upa = UserPropertyActionTable.TABLE_NAME
 
-        var orderBy = "$p.${PropertyTable.COLUMN_CREATED_AT} DESC"
         var joinType = "LEFT JOIN"
-        if (PropertyFiltersField.ONLY_SHORTLISTS.name in filters) {
-            joinType = "JOIN"
-            orderBy = "$upa.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
+        var orderBy = "$p.${PropertyTable.COLUMN_CREATED_AT} DESC"
+
+        var whereConditions = ""
+        var whereArgs = arrayOf<String>()
+        if (filters != null) {
+            buildWhere(filters).let { (conditions, args) ->
+                whereConditions = conditions
+                whereArgs = args
+            }
+
+            if (filters.onlyShortlists) {
+                joinType = "JOIN"
+                orderBy = "$upa.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
+            }
         }
 
         val query = """
@@ -231,7 +203,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             $joinType $upa
                 ON $upa.${UserPropertyActionTable.COLUMN_TENANT_ID} = $userId AND 
                    $upa.${UserPropertyActionTable.COLUMN_PROPERTY_ID} = $p.${PropertyTable.COLUMN_ID} AND
-                   $upa.${UserPropertyActionTable.COLUMN_ACTION} = '${UserActionEnum.SHORTLISTED.name}' 
+                   $upa.${UserPropertyActionTable.COLUMN_ACTION} = '${UserActionEnum.SHORTLISTED.readable}' 
             WHERE $whereConditions
             GROUP BY $p.${PropertyTable.COLUMN_ID}
             ORDER BY $orderBy
@@ -344,61 +316,64 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
     }
 
     private fun buildWhere(
-        filters: Map<String, Any>, onlyAvailable: Boolean = true
-    ): Pair<List<String>, Array<String>> {
+        filters: PropertyFilters, onlyAvailable: Boolean = true
+    ): Pair<String, Array<String>> {
         val clauses = mutableListOf<String>()
         val args = mutableListOf<String>()
 
-        filters.forEach { (key, value) ->
-            when(key) {
-                "landlordId" -> {
-                    clauses.add("${PropertyTable.COLUMN_LANDLORD_ID} = ?")
-                    args.add(value.toString())
-                }
-                "city" -> {
-                    clauses.add("${PropertyTable.COLUMN_CITY} = ?")
-                    args.add(value.toString())
-                }
-                "locality" -> {
-                    clauses.add("${PropertyTable.COLUMN_LOCALITY} = ?")
-                    args.add(value.toString())
-                }
-                "lookingTo" -> {
-                    clauses.add("${PropertyTable.COLUMN_LOOKING_TO} = ?")
-                    args.add(value.toString())
-                }
-                "type" -> {
-                    clauses.add("${PropertyTable.COLUMN_TYPE} = ?")
-                    args.add(value.toString())
-                }
-                "bhk" -> {
-                    clauses.add("${PropertyTable.COLUMN_BHK} = ?")
-                    args.add(value.toString())
-                }
-                "minPrice" -> {
-                    clauses.add("${PropertyTable.COLUMN_PRICE} >= ?")
-                    args.add(value.toString())
-                }
-                "maxPrice" -> {
-                    clauses.add("${PropertyTable.COLUMN_PRICE} <= ?")
-                    args.add(value.toString())
-                }
-                "furnishingType" -> {
-                    clauses.add("${PropertyTable.COLUMN_FURNISHING_TYPE} = ?")
-                    args.add(value.toString())
-                }
-                "isPetAllowed" -> {
-                    clauses.add("${PropertyTable.COLUMN_IS_PET_ALLOWED} = ?")
-                    args.add(if (value as Boolean) "1" else "0")
-                }
-            }
+//        if (filters.landLordId != null) {
+//            clauses.add("${PropertyTable.COLUMN_LANDLORD_ID} = ?")
+//            args.add(filters.landLordId.toString())
+//        }
+
+        if (filters.searchQuery.isNotBlank()) {
+            clauses.add("LOWER(${PropertyTable.COLUMN_CITY}) LIKE LOWER(?) OR LOWER(${PropertyTable.COLUMN_LOCALITY}) LIKE LOWER(?)")
+            args.add("%${filters.searchQuery}%")
+            args.add("%${filters.searchQuery}%")
+        }
+
+        fun applyQueryForListOfValues(columnName: String, options: List<ReadableEnum>) {
+            val placeHolder = options.joinToString(",") { "?" }
+            clauses.add("LOWER($columnName) IN ($placeHolder)")
+            args.addAll(options.map { it.readable.lowercase() })
+        }
+
+        if (filters.bhkTypes.isNotEmpty())
+            applyQueryForListOfValues(
+                PropertyTable.COLUMN_BHK,
+                filters.bhkTypes
+            )
+
+        if (filters.propertyTypes.isNotEmpty())
+            applyQueryForListOfValues(
+                PropertyTable.COLUMN_TYPE,
+                filters.propertyTypes
+            )
+
+        if (filters.furnishingTypes.isNotEmpty())
+            applyQueryForListOfValues(
+                PropertyTable.COLUMN_FURNISHING_TYPE,
+                filters.furnishingTypes
+            )
+
+        if (filters.tenantTypes.isNotEmpty())
+            applyQueryForListOfValues(
+                PropertyTable.COLUMN_PREFERRED_TENANTS,
+                filters.tenantTypes
+            )
+
+        filters.budget?.let { (min, max) ->
+            clauses.add("${PropertyTable.COLUMN_PRICE} BETWEEN ? AND ?")
+            args.add(min.toString())
+            args.add(max.toString())
         }
 
         // Add Condition to get only available products
         if (onlyAvailable)
             clauses.add("${PropertyTable.COLUMN_IS_AVAILABLE} = 1")
 
-        return Pair(clauses, args.toTypedArray())
+        val joinedWhere = if (clauses.isNotEmpty()) clauses.joinToString(" AND ") else " 1 = 1 "
+        return Pair(joinedWhere, args.toTypedArray())
     }
 
     // -------------- UPDATE --------------

@@ -19,7 +19,7 @@ import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBindin
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.enums.AmenityType
-import com.example.houserentalapp.domain.usecase.GetPropertyUseCase
+import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
@@ -77,6 +77,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
+        // Always hide bottom nav
         mainActivity.hideBottomNav()
 
         with(binding) {
@@ -88,7 +89,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     fun setupViewModel() {
         val context = requireActivity()
-        val getPropertyUseCase = GetPropertyUseCase(PropertyRepoImpl(context))
+        val getPropertyUseCase = PropertyUseCase(PropertyRepoImpl(context))
         val propertyUserActionUseCase = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(context))
         val factory = SinglePropertyDetailViewModelFactory(
             getPropertyUseCase,

@@ -116,11 +116,39 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
             }
         }
 
+
         fun bindShortlistData(isShortListed: Boolean) {
-            ibtnShortlist.imageTintList = if (isShortListed)
-                ColorStateList.valueOf(itemView.context.getColor(R.color.primary_blue))
-            else
-                ColorStateList.valueOf(itemView.context.getColor(R.color.gray_medium))
+            var colorId = R.color.primary_blue
+            if (isShortListed) {
+                // Heart beat animation for shortlisted
+                ibtnShortlist.animate()
+                    .scaleX(0.8f)
+                    .scaleY(0.8f)
+                    .rotationX(30f)
+                    .setDuration(150)
+                    .withEndAction {
+                        ibtnShortlist.animate()
+                            .scaleX(1.1f)
+                            .scaleY(1.1f)
+                            .rotationX(0f)
+                            .setDuration(100)
+                            .start()
+                    }
+                    .start()
+            } else {
+                // Simple scale back to normal
+                ibtnShortlist.animate()
+                    .scaleX(1.0f)
+                    .scaleY(1.0f)
+                    .setDuration(200)
+                    .start()
+
+                colorId = R.color.gray_medium
+            }
+
+            ibtnShortlist.imageTintList = ColorStateList.valueOf(
+                itemView.context.getColor(colorId)
+            )
         }
     }
 

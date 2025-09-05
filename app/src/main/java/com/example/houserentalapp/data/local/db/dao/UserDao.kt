@@ -30,9 +30,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
             put(UserTable.COLUMN_CREATED_AT, userEntity.createdAt)
         }
 
-        writableDB.insertOrThrow(
-            UserTable.TABLE_NAME, null, values
-        )
+        writableDB.insertOrThrow(UserTable.TABLE_NAME, null, values)
     }
 
     suspend fun insertUserPreferences(entity: UserPreferenceEntity): Long =

@@ -41,7 +41,8 @@
     <string name="lease">Lease</string>
     <string name="sell">Sell</string>
     <string name="built_up_area">Built Up Area(Sq. ft.)</string>
-    <string name="_5_bhk">5+ BHK</string>
+    <string name="_5_above_bhk">5+ BHK</string>
+    <string name="_5_bhk">5 BHK</string>
     <string name="_4_bhk">4 BHK</string>
     <string name="_3_bhk">3 BHK</string>
     <string name="_2_bhk">2 BHK</string>
@@ -99,4 +100,18 @@
     <string name="i_m_interested">I\'m Interested</string>
     <string name="shortlist">Shortlist</string>
     <string name="view_contact_number">View Contact Number</string>
+    <string name="search_this">search this</string>
+    <string name="history_icon">history icon</string>
+    <string name="search_city_locality">search city, locality</string>
+    <string name="search_properties">Search Properties</string>
+    <string name="apply_filters">Apply Filters</string>
+    <string name="budget">Budget ₹</string>
+    <string name="all">All</string>
+    <string name="max">Max:</string>
+    <string name="min">Min:</string>
+    <string name="recent_searches">Recent Searches...</string>
+    <array name="default_budget_range">
+        <item>1000</item>
+        <item>20000</item>
+    </array>
 </resources>

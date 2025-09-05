@@ -2,19 +2,21 @@ package com.example.houserentalapp.domain.usecase
 
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.repo.PropertyRepo
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logError
+import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
-class GetPropertyUseCase(private val propertyRepo: PropertyRepo) {
+class PropertyUseCase(private val propertyRepo: PropertyRepo) {
     suspend fun getPropertySummaries(
         userId: Long,
-        filters: Map<String, Any>,
-        pagination: Pagination
+        pagination: Pagination,
+        filters: PropertyFilters? = null
     ): Result<List<Pair<PropertySummary, Boolean>>> {
         return try {
-            return propertyRepo.getPropertySummaries(userId, filters, pagination)
+            return propertyRepo.getPropertySummaries(userId, pagination, filters)
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while fetching property summaries")
             Result.Error(exp.message.toString())
@@ -27,6 +29,23 @@ class GetPropertyUseCase(private val propertyRepo: PropertyRepo) {
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while fetching property(id: $propertyId)")
             Result.Error(exp.message.toString())
+        }
+    }
+
+    suspend fun createProperty(property: Property): Result<Long> { // invoke() is Kotlin's way to make objects "callable" like functions
+        return try {
+            when(val result = propertyRepo.createProperty(property)){
+                is Result.Success<Long> -> {
+                    logInfo("Property(${property.name}) created successfully with id: ${result.data}")
+                    result
+                }
+                is Result.Error -> {
+                    logError("Property Creation failed")
+                    result
+                }
+            }
+        } catch (exp: Exception) {
+            Result.Error("error")
         }
     }
 }
