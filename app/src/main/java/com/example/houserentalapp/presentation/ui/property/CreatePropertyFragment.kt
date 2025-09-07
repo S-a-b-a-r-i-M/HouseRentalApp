@@ -19,6 +19,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
+import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
@@ -33,6 +34,7 @@ import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getRequiredStyleLabel
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -64,7 +66,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private val formTextInputFieldInfoList = mutableListOf<TextInputFieldInfo>()
     private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
-    private val formSGButtonsInfoList = mutableListOf<SelectableGroupedButtonsInfo>()
+    private val formSingleSelectChipGroupsInfo = mutableListOf<SingleSelectableChipGroupInfo>()
 
     private val imagesPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -147,7 +149,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         )
 
         with(binding) {
-            formSGButtonsInfoList.forEach {
+            formSingleSelectChipGroupsInfo.forEach {
                 observeError(it.field) { error ->
                     it.label.setTextColor(getErrorState(error))
                 }
@@ -247,24 +249,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 }
             }
 
-            /*
-            viewModel.getFormDataMap(PropertyFormField.COVERED_PARKING_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    coveredParkingCounter.count = count?.toIntOrNull() ?: 0
-                }
-
-            viewModel.getFormDataMap(PropertyFormField.OPEN_PARKING_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    openParkingCounter.count = count?.toIntOrNull() ?: 0
-                }
-
-            // Bathroom
-            viewModel.getFormDataMap(PropertyFormField.BATH_ROOM_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    bathRoomCounter.count = count?.toIntOrNull() ?: 0
-                }
-             */
-
             // Creation Result
             viewModel.createPropertyResult.observe(viewLifecycleOwner) { result ->
                 if (result == null) return@observe
@@ -316,7 +300,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         setSystemBarBottomPadding(binding.root)
 
         setupCustomToolBar()
-        setupSingleSelectableGroupedButtons()
+        // setupSingleSelectableGroupedButtons()
         groupRelatedFields()
         setRequiredFieldIndicator()
     }
@@ -377,6 +361,30 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 add(Pair(PropertyFormField.OPEN_PARKING_COUNT, openParkingCounter))
                 add(Pair(PropertyFormField.BATH_ROOM_COUNT, bathRoomCounter))
             }
+
+            formSingleSelectChipGroupsInfo.apply {
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.LOOKING_TO, tvLookingTo, chipGroupLookingTo
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.TYPE, tvPropertyType, chipGroupPropertyType
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.BHK, tvBHK, chipGroupBHK
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.FURNISHING_TYPE, tvFurnishing, chipGroupFurnishing
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.IS_PET_FRIENDLY, tvPetFriendly, chipGroupPetFriendly
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.PREFERRED_BACHELOR_TYPE, tvPreferredBachelor, chipGroupBachelorPreference
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.IS_MAINTENANCE_SEPARATE, tvMaintenanceSeparate, chipGroupMaintenance
+                ))
+            }
         }
     }
 
@@ -389,7 +397,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                     )
             }
 
-            formSGButtonsInfoList.forEach {
+            formSingleSelectChipGroupsInfo.forEach {
                 if (it.isRequired)
                     it.label.text = getRequiredStyleLabel(
                         it.label.text.toString(), mainActivity
@@ -400,106 +408,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun setupCustomToolBar() {
         with(binding) {
-            titleTV.text = getString(R.string.create_property)
+            // titleTV.text = getString(R.string.create_property)
+            toolbar.title = getString(R.string.create_property)
 
-            backImgBtn.root.setOnClickListener {
+            toolbar.setNavigationOnClickListener {
                 parentFragmentManager.popBackStack()
-            }
-        }
-    }
-
-    private fun setupSingleSelectableGroupedButtons() {
-        with(binding) {
-            // LOOKING TO
-            val sgbLookingTo = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnRent, ::onRentSelectChange),
-                    SelectableButtonData(btnSell)
-                )
-            )
-
-            // PROPERTY TYPE
-            val sgbPropertyType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnApartment),
-                    SelectableButtonData(btnVilla),
-                    SelectableButtonData(btnIndependentHouse),
-                    SelectableButtonData(btnFormHouse),
-                    SelectableButtonData(btnStudio),
-                    SelectableButtonData(btnOther),
-                )
-            )
-
-            // BHK
-            val sgbBhk = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btn1BHK),
-                    SelectableButtonData(btn2BHK),
-                    SelectableButtonData(btn3BHK),
-                    SelectableButtonData(btn4BHK),
-                    SelectableButtonData(btn5AboveBHK),
-                )
-            )
-
-            // FURNISHING TYPE
-            val sgbFurnishingType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnFullyFurnished),
-                    SelectableButtonData(btnSemiFurnished),
-                    SelectableButtonData(btnUnFurnished),
-                )
-            )
-
-            // PET FRIENDLY
-            val sgbPetFriendly = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnPetFriendlyYes),
-                    SelectableButtonData(btnPetFriendlyNo),
-                )
-            )
-
-            // PREFERRED BACHELOR TYPE
-            val sgbBachelorType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnOpenForBoth),
-                    SelectableButtonData(btnOnlyMen),
-                    SelectableButtonData(btnOnlyWomen)
-                )
-            )
-
-            // Maintenance Charge
-            val sgbIsMaintenanceSeparate = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnIncludeInRent),
-                    SelectableButtonData(
-                        btnSeparate,
-                        ::onMaintenanceSeparateSelect,
-                    )
-                )
-            )
-
-            formSGButtonsInfoList.apply {
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.LOOKING_TO, tvLookingTo, sgbLookingTo
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.TYPE, tvPropertyType, sgbPropertyType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.BHK, tvBHK, sgbBhk
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.FURNISHING_TYPE, tvFurnishing, sgbFurnishingType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.IS_PET_FRIENDLY, tvPetFriendly, sgbPetFriendly
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.PREFERRED_BACHELOR_TYPE, tvPreferredBachelor, sgbBachelorType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.IS_MAINTENANCE_SEPARATE, tvMaintenanceSeparate, sgbIsMaintenanceSeparate
-                ))
             }
         }
     }
@@ -519,34 +432,34 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         }
     }
 
-    private fun setSelectableGroupedButtonListeners() {
-        fun setOnOptionSelectedListener(
-            selectableGroupedButtons: SingleSelectableGroupedButtons,
-            field: PropertyFormField
-        ) {
-            selectableGroupedButtons.setOnOptionSelectedListener { buttonData ->
-                logDebug("${buttonData.button.text} Selected in $field Group")
-                // Button text is same as enum prop readable
-                viewModel.updateFormValue(field, buttonData.button.text.toString())
+    private val chipIdToBHK = mapOf(
+        R.id.chip1BHK to BHK.ONE_BHK.readable,
+        R.id.chip2BHK to BHK.TWO_BHK.readable,
+        R.id.chip3BHK to BHK.THREE_BHK.readable,
+        R.id.chip4BHK to BHK.FOUR_BHK.readable,
+        R.id.chip5BHK to BHK.FIVE_PLUS_BHK.readable,
+        R.id.chip5aboveBHK to BHK.FIVE_PLUS_BHK.readable,
+    )
+
+    private fun setSingleSelectableChipGroupListeners() {
+        formSingleSelectChipGroupsInfo.forEach {
+            it.chipGroup.setOnCheckedStateChangeListener { chipGroup, checkedIds ->
+                if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+                if (it.field == PropertyFormField.BHK) {
+                    val checkedValue = chipIdToBHK.getValue(checkedIds[0])
+                    viewModel.updateFormValue(it.field, checkedValue)
+                }
             }
         }
 
-        with(binding) {
-            formSGButtonsInfoList.forEach {
-                setOnOptionSelectedListener(it.groupedButtons, it.field)
-            }
-
-            btnRent.performClick() // As of now only supporting Rent
-            btnSell.apply {
-                isClickable = false
-                alpha = 0.5f
-            }
+        binding.chipSeparate.setOnCheckedChangeListener { _, isChecked ->
+            onMaintenanceSeparateSelect(isChecked)
         }
     }
 
     private fun setListeners() {
         setEditTextListeners()
-        setSelectableGroupedButtonListeners()
+        setSingleSelectableChipGroupListeners()
         setCounterViewsListeners()
         setPreferredTenantListeners()
 
@@ -613,11 +526,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 )
             }
 
-            btnFamily.addOnCheckedChangeListener { _, isChecked ->
+            chipFamily.setOnCheckedChangeListener { _, isChecked ->
                 onChangePreferredTenants(TenantType.FAMILY.readable, isChecked)
             }
 
-            btnBachelors.addOnCheckedChangeListener { _, isChecked ->
+            chipBachelors.setOnCheckedChangeListener { _, isChecked ->
                 onChangePreferredTenants(TenantType.BACHELORS.readable, isChecked)
                 onBachelorsSelectChange(isChecked)
             }
@@ -668,7 +581,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         logInfo("<------------ onBachelorsSelectChange: $isSelected ------------>")
         if (isSelected) {
             binding.preferredBachelorContainer.visibility = View.VISIBLE
-            binding.btnOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
+            binding.chipOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
         } else
             binding.preferredBachelorContainer.visibility = View.GONE
     }
@@ -676,10 +589,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun onMaintenanceSeparateSelect(isSelected: Boolean) {
         logInfo("<------------ onMaintenanceSeparateSelect: $isSelected ------------>")
         binding.tilMaintenanceCharge.visibility = if (isSelected) View.VISIBLE else View.GONE
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onDetach() {
@@ -698,6 +607,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         val field: PropertyFormField,
         val label: TextView,
         val groupedButtons: SingleSelectableGroupedButtons,
+        val isRequired: Boolean = true
+    )
+
+    private data class SingleSelectableChipGroupInfo (
+        val field: PropertyFormField,
+        val label: TextView,
+        val chipGroup: ChipGroup,
         val isRequired: Boolean = true
     )
 }
