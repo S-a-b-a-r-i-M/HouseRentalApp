@@ -10,6 +10,8 @@
 
         <!-- Text -->
         <item name="fontFamily">@font/poppins</item>
+
+        <item name="android:scrollbarThumbHorizontal">@null</item>
     </style>
 
     <style name="Widget.App.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

@@ -8,6 +8,7 @@ import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.enums.BHK
+import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyKind
@@ -28,7 +29,7 @@ object PropertyMapper {
             furnishingType = domain.furnishingType.readable,
             amenities = AmenitiesMapper.fromDomain(domain.amenities),
             preferredTenants = domain.preferredTenantType.joinToString(",") { it.readable },
-            preferredBachelorType = domain.preferredBachelorType,
+            preferredBachelorType = domain.preferredBachelorType?.readable,
             transactionType = domain.transactionType?.readable,
             ageOfProperty = domain.ageOfProperty,
             countOfCoveredParking = domain.countOfCoveredParking,
@@ -63,8 +64,8 @@ object PropertyMapper {
             amenities = AmenitiesMapper.toDomain(entity.amenities),
             preferredTenantType = entity.preferredTenants
                 .split(",")
-                .map { TenantType.fromString(it)!! },
-            preferredBachelorType = entity.preferredBachelorType,
+                .map { TenantType.fromString(it) },
+            preferredBachelorType = entity.preferredBachelorType?.let { BachelorType.fromString(it) },
             transactionType = entity.transactionType?.let { PropertyTransactionType.fromString(it) },
             ageOfProperty = entity.ageOfProperty,
             countOfCoveredParking = entity.countOfCoveredParking,

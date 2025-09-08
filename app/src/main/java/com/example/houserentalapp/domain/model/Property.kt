@@ -20,7 +20,7 @@ data class  Property (
     val furnishingType: FurnishingType,
     val amenities: List<AmenityDomain>,
     val preferredTenantType: List<TenantType>,
-    val preferredBachelorType: String? = BachelorType.BOTH.readable,
+    val preferredBachelorType: BachelorType?,
     val transactionType: PropertyTransactionType?, // Specific to Sell
     val ageOfProperty: Int?, // Specific to Sell
     val countOfCoveredParking: Int,
