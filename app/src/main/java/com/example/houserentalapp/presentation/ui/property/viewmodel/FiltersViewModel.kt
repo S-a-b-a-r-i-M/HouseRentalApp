@@ -45,6 +45,8 @@ class FiltersViewModel : ViewModel() {
 
     fun setFurnishingTypes(newData: List<FurnishingType>) = updateFilter { it.copy(furnishingTypes = newData) }
 
+    fun setOnlyShortlisted(newData: Boolean) = updateFilter { it.copy(onlyShortlisted = newData) }
+
     fun resetFilters() {
         _filtersUI.value = PropertyFilters()
         logDebug("Filters have reset.")

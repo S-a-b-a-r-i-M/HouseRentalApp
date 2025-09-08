@@ -174,7 +174,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 whereArgs = args
             }
 
-            if (filters.onlyShortlists) {
+            if (filters.onlyShortlisted) {
                 joinType = "JOIN"
                 orderBy = "$upa.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
             }

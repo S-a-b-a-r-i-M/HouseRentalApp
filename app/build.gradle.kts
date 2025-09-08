@@ -1,20 +1,27 @@
-import org.gradle.kotlin.dsl.resolver.fetchKotlinBuildScriptModelFor
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    id("org.jetbrains.kotlin.plugin.parcelize")
-    kotlin("kapt")
+    id("org.jetbrains.kotlin.plugin.parcelize") /*
+        Plugin: Compile-time code generation (adds @Parcelize annotation processing)
+        Dependency: Runtime libraries
+        Parcelize generates Parcelable implementation code during compilation, so it's a build-time tool
+    */
+    kotlin("kapt") /*
+        kotlin("kapt") enables Kotlin’s annotation processing tool in your Gradle build,
+        letting libraries like Room, Dagger/Hilt, Glide generate code at compile time.
+        Without it → your project won’t compile if those libraries need generated classes.
+    */
 }
 
 android {
     namespace = "com.example.houserentalapp"
-    compileSdk = 36
+    compileSdk = 36  // What you compile against
 
     defaultConfig {
         applicationId = "com.example.houserentalapp"
-        minSdk = 27
-        targetSdk = 36
+        minSdk = 30 // Android 11  // Minimum supported device
+        targetSdk = 36 // What you're optimized for
         versionCode = 1
         versionName = "1.0"
 
@@ -43,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

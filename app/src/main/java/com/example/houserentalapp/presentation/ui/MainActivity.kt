@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.enums.NavigationOptions
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
@@ -29,6 +30,8 @@ import kotlinx.coroutines.runBlocking
         Existing fix:
         1. Create Property -> images(add more, storage) , enhance the counter view design, Global Error near button
         2. Make Use Cases Single Responsibility
+        3. Get Current User Details from db(MainActivity)
+        4. Have to add batch count in lot of places
         New:
         1. Favourites page -> move and remove properties
         2. Filters
@@ -101,18 +104,6 @@ class MainActivity : AppCompatActivity() {
 
     fun getCurrentUser() = currentUser
 
-    private fun scrollToFocusedView() {
-        val currentFocus = currentFocus
-//        if (currentFocus is EditText) {
-//            val scrollView: NestedScrollView = binding.scrollView
-//            scrollView?.post {
-//                val rect = Rect()
-//                currentFocus.getGlobalVisibleRect(rect)
-//                scrollView.requestChildRectangleOnScreen(currentFocus, rect, false)
-//            }
-//        }
-    }
-
     private fun setBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when(item.itemId) {
@@ -126,7 +117,6 @@ class MainActivity : AppCompatActivity() {
                         addToPropertiesListStore(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
                         addToPropertiesListStore(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
                     }
-
                     loadFragment(PropertiesListFragment())
                 }
                 R.id.bnav_listings -> {
@@ -143,6 +133,10 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemReselectedListener { item ->
             logInfo("setOnItemReselectedListener")
         }
+    }
+
+    fun selectBottomNavOption(option: NavigationOptions) {
+        binding.bottomNavigation.selectedItemId = option.id
     }
 
     fun showBottomNav() {

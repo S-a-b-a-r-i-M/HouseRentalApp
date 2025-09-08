@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui.property
 
 import android.app.Activity.RESULT_OK
+import android.content.Context
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -47,8 +48,9 @@ import java.util.Locale
     1. FIX: Property description, issue: horizontal scroll
     2. Reset Form
     3. Validation for Maintenance charges
-    4. Image Upload (Click From Camera , Upload From Gallery)
+    4. Image Upload (Click From Camera , Upload From Gallery) With Api's essential permissions
     5. Change toolbar implementation to built in
+    6. Handle Success and Error msg display
 */
 
 class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
@@ -89,10 +91,14 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainActivity = context as MainActivity
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreatePropertyBinding.bind(view)
-        mainActivity = context as MainActivity
 
         // Set up UI
         setupUI()
@@ -102,6 +108,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
         // Observe View Model
         observeViewModel()
+
+        println("CreatePropertyFragment viewModel: $viewModel")
     }
 
     private fun observeEditTextFields() {
@@ -676,10 +684,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun onMaintenanceSeparateSelect(isSelected: Boolean) {
         logInfo("<------------ onMaintenanceSeparateSelect: $isSelected ------------>")
         binding.tilMaintenanceCharge.visibility = if (isSelected) View.VISIBLE else View.GONE
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
     }
 
     override fun onDetach() {

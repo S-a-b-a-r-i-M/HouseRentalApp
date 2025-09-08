@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.common
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.core.widget.doOnTextChanged
@@ -32,11 +33,15 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainActivity = context as MainActivity
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
-        mainActivity = context as MainActivity
 
         val isNewSearch = arguments?.getBoolean(IS_NEW_SEARCH) ?: false
         if (isNewSearch) {

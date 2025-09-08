@@ -12,5 +12,6 @@ data class PropertyFilters (
     val furnishingTypes: List<FurnishingType> = emptyList(),
     val tenantTypes: List<TenantType> = emptyList(),
     val budget: Pair<Int, Int>? = null,
-    val onlyShortlists: Boolean = false
+    val onlyShortlisted: Boolean = false, // Only shortlisted properties
+    val landlordId: Long? = null, // Only his uploaded properties
 )

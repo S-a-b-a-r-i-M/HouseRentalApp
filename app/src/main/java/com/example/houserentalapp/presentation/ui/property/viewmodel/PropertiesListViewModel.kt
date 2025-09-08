@@ -22,7 +22,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 
 class PropertiesListViewModel(
-    private val getPropertyUC: PropertyUseCase,
+    private val propertyUC: PropertyUseCase,
     private val propertyUserActionUC: TenantRelatedPropertyUseCase,
     private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
@@ -52,7 +52,7 @@ class PropertiesListViewModel(
                 searchHistoryUC.storeSearchHistory(currentUser.id, filters)
 
             try {
-                val result = getPropertyUC.getPropertySummaries(
+                val result = propertyUC.getPropertySummaries(
                     currentUser.id,
                     Pagination(offset, limit),
                     filters
@@ -128,7 +128,7 @@ class PropertiesListViewModel(
 }
 
 class PropertiesListViewModelFactory(
-    private val getPropertyUC: PropertyUseCase,
+    private val propertyUC: PropertyUseCase,
     private val propertyUserActionUC: TenantRelatedPropertyUseCase,
     private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
@@ -137,7 +137,7 @@ class PropertiesListViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PropertiesListViewModel::class.java))
             return PropertiesListViewModel(
-                getPropertyUC,
+                propertyUC,
                 propertyUserActionUC,
                 searchHistoryUC,
                 currentUser

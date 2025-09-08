@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui.property
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
@@ -36,31 +37,45 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
+/* TODO
+    1. FIX: Maintenance alignment
+ */
 class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
-    private lateinit var viewModel: SinglePropertyDetailViewModel
-    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var adapter: PropertyImagesViewAdapter
     private lateinit var mainActivity: MainActivity
 
+    private lateinit var viewModel: SinglePropertyDetailViewModel
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+
     private var propertyId: Long = -1L
     private var isTenantView = false
+    private var hideAndShowBottomNav = false
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding = FragmentSinglePropertyDetailBinding.bind(view)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
         mainActivity = context as MainActivity
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         propertyId = arguments?.getLong(PROPERTY_ID_KEY) ?: run {
             logError("Selected property id is not found in bundle")
             parentFragmentManager.popBackStack()
             return
         }
         isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
+        hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV_KEY) ?: false
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentSinglePropertyDetailBinding.bind(view)
 
         logDebug("Received arguments \n" +
-                "$PROPERTY_ID_KEY: $propertyId" +
-                "$IS_TENANT_VIEW_KEY: $isTenantView"
+                "PROPERTY_ID_KEY: $propertyId" +
+                "IS_TENANT_VIEW_KEY: $isTenantView" +
+                "HIDE_AND_SHOW_BOTTOM_NAV_KEY: $hideAndShowBottomNav"
         )
 
         setupUI()
@@ -83,7 +98,12 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         with(binding) {
             // Image ViewPager 2
             adapter = PropertyImagesViewAdapter()
-            viewPager2.adapter = adapter
+            viewPager2.apply {
+                this.adapter = this@SinglePropertyDetailFragment.adapter
+                beginFakeDrag()
+                fakeDragBy(-2.0f)
+                endFakeDrag()
+            }
         }
     }
 
@@ -97,6 +117,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             mainActivity.getCurrentUser()
         )
         viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
+        println("SinglePropertyDetailsView viewModel: $viewModel")
     }
 
     fun setListeners() {
@@ -275,8 +296,15 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        if (hideAndShowBottomNav)
+            mainActivity.showBottomNav()
+    }
+
     companion object {
         const val PROPERTY_ID_KEY = "propertyId"
         const val IS_TENANT_VIEW_KEY = "isTenantView"
+        const val HIDE_AND_SHOW_BOTTOM_NAV_KEY = "hideAndShow"
     }
 }

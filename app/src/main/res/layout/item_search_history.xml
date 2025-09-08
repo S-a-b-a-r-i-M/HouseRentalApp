@@ -32,12 +32,13 @@
             android:textAppearance="@style/TextAppearance.App.Body2" />
 
         <ImageButton
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:src="@drawable/outline_arrow_forward_24"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/search_this"
-        app:tint="@color/gray_medium" />
+            android:id="@+id/ibtnForward"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/outline_arrow_forward_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/search_this"
+            app:tint="@color/gray_medium" />
 
     </LinearLayout>
 

@@ -20,7 +20,10 @@ import com.example.houserentalapp.presentation.utils.extensions.createPropertyVi
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.google.android.material.checkbox.MaterialCheckBox
 
-
+/* TODO
+    1. FIX: Countable Amenities color
+    2. Add: Icons
+ */
 class AmenitiesBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentAmenitiesBottomSheetBinding? = null
     private val binding get() = _binding!!
@@ -45,6 +48,8 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         observeViewModel()
         // Set OnClicks
         setOnClicks()
+
+        println("AmenitiesBottomSheet viewModel: $viewModel")
     }
 
     // Layout Params

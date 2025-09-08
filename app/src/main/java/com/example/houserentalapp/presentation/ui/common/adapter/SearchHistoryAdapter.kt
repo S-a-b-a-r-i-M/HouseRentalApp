@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui.common.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
@@ -12,12 +13,12 @@ import com.example.houserentalapp.presentation.utils.extensions.logDebug
 class SearchHistoryAdapter(private val onItemClick: (PropertyFilters) -> Unit) : RecyclerView.Adapter<SearchHistoryAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvSearchQuery: TextView = itemView.findViewById(R.id.tvSearchQuery)
+        val ibtnForward: ImageButton = itemView.findViewById(R.id.ibtnForward)
 
         fun bind(data: PropertyFilters) {
             tvSearchQuery.text = data.searchQuery
-            itemView.setOnClickListener {
-               onItemClick(data)
-            }
+            itemView.setOnClickListener { onItemClick(data) }
+            ibtnForward.setOnClickListener { onItemClick(data) }
         }
     }
 

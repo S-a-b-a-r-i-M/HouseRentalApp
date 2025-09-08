@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -16,10 +17,14 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var mainActivity: MainActivity
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainActivity = context as MainActivity
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentHomeBinding.bind(view)
-        mainActivity = context as MainActivity
 
         setupUI()
         setListeners()

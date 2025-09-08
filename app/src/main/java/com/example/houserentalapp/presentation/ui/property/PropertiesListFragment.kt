@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.property
 
+import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
@@ -29,8 +30,13 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
+/* TODO
+    1. FIX: Bottom nav while moving to shortlists page from here
+    2.
+ */
 class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
     private lateinit var mainActivity: MainActivity
@@ -40,17 +46,20 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
 
-    private var isScrolling: Boolean = false
+    private var isScrolling = false
     private var hideBottomNav = false
     private var onlyShortlisted = false
     private var hideToolBar = false
     private var hideFabButton = false
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainActivity = context as MainActivity
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
-        // mainActivity = requireActivity() as MainActivity // Is Crashing on quick rotations ?
-        mainActivity = context as MainActivity
 
         // Decisions based on received values
         hideBottomNav = sharedDataViewModel.propertiesListStore[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false
@@ -64,6 +73,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         setupObservers()
 
         // Initial Load Data
+        filtersViewModel.setOnlyShortlisted(onlyShortlisted)
         if (propertiesListViewModel.propertySummariesResult.value !is ResultUI.Success)
             loadProperties()
     }
@@ -145,12 +155,12 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     fun setupViewModel() {
-        val getPropertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
+        val propertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
         val propertyUserActionUC = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(mainActivity))
         val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
         val currentUser = mainActivity.getCurrentUser()
         val factory = PropertiesListViewModelFactory(
-            getPropertyUC,
+            propertyUC,
             propertyUserActionUC,
             searchHistoryUC,
             currentUser
@@ -182,6 +192,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 }
 
                 mainActivity.loadFragment(PropertiesListFragment(), true)
+//                mainActivity.selectBottomNavOption(NavigationOptions.SHORTLISTS)
             }
         }
     }
@@ -191,6 +202,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         destinationFragment.arguments = Bundle().apply {
             putLong(SinglePropertyDetailFragment.PROPERTY_ID_KEY, propertyId)
             putBoolean(SinglePropertyDetailFragment.IS_TENANT_VIEW_KEY, true)
+            putBoolean(SinglePropertyDetailFragment.HIDE_AND_SHOW_BOTTOM_NAV_KEY, onlyShortlisted)
         }
 
         mainActivity.addFragment(destinationFragment, true)
