@@ -206,7 +206,7 @@
                         android:text="@string/independent_house" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chipFormHouse"
+                        android:id="@+id/chipFarmHouse"
                         style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -253,10 +253,11 @@
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chipGroupBHK"
                     style="@style/Widget.App.ChipGroup"
-                    app:singleSelection="true"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tvBHK">
@@ -297,7 +298,7 @@
                         android:text="@string/_5_bhk" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip5AboveBHK"
+                        android:id="@+id/chip5aboveBHK"
                         style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

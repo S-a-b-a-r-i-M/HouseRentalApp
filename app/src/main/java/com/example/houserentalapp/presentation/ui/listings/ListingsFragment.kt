@@ -1,7 +1,6 @@
 package com.example.houserentalapp.presentation.ui.listings
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +10,6 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentListingsBinding
 import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
-import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
 class ListingsFragment : Fragment() {
     private lateinit var binding: FragmentListingsBinding
