@@ -105,7 +105,11 @@ class PropertiesListViewModel(
                 is Result.Success<*> -> {
                     logInfo("property shortlisted toggled")
                     val newState = !summaryUI.isShortListed
-                    propertySummaryUIList[propertyIdx] = summaryUI.copy(isShortListed = newState)
+                    if (!newState && recentFilters?.onlyShortlisted == true) // Remove in only shortlisted page
+                        propertySummaryUIList.removeAt(propertyIdx)
+                    else
+                        propertySummaryUIList[propertyIdx] = summaryUI.copy(isShortListed = newState)
+
                     _propertySummariesResult.value = ResultUI.Success(propertySummaryUIList)
                     onSuccess(newState)
                 }

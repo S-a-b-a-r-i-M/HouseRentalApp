@@ -30,7 +30,6 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 /* TODO
@@ -45,7 +44,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
-
     private var isScrolling = false
     private var hideBottomNav = false
     private var onlyShortlisted = false

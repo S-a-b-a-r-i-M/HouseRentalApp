@@ -21,6 +21,7 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 import java.io.File
 
+// TODO: Fix Image iteration
 class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Long) -> Unit)? = null)
     : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -51,13 +52,14 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         }
 
         fun bind(summaryUI: PropertySummaryUI) {
+            // Calc. Image Width Based On Screen Width Pixels
             val screenWidth = itemView.context.resources.displayMetrics.widthPixels
             val imageWidth = (screenWidth / 2.2).toInt()
             val summary = summaryUI.summary
 
             // Add images programmatically
             if (summary.images.isNotEmpty())
-                summary.images.forEach{
+                summary.images.forEach {
                     try {
                         // Get Image File
                         val file = File(itemView.context.filesDir, it.imageAddress)
@@ -153,7 +155,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
     }
 
     private var dataList: MutableList<PropertySummaryUI> = mutableListOf()
-    private var shortlistToggledPropertyId: Long? = null
+    private var shortlistToggledPropertyId: Long? = null // TODO: Make this as index
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -222,6 +224,6 @@ class PropertiesDiffCallBack(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition] == newList[newItemPosition]
+        return oldList[oldItemPosition].summary == newList[newItemPosition].summary
     }
 }

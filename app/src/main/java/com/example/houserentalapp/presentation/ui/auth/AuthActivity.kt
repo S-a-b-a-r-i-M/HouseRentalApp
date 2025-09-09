@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation
+package com.example.houserentalapp.presentation.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,8 +9,6 @@ import androidx.core.view.WindowInsetsCompat
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityAuthBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailFragment
-import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 
 // TODO: HANDLE AUTH PORTION
 class AuthActivity : AppCompatActivity() {
@@ -38,7 +36,7 @@ class AuthActivity : AppCompatActivity() {
 
     fun navigateToMain() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(MainActivity.CURRENT_USER_ID_KEY, 1)
+        intent.putExtra(MainActivity.Companion.CURRENT_USER_ID_KEY, 1)
         startActivity(intent)
         finish()
     }

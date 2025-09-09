@@ -31,15 +31,19 @@ import com.example.houserentalapp.databinding.ViewCounterBinding
         app:iconTintColor="@color/primary_blue" />
  */
 
+/* TODO
+    1. View Counter Color and touch target
+    2.
+*/
+
 class CounterView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ): LinearLayout(context, attrs, defStyleAttr) {
-
     // PROPERTIES
-    private var binding: ViewCounterBinding =
-        ViewCounterBinding.inflate(LayoutInflater.from(context), this)
+    private var binding: ViewCounterBinding = ViewCounterBinding
+        .inflate(LayoutInflater.from(context), this)
 
     var label: String = ""
         set(value) {
@@ -60,7 +64,7 @@ class CounterView @JvmOverloads constructor(
     val DEFAULT_TEXT_SIZE_IN_SP = 14f // in sp
     val DEFAULT_TEXT_SIZE_IN_PX = DEFAULT_TEXT_SIZE_IN_SP.toInt().spToPx() // in px
     val DEFAULT_ICON_SIZE_IN_PX = 25.dpToPx() // in px
-    val DEFAULT_COLOR =  R.color.gray_dark
+    val DEFAULT_COLOR = R.color.gray_dark
 
     var labelSize: Float = DEFAULT_TEXT_SIZE_IN_SP // size in Sp
         set(value) {
@@ -143,7 +147,7 @@ class CounterView @JvmOverloads constructor(
 
                 // Colors
                 labelColor = getColor(R.styleable.CounterView_labelColor, DEFAULT_COLOR)
-                counterColor = getColor(R.styleable.CounterView_labelColor, DEFAULT_COLOR)
+                counterColor = getColor(R.styleable.CounterView_counterColor, DEFAULT_COLOR)
                 iconTintColor = getColor(R.styleable.CounterView_iconTintColor, DEFAULT_COLOR)
             } finally {
                 recycle()
