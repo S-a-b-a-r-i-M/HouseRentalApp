@@ -852,4 +852,5 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
         android:text="@string/post_property" />
+
 </LinearLayout>

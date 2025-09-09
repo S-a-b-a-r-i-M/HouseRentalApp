@@ -51,6 +51,7 @@ import java.util.Locale
     4. Image Upload (Click From Camera , Upload From Gallery) With Api's essential permissions
     5. Change toolbar implementation to built in
     6. Handle Success and Error msg display
+    7. Enhance the counter view design
 */
 
 class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {

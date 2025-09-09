@@ -28,7 +28,6 @@ import kotlinx.coroutines.runBlocking
 
 /*  TODO:
         Existing fix:
-        1. Create Property -> images(add more, storage) , enhance the counter view design, Global Error near button
         2. Make Use Cases Single Responsibility
         3. Get Current User Details from db(MainActivity)
         4. Have to add batch count in lot of places

@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.property
 
+import android.graphics.Typeface
 import android.os.Bundle
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import android.view.LayoutInflater
@@ -48,8 +49,6 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         observeViewModel()
         // Set OnClicks
         setOnClicks()
-
-        println("AmenitiesBottomSheet viewModel: $viewModel")
     }
 
     // Layout Params
@@ -82,6 +81,8 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
             val counterView = CounterView(context).apply {
                 label = it.readable
                 labelSize = 14f
+                labelColor = resources.getColor(R.color.black)
+                labelStyle = Typeface.DEFAULT
                 setPadding(30)
                 setIconDimensions(30, 30)
                 setLayoutParams(matchParentWrapContentParams)

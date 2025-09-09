@@ -14,8 +14,8 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 
 class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
-    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var mainActivity: MainActivity
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

@@ -2,11 +2,15 @@ package com.example.houserentalapp.presentation.ui.common
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.graphics.Color
+import android.graphics.Typeface
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ViewCounterBinding
@@ -64,7 +68,13 @@ class CounterView @JvmOverloads constructor(
     val DEFAULT_TEXT_SIZE_IN_SP = 14f // in sp
     val DEFAULT_TEXT_SIZE_IN_PX = DEFAULT_TEXT_SIZE_IN_SP.toInt().spToPx() // in px
     val DEFAULT_ICON_SIZE_IN_PX = 25.dpToPx() // in px
-    val DEFAULT_COLOR = R.color.gray_dark
+    val DEFAULT_COLOR = Color.GRAY
+
+    var labelStyle: Typeface = Typeface.DEFAULT
+        set(value) {
+            field = value
+            binding.tvLabel.typeface = value
+        }
 
     var labelSize: Float = DEFAULT_TEXT_SIZE_IN_SP // size in Sp
         set(value) {
@@ -90,18 +100,21 @@ class CounterView @JvmOverloads constructor(
             updateIconDimensions()
         }
 
+    @ColorInt
     var labelColor: Int = DEFAULT_COLOR
         set(value) {
             field = value
             binding.tvLabel.setTextColor(value)
         }
 
+    @ColorInt
     var counterColor: Int = DEFAULT_COLOR
         set(value) {
             field = value
             binding.tvCount.setTextColor(value)
         }
 
+    @ColorInt
     var iconTintColor: Int = DEFAULT_COLOR
         set(value) {
             field = value
@@ -136,6 +149,13 @@ class CounterView @JvmOverloads constructor(
                 counterSize = getDimensionPixelSize(
                     R.styleable.CounterView_counterSize, DEFAULT_TEXT_SIZE_IN_PX
                 ).pxToSP()
+
+//                labelStyle = when(getInt(R.styleable.CounterView_labelStyle, 0)) {
+//                    0 -> Typeface.DEFAULT
+//                    1 -> Typeface.DEFAULT_BOLD
+//                    2 -> Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+//                    else -> Typeface.DEFAULT
+//                }
 
                 // Icon dimensions
                 iconWidth = getDimensionPixelSize(
