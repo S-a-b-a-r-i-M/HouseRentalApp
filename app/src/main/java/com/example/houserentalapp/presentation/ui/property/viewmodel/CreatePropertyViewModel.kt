@@ -59,6 +59,9 @@ class CreatePropertyViewModel(
     private val _socialAmenitySet = MutableLiveData<Set<SocialAmenity>>(emptySet())
     val socialAmenitySet: LiveData<Set<SocialAmenity>> = _socialAmenitySet
 
+    private val _validationError = MutableLiveData<String?>()
+    val validationError: LiveData<String?> = _validationError
+
     fun getFormDataMap(field: PropertyFormField) : LiveData<String?> = formDataMap.getValue(field)
 
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
@@ -117,6 +120,7 @@ class CreatePropertyViewModel(
         // Run validation
         if (!checkValidation()) {
             logDebug("Validation failed to continue create property, aborting...")
+            _validationError.value = "Validation Failed"
             return
         }
 
@@ -355,7 +359,7 @@ class CreatePropertyViewModel(
                     builtUpArea = getValue(PropertyFormField.BUILT_UP_AREA).value?.toInt() ?: 0,
                     bathRoomCount = getValue(PropertyFormField.BATH_ROOM_COUNT).value?.toInt() ?: 0,
                     isPetAllowed = getValue(PropertyFormField.IS_PET_FRIENDLY).value?.toBoolean() ?: false,
-                    isAvailable = true,
+                    isActive = true,
                     price = getValue(PropertyFormField.BUILT_UP_AREA).value!!.toInt(),
                     isMaintenanceSeparate = isMaintenanceSeparate,
                     maintenanceCharges = maintenanceCharges,
@@ -369,6 +373,10 @@ class CreatePropertyViewModel(
             logError(exp.message.toString(), exp)
             return null
         }
+    }
+
+    fun clearValidationError() {
+        _validationError.value = null
     }
 }
 

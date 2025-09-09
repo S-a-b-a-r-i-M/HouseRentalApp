@@ -39,7 +39,7 @@ object PropertyMapper {
             builtUpArea = domain.builtUpArea,
             bathRoomCount = domain.bathRoomCount,
             isPetAllowed = domain.isPetAllowed,
-            isAvailable = domain.isAvailable,
+            isActive = domain.isActive,
             viewCount = domain.viewCount,
             price = domain.price,
             isMaintenanceSeparate = domain.isMaintenanceSeparate,
@@ -75,7 +75,7 @@ object PropertyMapper {
             builtUpArea = entity.builtUpArea,
             bathRoomCount = entity.bathRoomCount,
             isPetAllowed = entity.isPetAllowed,
-            isAvailable = entity.isAvailable,
+            isActive = entity.isActive,
             viewCount = entity.viewCount,
             price = entity.price,
             isMaintenanceSeparate = entity.isMaintenanceSeparate,
@@ -98,6 +98,7 @@ object PropertyMapper {
             bhk = BHK.fromString(entity.bhk),
             price = entity.price,
             builtUpArea = entity.builtUpArea,
+            isActive = entity.isActive,
             address = PropertyAddressMapper.toDomain(entity.address),
             images = entity.images.map { PropertyImageMapper.toDomain(it) },
             viewCount = entity.viewCount
@@ -117,6 +118,7 @@ object PropertyMapper {
                 builtUpArea = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_BUILT_UP_AREA)),
                 viewCount = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_VIEW_COUNT)),
                 price = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_PRICE)),
+                isActive = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_AVAILABLE)) == 1,
                 address = PropertyAddressEntity(
                     streetName = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_STREET_NAME)),
                     locality = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOCALITY)),

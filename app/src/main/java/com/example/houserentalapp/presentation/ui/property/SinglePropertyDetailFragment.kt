@@ -117,7 +117,6 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             mainActivity.getCurrentUser()
         )
         viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
-        println("SinglePropertyDetailsView viewModel: $viewModel")
     }
 
     fun setListeners() {
@@ -130,7 +129,6 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             toolbar.setOnMenuItemClickListener { item ->
                 if(item.itemId == R.id.tbar_shortlist)
                     viewModel.toggleFavourite(propertyId)
-
                 true
             }
         }

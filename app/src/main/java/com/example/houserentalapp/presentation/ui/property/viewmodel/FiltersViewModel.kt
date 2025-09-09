@@ -47,6 +47,10 @@ class FiltersViewModel : ViewModel() {
 
     fun setOnlyShortlisted(newData: Boolean) = updateFilter { it.copy(onlyShortlisted = newData) }
 
+    fun setOnlyAvailable(newData: Boolean) = updateFilter { it.copy(onlyAvailable = newData) }
+
+    fun setLandlordId(newData: Long) = updateFilter { it.copy(landlordId = newData) }
+
     fun resetFilters() {
         _filtersUI.value = PropertyFilters()
         logDebug("Filters have reset.")

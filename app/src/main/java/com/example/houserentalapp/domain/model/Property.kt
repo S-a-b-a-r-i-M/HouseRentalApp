@@ -30,7 +30,7 @@ data class  Property (
     val builtUpArea: Int,
     val bathRoomCount: Int = 0,
     val isPetAllowed: Boolean,
-    val isAvailable: Boolean,
+    val isActive: Boolean,
     val viewCount: Int = 0,
     // Budget Related
     val price: Int,

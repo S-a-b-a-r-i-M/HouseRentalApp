@@ -136,7 +136,7 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
     ): Result<List<Pair<PropertySummary, Boolean>>> {
         return try {
             withContext(Dispatchers.IO) {
-                val summariesWithShortlistState = propertyDao.getPropertySummariesWithFilterV2(
+                val summariesWithShortlistState = propertyDao.getPropertySummariesWithFilter(
                     userId, pagination, filters
                 )
                 logInfo("getPropertySummaries retrieved ${summariesWithShortlistState.size} summaries")

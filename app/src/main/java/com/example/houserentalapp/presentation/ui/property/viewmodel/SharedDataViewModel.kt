@@ -1,10 +1,15 @@
 package com.example.houserentalapp.presentation.ui.property.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
 // TODO-DOUBT: IS VIEW MODEL NEEDED ?
 
 class SharedDataViewModel : ViewModel() {
+    lateinit var currentUser: User
+        private set
+
     private val _fPropertiesListStore = mutableMapOf<String, Any>()
     val propertiesListStore: Map<String, Any> = _fPropertiesListStore
 
@@ -28,5 +33,10 @@ class SharedDataViewModel : ViewModel() {
 
     fun resetSearchViewStore() {
         _fSearchViewStore.clear()
+    }
+
+    fun setCurrentUser(user: User) {
+        logDebug("CurrentUser is initialized: $user")
+        currentUser = user
     }
 }

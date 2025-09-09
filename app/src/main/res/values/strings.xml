@@ -110,8 +110,17 @@
     <string name="max">Max:</string>
     <string name="min">Min:</string>
     <string name="recent_searches">Recent Searches...</string>
-    <array name="default_budget_range">
-        <item>1000</item>
-        <item>20000</item>
-    </array>
+    <string name="please_resolve_all_the_errors_msg">Please resolve all the errors to continue</string>
+    <string name="edit">edit</string>
+    <string name="delete">delete</string>
+    <string name="added_at">at:</string>
+    <string name="add_property">Add Property</string>
+    <string name="active">ACTIVE</string>
+    <string name="inactivated">INACTIVATED</string>
+    <string name="property_action">property action</string>
+    <string name="property_summary_header">%1$s (%2$s)</string>
+    <string name="property_summary_body1">%1$s, %2$s</string>
+    <string name="property_summary_footer">%1$s | %2$s | %3$d sq.ft.</string>
+    <string name="editc">Edit</string>
+    <string name="deleteC">Delete</string>
 </resources>

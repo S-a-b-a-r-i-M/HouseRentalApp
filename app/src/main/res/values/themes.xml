@@ -11,6 +11,8 @@
         <item name="fontFamily">@font/poppins</item>
 
         <item name="android:scrollbarThumbHorizontal">@null</item>
+
+        <item name="popupMenuBackground">@drawable/popup_bg</item>
     </style>
 
     <style name="Widget.App.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

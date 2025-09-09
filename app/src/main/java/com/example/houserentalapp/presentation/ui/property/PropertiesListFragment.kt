@@ -40,7 +40,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
     private lateinit var mainActivity: MainActivity
     private lateinit var propertiesAdapter: PropertiesAdapter
-    private lateinit var propertiesListViewModel: PropertiesListViewModel
+    private lateinit var propertiesViewModel: PropertiesListViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
@@ -72,12 +72,12 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
         // Initial Load Data
         filtersViewModel.setOnlyShortlisted(onlyShortlisted)
-        if (propertiesListViewModel.propertySummariesResult.value !is ResultUI.Success)
+        if (propertiesViewModel.propertySummariesResult.value !is ResultUI.Success)
             loadProperties()
     }
 
     private fun loadProperties() {
-        propertiesListViewModel.loadPropertySummaries(filtersViewModel.filters.value)
+        propertiesViewModel.loadPropertySummaries(filtersViewModel.filters.value)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -101,7 +101,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             }
             else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 isScrolling = false
-                if (!propertiesListViewModel.hasMore) return
+                if (!propertiesViewModel.hasMore) return
 
                 val lastVisibleItemPosition =
                     layoutManger.findLastCompletelyVisibleItemPosition() // index
@@ -163,7 +163,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             searchHistoryUC,
             currentUser
         )
-        propertiesListViewModel = ViewModelProvider(this, factory)
+        propertiesViewModel = ViewModelProvider(this, factory)
             .get(PropertiesListViewModel::class.java)
     }
 
@@ -207,7 +207,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     private fun handleShortlistToggle(propertyId: Long) {
-        propertiesListViewModel.togglePropertyShortlist(
+        propertiesViewModel.togglePropertyShortlist(
             propertyId,
             { isShortlisted ->
                 val message = if (isShortlisted)
@@ -223,7 +223,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     private fun setupObservers() {
-        propertiesListViewModel.propertySummariesResult.observe(viewLifecycleOwner) { result ->
+        propertiesViewModel.propertySummariesResult.observe(viewLifecycleOwner) { result ->
             when(result) {
                 is ResultUI.Success<List<PropertySummaryUI>> -> {
                     logInfo("success")

@@ -28,9 +28,10 @@ import kotlinx.coroutines.runBlocking
 
 /*  TODO:
         Existing fix:
-        2. Make Use Cases Single Responsibility
-        3. Get Current User Details from db(MainActivity)
+        2. Make Use Cases Single Responsibility (optional)
+        3. Get Current User Details from db(MainActivity) and place it in shared view model
         4. Have to add batch count in lot of places
+        5. Create an base fragment for adding system bars width(if needed)
         New:
         1. Favourites page -> move and remove properties
         2. Filters
@@ -77,6 +78,7 @@ class MainActivity : AppCompatActivity() {
             email = "owner@gmail.com",
             createdAt = 123465689L
         )
+        sharedDataViewModel.setCurrentUser(currentUser)
 
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
 

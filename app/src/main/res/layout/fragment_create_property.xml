@@ -18,29 +18,8 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:contentInsetStart="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:paddingHorizontal="12dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <include
-                    android:id="@+id/backImgBtn"
-                    layout="@layout/back_button" />
-
-                <TextView
-                    android:id="@+id/titleTV"
-                    style="@style/TextAppearance.App.Toolbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp" />
-
-            </LinearLayout>
-
-        </com.google.android.material.appbar.MaterialToolbar>
+            app:titleTextAppearance="@style/TextAppearance.App.Toolbar"
+            app:navigationIcon="@drawable/outline_arrow_back_24" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -51,7 +30,8 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true"
-        android:padding="16dp">
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="6dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -845,6 +825,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminateTint="@color/primary_blue" />
+
+    <TextView
+        android:id="@+id/tvErrorMsg"
+        android:visibility="gone"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp"
+        android:paddingHorizontal="12dp"
+        android:layout_gravity="center"
+        android:text="@string/please_resolve_all_the_errors_msg"
+        android:textColor="@color/red_error"
+        android:background="@drawable/error_text_bg" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_post_property"

@@ -46,11 +46,8 @@ import java.util.Locale
 
 /* TODO:
     1. FIX: Property description, issue: horizontal scroll
-    2. Reset Form
     3. Validation for Maintenance charges
     4. Image Upload (Click From Camera , Upload From Gallery) With Api's essential permissions
-    5. Change toolbar implementation to built in
-    6. Handle Success and Error msg display
     7. Enhance the counter view design
 */
 
@@ -248,34 +245,16 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         observeGroupedButtonFields()
         observeImageUri()
 
-        with(binding) {
+        with(viewModel) {
             // Counter Views
             formCounterViewList.forEach { (field, counterView) ->
-                viewModel.getFormDataMap(field).observe(viewLifecycleOwner) { count ->
+                getFormDataMap(field).observe(viewLifecycleOwner) { count ->
                     counterView.count = count?.toIntOrNull() ?: 0
                 }
             }
 
-            /*
-            viewModel.getFormDataMap(PropertyFormField.COVERED_PARKING_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    coveredParkingCounter.count = count?.toIntOrNull() ?: 0
-                }
-
-            viewModel.getFormDataMap(PropertyFormField.OPEN_PARKING_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    openParkingCounter.count = count?.toIntOrNull() ?: 0
-                }
-
-            // Bathroom
-            viewModel.getFormDataMap(PropertyFormField.BATH_ROOM_COUNT)
-                .observe(viewLifecycleOwner) { count ->
-                    bathRoomCounter.count = count?.toIntOrNull() ?: 0
-                }
-             */
-
             // Creation Result
-            viewModel.createPropertyResult.observe(viewLifecycleOwner) { result ->
+            createPropertyResult.observe(viewLifecycleOwner) { result ->
                 if (result == null) return@observe
 
                 when(result) {
@@ -284,18 +263,25 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         hideError()
 
                         requireActivity().showToast("Property posted successfully")
-                        viewModel.resetForm()
+                        resetForm()
                         parentFragmentManager.popBackStack()
                     }
                     is ResultUI.Error -> {
                         hideProgressBar()
-                        showError()
+                        showError("Unexpected Error occurred, try later.")
                         requireActivity().showToast("Failed ❌")
                     }
                     ResultUI.Loading -> {
                         hideError()
                         showProgressBar()
                     }
+                }
+            }
+
+            validationError.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    showError(getString(R.string.please_resolve_all_the_errors_msg))
+                    clearValidationError()
                 }
             }
         }
@@ -309,8 +295,23 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         binding.progressBar.visibility = View.GONE
     }
 
-    private fun showError() {
+    private fun showError(error: String = getString(R.string.please_resolve_all_the_errors_msg)) {
+        binding.tvErrorMsg.apply {
+            alpha = 1f
+            visibility = View.VISIBLE
+            text = error
 
+            postDelayed({
+                animate()
+                    .alpha(0f)
+                    .setDuration(750)
+                    .withEndAction {
+                        visibility = View.GONE
+                    }
+                },
+                1000
+            )
+        }
     }
 
     private fun hideError() {
@@ -320,14 +321,19 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun setupUI() {
         // Always hide bottom nav
         mainActivity.hideBottomNav()
-
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
-        setupCustomToolBar()
         setupSingleSelectableGroupedButtons()
         groupRelatedFields()
         setRequiredFieldIndicator()
+
+        with(binding) {
+            toolbar.title = getString(R.string.create_property)
+            toolbar.setNavigationOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
+        }
     }
 
     private fun groupRelatedFields() {
@@ -403,16 +409,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                     it.label.text = getRequiredStyleLabel(
                         it.label.text.toString(), mainActivity
                     )
-            }
-        }
-    }
-
-    private fun setupCustomToolBar() {
-        with(binding) {
-            titleTV.text = getString(R.string.create_property)
-
-            backImgBtn.root.setOnClickListener {
-                parentFragmentManager.popBackStack()
             }
         }
     }

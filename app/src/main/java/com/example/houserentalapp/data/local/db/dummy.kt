@@ -62,7 +62,7 @@ fun getDummyPropertyEntity(index: Int) =
         builtUpArea = 1250,
         bathRoomCount = 2,
         isPetAllowed = listOf(true, false).random(),
-        isAvailable = true,
+        isActive = true,
         viewCount = 0,
         price = listOf(6000, 10000, 20000, 30000, 40000, 14000).random(),
         isMaintenanceSeparate = true,
@@ -113,7 +113,7 @@ fun insertInitialData(db: SQLiteDatabase) {
             put(PropertyTable.COLUMN_BHK, entity.bhk)
             put(PropertyTable.COLUMN_BUILT_UP_AREA, entity.builtUpArea)
             put(PropertyTable.COLUMN_BATHROOM_COUNT, entity.bathRoomCount)
-            put(PropertyTable.COLUMN_IS_AVAILABLE, if (entity.isAvailable) 1 else 0)
+            put(PropertyTable.COLUMN_IS_AVAILABLE, if (entity.isActive) 1 else 0)
             put(PropertyTable.COLUMN_VIEW_COUNT, entity.viewCount)
             // PRICE
             put(PropertyTable.COLUMN_PRICE, entity.price)

@@ -13,12 +13,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
-import com.example.houserentalapp.presentation.utils.extensions.dpToPx
+import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import com.google.android.material.imageview.ShapeableImageView
-import com.google.android.material.shape.ShapeAppearanceModel
 import java.io.File
 
 // TODO: Fix Image iteration
@@ -31,25 +29,6 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         private var tvBody2: TextView = itemView.findViewById(R.id.tvBody2)
         private var tvFooter: TextView = itemView.findViewById(R.id.tvFooter)
         private var ibtnShortlist: ImageButton = itemView.findViewById(R.id.ibtnShortlist)
-
-        private fun getShapableImageView(imageWidth: Int) : ShapeableImageView {
-            return ShapeableImageView(itemView.context).apply {
-                scaleType = ImageView.ScaleType.CENTER_CROP
-                shapeAppearanceModel = ShapeAppearanceModel.builder().apply {
-                    setAllCornerSizes(24f)
-                }.build()
-
-                val marginInPx = 5.dpToPx(itemView.context)
-                setLayoutParams(
-                    LinearLayout.LayoutParams(
-                        imageWidth,
-                        LinearLayout.LayoutParams.MATCH_PARENT
-                    ).apply {
-                        setMargins(marginInPx, 0, marginInPx, 0)
-                    }
-                )
-            }
-        }
 
         fun bind(summaryUI: PropertySummaryUI) {
             // Calc. Image Width Based On Screen Width Pixels
@@ -71,7 +50,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                         }
 
                         // Add Image Into imageContainer
-                        val shapableImageView = getShapableImageView(imageWidth)
+                        val shapableImageView = itemView.context.getShapableImageView(imageWidth)
 //                        Glide.with(itemView) // TODO: Need to check this
 //                            .load(file)
 //                            .into(shapableImageView)
@@ -83,7 +62,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                 }
             else // Add Place Holder Image
                 repeat(2) {
-                val shapableImageView = getShapableImageView(imageWidth)
+                val shapableImageView = itemView.context.getShapableImageView(imageWidth)
                 shapableImageView.setImageResource(
                     listOf(R.drawable.interior, R.drawable.room_1).random()
                 )
