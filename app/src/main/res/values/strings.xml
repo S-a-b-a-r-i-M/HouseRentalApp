@@ -109,7 +109,7 @@
     <string name="all">All</string>
     <string name="max">Max:</string>
     <string name="min">Min:</string>
-    <string name="recent_searches">Recent Searches...</string>
+    <string name="recent_searches">Recent Searches…</string>
     <string name="please_resolve_all_the_errors_msg">Please resolve all the errors to continue</string>
     <string name="edit">edit</string>
     <string name="delete">delete</string>
@@ -124,4 +124,10 @@
     <string name="editc">Edit</string>
     <string name="deleteC">Delete</string>
     <string name="price">Price</string>
+    <string name="property_price">₹ %1$d</string>
+    <string name="take_live_photos">Take live photos</string>
+    <string name="upload_from_gallery">Upload from gallery</string>
+    <string name="or">OR</string>
+    <string name="number_of_images">%1$d+ Images</string>
+    <string name="property_images">Property Images</string>
 </resources>

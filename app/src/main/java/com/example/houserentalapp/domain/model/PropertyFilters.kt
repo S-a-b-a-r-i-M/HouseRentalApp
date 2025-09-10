@@ -14,5 +14,5 @@ data class PropertyFilters (
     val budget: Pair<Int, Int>? = null,
     val onlyAvailable: Boolean = true,
     val onlyShortlisted: Boolean = false, // Only shortlisted properties
-    val landlordId: Long? = null, // Only his uploaded properties
+    val onlyUserProperties: Boolean = false, // Only his uploaded properties
 )

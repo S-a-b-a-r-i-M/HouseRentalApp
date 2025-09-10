@@ -42,11 +42,8 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             db.beginTransaction()
             try {
                 val propertyId = insertPropertyRecord(db, entity)
-                // Run images and amenities in parallel
-                coroutineScope {
-                    launch { insertPropertyImages(db, propertyId, entity.images) }
-                    launch { insertAmenities(db, propertyId, entity.amenities) }
-                }
+                insertPropertyImages(db, propertyId, entity.images)
+                insertAmenities(db, propertyId, entity.amenities)
 
                 db.setTransactionSuccessful()
                 return propertyId
@@ -175,7 +172,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         var whereConditions = ""
         var whereArgs = arrayOf<String>()
         if (filters != null) {
-            buildWhere(filters).let { (conditions, args) ->
+            buildWhere(filters, userId).let { (conditions, args) ->
                 whereConditions = conditions
                 whereArgs = args
             }
@@ -321,14 +318,16 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    private fun buildWhere(filters: PropertyFilters): Pair<String, Array<String>> {
+    private fun buildWhere(filters: PropertyFilters, userId: Long): Pair<String, Array<String>> {
         val clauses = mutableListOf<String>()
         val args = mutableListOf<String>()
 
-        if (filters.landlordId != null) {
-            clauses.add("${PropertyTable.COLUMN_LANDLORD_ID} = ?")
-            args.add(filters.landlordId.toString())
-        }
+        // User Based
+        clauses.add(
+            PropertyTable.COLUMN_LANDLORD_ID +
+            if (filters.onlyUserProperties) " = ?" else " != ?"
+        )
+        args.add(userId.toString())
 
         if (filters.searchQuery.isNotBlank()) {
             clauses.add("(LOWER(${PropertyTable.COLUMN_CITY}) LIKE LOWER(?) OR LOWER(${PropertyTable.COLUMN_LOCALITY}) LIKE LOWER(?))")

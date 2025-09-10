@@ -29,9 +29,16 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
 
     // -------------- CREATE --------------
     // SAVE INTO INTERNAL STORAGE
-    // TODO: Check the logic, it can be moved to use case ?
     private fun saveImageToInternalStorage(imageUri: Uri): String? {
         with(context) {
+            // Parent Directory
+            val imagesDir = File(filesDir, "property_images")
+            if (!imagesDir.exists() && !imagesDir.mkdir()) {
+                logError("Failed to create images directory")
+                return null
+            }
+
+            // Construct File Name
             val fileName = contentResolver.query(imageUri, null, null, null)?.use {
                 it.moveToFirst()
                 val nameIndex = it.getColumnIndex(OpenableColumns.DISPLAY_NAME)
@@ -39,15 +46,14 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
             } ?: "${System.currentTimeMillis()}"
 
             val inputStream = contentResolver.openInputStream(imageUri)
-            val destinationFile = File(filesDir, fileName)
-
+            val destinationFile = File(imagesDir, fileName)
             inputStream?.use { input ->
                 destinationFile.outputStream().use { output ->
                     input.copyTo(output)
                 }
             } ?: return null
 
-            return fileName
+            return destinationFile.absolutePath // Return full path
         }
     }
 

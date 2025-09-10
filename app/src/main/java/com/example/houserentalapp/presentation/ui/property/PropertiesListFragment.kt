@@ -34,7 +34,7 @@ import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomP
 
 /* TODO
     1. FIX: Bottom nav while moving to shortlists page from here
-    2.
+    2. FIX: Sort
  */
 class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding

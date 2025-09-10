@@ -138,8 +138,8 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         filtersViewModel = ViewModelProvider(this)[FiltersViewModel::class]
 
         // Set Initial Filters
-        if (filtersViewModel.filters.value?.landlordId != currentUser.id)
-            filtersViewModel.setLandlordId(currentUser.id)
+        if (filtersViewModel.filters.value?.onlyUserProperties == false)
+            filtersViewModel.setOnlyLandlordProperty(true)
     }
 
     fun setupListeners() {

@@ -1,8 +1,10 @@
 package com.example.houserentalapp.presentation.ui.property
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
@@ -13,6 +15,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
@@ -41,8 +46,10 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 /* TODO:
     1. FIX: Property description, issue: horizontal scroll
@@ -70,7 +77,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         ActivityResultContracts.StartActivityForResult()
     ) { it ->
         if (it.resultCode == RESULT_OK && it.data != null) {
-            // TODO: handle max images
             val clipData = it.data?.clipData
             val imageUris = mutableListOf<Uri>()
 
@@ -79,13 +85,36 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 for (i in 0 until clipData.itemCount)
                     imageUris.add(clipData.getItemAt(i).uri)
             else
-            // Single images selected
+            // Single image selected
                 it.data?.data?.let { uri ->  imageUris.add(uri) }
 
             if (imageUris.isNotEmpty()) {
                 viewModel.setPropertyImages(imageUris)
                 requireActivity().showToast("${imageUris.size} selected successfully")
             }
+        }
+    }
+
+    private lateinit var photoUri: Uri
+    private val openCameraLauncher = registerForActivityResult(
+        ActivityResultContracts.TakePicture()
+    ) { success ->
+        if (success){
+            logInfo("got image $photoUri")
+            viewModel.addPropertyImage(photoUri)
+            showAnotherPhotoDialog()
+        }
+    }
+
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            logInfo("User approved the camera permission")
+            openCamera()
+        } else {
+            logInfo("User denied the camera permission")
+            mainActivity.showToast("Please provide camera permission to take pictures")
         }
     }
 
@@ -170,9 +199,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             viewModel.imageUris.observe(viewLifecycleOwner) { uris ->
                 if (uris.isEmpty()) {
                     cvUploadImages.visibility = View.VISIBLE
+                    cvTakeImages.visibility = View.VISIBLE
+                    tvOR.visibility = View.VISIBLE
                     llUploadedImages.visibility = View.GONE
                 } else {
                     llUploadedImages.visibility = View.VISIBLE
+                    tvOR.visibility = View.GONE
+                    cvTakeImages.visibility = View.GONE
                     cvUploadImages.visibility = View.GONE
 
                     // Load Images
@@ -216,7 +249,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                     if (uris.size > 3) {
                         button.apply {
-                            text = "${uris.size - 3}+ Images"
+                            text = context.getString(R.string.number_of_images, uris.size - 3)
                             // On Click Event
                             setOnClickListener {
                                 imagesBottomSheet.show(parentFragmentManager, "imagesBottomSheet")
@@ -549,6 +582,44 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         }
     }
 
+    private fun openImagePicker() {
+        // Without Permission also it's working
+        // action will tell what exactly we are intent to do.
+        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) //
+        }
+        imagesPickerLauncher.launch(intent)
+    }
+
+    private fun checkCameraPermissionAndOpenCamera() {
+        // Camera Permission
+        if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
+        )
+            permissionLauncher.launch(Manifest.permission.CAMERA)
+        else
+            openCamera()
+    }
+
+    private fun openCamera() {
+        val photoFile = File.createTempFile("IMG_", ".jpg", mainActivity.cacheDir)
+        photoUri = FileProvider.getUriForFile(
+            mainActivity,
+            mainActivity.packageName + ".provider",
+            photoFile
+        )
+        openCameraLauncher.launch(photoUri)
+    }
+
+    private fun showAnotherPhotoDialog() {
+        AlertDialog.Builder(mainActivity)
+            .setMessage("Take another photo ?")
+            .setPositiveButton("Yes") {_, _ -> checkCameraPermissionAndOpenCamera() }
+            .setNegativeButton("Done") {_, _ -> }
+            .show()
+    }
+
     private fun setListeners() {
         setEditTextListeners()
         setSelectableGroupedButtonListeners()
@@ -567,15 +638,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 amenitiesBottomSheet.show(parentFragmentManager, "AmenitiesBottomSheet")
             }
 
-            // Pick Images
-            btnUploadImages.setOnClickListener {
-                // action will tell what exactly we are intent to do.
-                val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-                    type = "image/*"
-                    putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) //
-                }
-                imagesPickerLauncher.launch(intent)
-            }
+            // Images
+            imgUploadImages.setOnClickListener { openImagePicker() }
+            btnUploadImages.setOnClickListener { openImagePicker() }
+            imgTakeImages.setOnClickListener { checkCameraPermissionAndOpenCamera() }
+            btnTakeImages.setOnClickListener { checkCameraPermissionAndOpenCamera() }
 
             // Save Button
             btnPostProperty.setOnClickListener {

@@ -12,7 +12,9 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePrope
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 
-class PropertyImagesBottomSheet : BottomSheetDialogFragment(R.layout.fragment_property_images_bottom_sheet) {
+class PropertyImagesBottomSheet : BottomSheetDialogFragment(
+    R.layout.fragment_property_images_bottom_sheet
+) {
     private lateinit var binding: FragmentPropertyImagesBottomSheetBinding
     private lateinit var imagesAdapter: PropertyImagesEditAdapter
     private val viewModel: CreatePropertyViewModel by activityViewModels {
@@ -28,7 +30,6 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(R.layout.fragment_pr
         setClickListeners()
     }
 
-
     fun setupRecyclerView() {
         imagesAdapter = PropertyImagesEditAdapter { uri: Uri ->
             viewModel.removePropertyImage(uri)
@@ -41,7 +42,7 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(R.layout.fragment_pr
 
     private fun observeViewModel() {
         viewModel.imageUris.observe(viewLifecycleOwner) { uris ->
-            imagesAdapter.setData(uris)
+            imagesAdapter.setDataList(uris)
         }
     }
 

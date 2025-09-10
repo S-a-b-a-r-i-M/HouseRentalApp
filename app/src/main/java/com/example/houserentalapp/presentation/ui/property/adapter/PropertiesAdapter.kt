@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
 import com.example.houserentalapp.presentation.utils.extensions.logError
@@ -31,31 +31,37 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         private var ibtnShortlist: ImageButton = itemView.findViewById(R.id.ibtnShortlist)
 
         fun bind(summaryUI: PropertySummaryUI) {
+            val context = itemView.context
             // Calc. Image Width Based On Screen Width Pixels
-            val screenWidth = itemView.context.resources.displayMetrics.widthPixels
+            val screenWidth = context.resources.displayMetrics.widthPixels
             val imageWidth = (screenWidth / 2.2).toInt()
             val summary = summaryUI.summary
 
             // Add images programmatically
+            imageContainer.removeAllViews() // Remove the existing images (scenario: reusing views)
             if (summary.images.isNotEmpty())
                 summary.images.forEach {
                     try {
-                        // Get Image File
-                        val file = File(itemView.context.filesDir, it.imageAddress)
-                        if (!file.exists()) {
-                            logWarning(
-                                "Image(${it.imageAddress}) is not exists, property:${summary.id}"
-                            )
-                            return@forEach
+                        val shapableImageView = context.getShapableImageView(imageWidth)
+                        // Load Image
+                        when(it.imageSource) {
+                            is ImageSource.LocalFile -> {
+                                val file = File(it.imageSource.filePath)
+                                if (!file.exists()) {
+                                    logWarning(
+                                        "Image(${it.imageSource.filePath}) is not exists, property:${summary.id}"
+                                    )
+                                    return@forEach
+                                }
+                                shapableImageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                            }
+                            is ImageSource.Uri -> {
+                                shapableImageView.setImageURI(it.imageSource.uri)
+                            }
                         }
-
-                        // Add Image Into imageContainer
-                        val shapableImageView = itemView.context.getShapableImageView(imageWidth)
-//                        Glide.with(itemView) // TODO: Need to check this
-//                            .load(file)
-//                            .into(shapableImageView)
-                        shapableImageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
                         imageContainer.addView(shapableImageView)
+                        // TODO: Need to check this
+                       // Glide.with(itemView).load(file).into(shapableImageView)
                     } catch (exp: Exception) {
                         logError("Error on Add images programmatically exp:${exp.message}")
                     }
@@ -69,10 +75,23 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                 imageContainer.addView(shapableImageView)
             }
 
-            tvHeader.text = "${summary.name} (${summary.bhk.readable})"
-            tvBody1.text = "${summary.address.city}, ${summary.address.locality}"
-            tvBody2.text = "${summary.price}"
-            tvFooter.text = "${summary.bhk.readable} | ${summary.furnishingType.readable} | ${summary.builtUpArea} sq.ft."
+            tvHeader.text = context.getString(
+                R.string.property_summary_header,
+                summary.name,
+                summary.bhk.readable
+            )
+            tvBody1.text = context.getString(
+                R.string.property_summary_body1,
+                summary.address.city,
+                summary.address.locality
+            )
+            tvBody2.text = context.getString(R.string.property_price, summary.price)
+            tvFooter.text = context.getString(
+                R.string.property_summary_footer,
+                summary.bhk.readable,
+                summary.furnishingType.readable,
+                summary.builtUpArea
+            )
             bindShortlistData(summaryUI.isShortListed)
 
             // Set On Click
@@ -88,7 +107,6 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                 if(onShortlistToggle == null) return@setOnClickListener
 
                 it.isEnabled = false // Disable immediately
-
                 shortlistToggledPropertyId = summary.id
                 onShortlistToggle(summary.id)
 

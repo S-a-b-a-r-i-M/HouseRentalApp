@@ -774,19 +774,29 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Property Images"
+                android:text="@string/property_images"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilSecurityDeposit" />
 
-            <androidx.cardview.widget.CardView
+            <LinearLayout
                 android:id="@+id/cvUploadImages"
-                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:layout_marginTop="4dp"
-                android:backgroundTint="@color/primary_blue_very_light"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:background="@color/primary_blue_very_light"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages">
+                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <ImageView
+                    android:id="@+id/imgUploadImages"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/upload_image"
+                    android:contentDescription="@string/upload_from_gallery"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnUploadImages"
@@ -796,10 +806,55 @@
                     android:layout_gravity="center"
                     android:textSize="14sp"
                     app:rippleColor="@android:color/transparent"
-                    android:drawableTop="@drawable/images_24"
-                    android:text="@string/add_property_images" />
+                    android:text="@string/upload_from_gallery" />
 
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvOR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="4dp"
+                android:paddingVertical="2dp"
+                android:text="@string/or"
+                android:textColor="@color/gray_dark"
+                android:elevation="5dp"
+                android:background="@drawable/dashed_oval_shape"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/cvTakeImages"
+                app:layout_constraintStart_toStartOf="@+id/cvUploadImages"
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages" />
+
+            <LinearLayout
+                android:id="@+id/cvTakeImages"
+                android:orientation="vertical"
+                android:layout_width="0dp"
+                android:layout_height="150dp"
+                android:layout_margin="4dp"
+                android:gravity="center"
+                android:background="@color/primary_blue_very_light"
+                app:layout_constraintStart_toEndOf="@+id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPropertyImages">
+
+                <ImageView
+                    android:id="@+id/imgTakeImages"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/take_picture"
+                    android:contentDescription="@string/upload_from_gallery"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTakeImages"
+                    style="@style/Widget.App.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="14sp"
+                    app:rippleColor="@android:color/transparent"
+                    android:text="@string/take_live_photos" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/ll_uploaded_images"
@@ -841,6 +896,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_post_property"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"

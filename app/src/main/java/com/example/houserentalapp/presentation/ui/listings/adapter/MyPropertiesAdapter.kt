@@ -10,19 +10,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.appcompat.view.menu.MenuBuilder
-import androidx.appcompat.view.menu.MenuPopupHelper
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesDiffCallBack
-import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
@@ -58,23 +55,24 @@ class MyPropertiesAdapter(
             if (summary.images.isNotEmpty())
                 summary.images.forEach {
                     try {
-                        // Get Image File
-                        val file = File(context.filesDir, it.imageAddress)
-                        if (!file.exists()) {
-                            logWarning(
-                                "Image(${it.imageAddress}) is not exists, property:${summary.id}"
-                            )
-                            return@forEach
-                        }
-
-                        // Add Image Into imageContainer
                         if (it.isPrimary)
-                            imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                            when(it.imageSource) {
+                                is ImageSource.LocalFile -> {
+                                    val file = File(it.imageSource.filePath)
+                                    if (!file.exists()) {
+                                        logWarning(
+                                            "Image(${it.imageSource.filePath}) is not exists, property:${summary.id}"
+                                        )
+                                        return@forEach
+                                    }
+                                    imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                                }
+                                is ImageSource.Uri -> {
+                                    imageView.setImageURI(it.imageSource.uri)
+                                }
+                            }
 
                         // val shapableImageView = context.getShapableImageView(imageWidth)
-//                        Glide.with(itemView) // TODO: Need to check this
-//                            .load(file)
-//                            .into(shapableImageView)
 //                        shapableImageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
 //                        imageContainer.addView(shapableImageView)
                     } catch (exp: Exception) {
@@ -82,14 +80,15 @@ class MyPropertiesAdapter(
                     }
                 }
             else // Add Place Holder Image
-                repeat(2) {
+                imageView.setImageResource(R.drawable.room_1)
+                /*repeat(2) {
                     val shapableImageView =  context.getShapableImageView(imageWidth)
                     shapableImageView.setImageResource(
                         listOf(R.drawable.interior, R.drawable.room_1).random()
                     )
-                    imageView.setImageResource(R.drawable.interior)
+                    imageView.setImageResource(R.drawable.room_1)
                     // imageContainer.addView(shapableImageView)
-                }
+                }*/
 
             // Add Details
             tvAddedDate.text = summary.createdAt.fromEpoch()

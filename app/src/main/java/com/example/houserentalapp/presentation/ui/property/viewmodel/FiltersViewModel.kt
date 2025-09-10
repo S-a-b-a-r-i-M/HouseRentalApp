@@ -49,7 +49,7 @@ class FiltersViewModel : ViewModel() {
 
     fun setOnlyAvailable(newData: Boolean) = updateFilter { it.copy(onlyAvailable = newData) }
 
-    fun setLandlordId(newData: Long) = updateFilter { it.copy(landlordId = newData) }
+    fun setOnlyLandlordProperty(newData: Boolean) = updateFilter { it.copy(onlyUserProperties = newData) }
 
     fun resetFilters() {
         _filtersUI.value = PropertyFilters()

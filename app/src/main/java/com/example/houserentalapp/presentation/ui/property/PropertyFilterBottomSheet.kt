@@ -23,11 +23,12 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
     private val filtersViewModel: FiltersViewModel by activityViewModels()
 
     private val chipIdToBHK = mapOf(
+        R.id.chip1RK to BHK.ONE_RK,
         R.id.chip1BHK to BHK.ONE_BHK,
         R.id.chip2BHK to BHK.TWO_BHK,
         R.id.chip3BHK to BHK.THREE_BHK,
         R.id.chip4BHK to BHK.FOUR_BHK,
-        R.id.chip5BHK to BHK.FIVE_PLUS_BHK,
+//        R.id.chip5BHK to BHK.FIVE_PLUS_BHK,
         R.id.chip5aboveBHK to BHK.FIVE_PLUS_BHK,
     )
     private val bhkToChipId = chipIdToBHK.entries.associate { (k, v) -> v to k }
@@ -65,9 +66,13 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
 
     private fun setupUI() {
         with(binding) {
+            val min = 1000f
+            val max = 2_00_000f
+            tvMinBudget.text = formatAmount(min)
+            tvMaxBudget.text = formatAmount(max)
             rSliderBudget.apply {
-                valueFrom = 1000f
-                valueTo = 2_00_000f
+                valueFrom = min
+                valueTo = max
                 setValues(valueFrom, valueTo)
             }
         }

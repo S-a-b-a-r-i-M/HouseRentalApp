@@ -1,12 +1,14 @@
 package com.example.houserentalapp.presentation.ui.property.adapter
 
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
 import java.io.File
 
@@ -15,12 +17,16 @@ class PropertyImagesViewAdapter() : RecyclerView.Adapter<PropertyImagesViewAdapt
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val imageView: ImageView = itemView.findViewById(R.id.imageViewProperty)
 
-        fun bind(fileName: String) {
-            val file = File(itemView.context.filesDir, fileName)
+        fun bind(filePath: String) {
+            val file = File(filePath)
             if (file.exists()){
                 val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                 imageView.setImageBitmap(bitmap)
             }
+        }
+
+        fun bind(uri: Uri) {
+            imageView.setImageURI(uri)
         }
     }
 
@@ -39,7 +45,14 @@ class PropertyImagesViewAdapter() : RecyclerView.Adapter<PropertyImagesViewAdapt
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(propertyImages[position].imageAddress)
+        when(val imageSource = propertyImages[position].imageSource) {
+            is ImageSource.LocalFile -> {
+                holder.bind(imageSource.filePath)
+            }
+            is ImageSource.Uri -> {
+                holder.bind(imageSource.uri)
+            }
+        }
     }
 
     override fun getItemCount() = propertyImages.size

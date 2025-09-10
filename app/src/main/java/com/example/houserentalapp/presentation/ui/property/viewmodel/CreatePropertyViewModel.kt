@@ -102,8 +102,20 @@ class CreatePropertyViewModel(
         }
     }
 
-    fun setPropertyImages(imageUris: List<Uri>) {
-        this._imageUris.value = imageUris
+    fun setPropertyImages(newUris: List<Uri>) {
+        _imageUris.value = newUris
+    }
+
+    fun addPropertyImages(newUris: List<Uri>) {
+        val currentUris = _imageUris.value!!.toMutableList()
+        currentUris.addAll(newUris)
+        _imageUris.value = currentUris
+    }
+
+    fun addPropertyImage(newUri: Uri) {
+        val currentUris = _imageUris.value!!.toMutableList()
+        currentUris.add(newUri)
+        _imageUris.value = currentUris
     }
 
     fun removePropertyImage(imageUri: Uri) {
@@ -333,7 +345,7 @@ class CreatePropertyViewModel(
                 )
 
                 val propertyImages = _imageUris.value?.map {
-                    PropertyImage(null, "", ImageSource.Uri(it), false)
+                    PropertyImage(null, imageSource = ImageSource.Uri(it), isPrimary = false)
                 } ?: emptyList()
 
                 val amenities = buildAmenities()
@@ -355,7 +367,7 @@ class CreatePropertyViewModel(
                     countOfCoveredParking = getValue(PropertyFormField.COVERED_PARKING_COUNT).value?.toInt() ?: 0,
                     countOfOpenParking = getValue(PropertyFormField.OPEN_PARKING_COUNT).value?.toInt() ?: 0,
                     availableFrom = getValue(PropertyFormField.AVAILABLE_FROM).value!!.toEpochSeconds(),
-                    bhk = BHK.fromString(getValue(PropertyFormField.BHK).value!!)!!,
+                    bhk = BHK.fromString(getValue(PropertyFormField.BHK).value!!),
                     builtUpArea = getValue(PropertyFormField.BUILT_UP_AREA).value?.toInt() ?: 0,
                     bathRoomCount = getValue(PropertyFormField.BATH_ROOM_COUNT).value?.toInt() ?: 0,
                     isPetAllowed = getValue(PropertyFormField.IS_PET_FRIENDLY).value?.toBoolean() ?: false,
