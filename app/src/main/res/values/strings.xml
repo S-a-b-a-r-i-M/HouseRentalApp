@@ -123,4 +123,5 @@
     <string name="property_summary_footer">%1$s | %2$s | %3$d sq.ft.</string>
     <string name="editc">Edit</string>
     <string name="deleteC">Delete</string>
+    <string name="price">Price</string>
 </resources>

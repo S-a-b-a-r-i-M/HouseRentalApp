@@ -18,5 +18,6 @@ data class PropertySummary(
     val address: PropertyAddress,
     val images: List<PropertyImage>,
     val isActive: Boolean,
+    val createdAt: Long,
     val viewCount: Int = 0, // Used At your property
 )

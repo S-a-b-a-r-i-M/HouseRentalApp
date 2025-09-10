@@ -13,5 +13,6 @@ data class PropertySummaryEntity (
     val address: PropertyAddressEntity,
     val isActive: Boolean,
     val images: List<PropertyImageEntity>, // Need to take all images
+    val createdAt: Long,
     val viewCount: Int = 0,
 )

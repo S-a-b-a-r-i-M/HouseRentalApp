@@ -22,6 +22,8 @@ import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -35,13 +37,17 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
     // -------------- CREATE --------------
 
     @Throws(SQLException::class)
-    fun insertProperty(entity: PropertyEntity): Long {
+    suspend fun insertProperty(entity: PropertyEntity): Long {
         writableDB.use { db ->
             db.beginTransaction()
             try {
                 val propertyId = insertPropertyRecord(db, entity)
-                insertPropertyImages(db, propertyId, entity.images)
-                insertAmenities(db, propertyId, entity.amenities)
+                // Run images and amenities in parallel
+                coroutineScope {
+                    launch { insertPropertyImages(db, propertyId, entity.images) }
+                    launch { insertAmenities(db, propertyId, entity.amenities) }
+                }
+
                 db.setTransactionSuccessful()
                 return propertyId
             } finally {
@@ -70,7 +76,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             put(PropertyTable.COLUMN_BHK, entity.bhk)
             put(PropertyTable.COLUMN_BUILT_UP_AREA, entity.builtUpArea)
             put(PropertyTable.COLUMN_BATHROOM_COUNT, entity.bathRoomCount)
-            put(PropertyTable.COLUMN_IS_AVAILABLE, if (entity.isAvailable) 1 else 0)
+            put(PropertyTable.COLUMN_IS_AVAILABLE, if (entity.isActive) 1 else 0)
             put(PropertyTable.COLUMN_VIEW_COUNT, entity.viewCount)
             // PRICE
             put(PropertyTable.COLUMN_PRICE, entity.price)
@@ -154,7 +160,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    fun getPropertySummariesWithFilterV2(
+    fun getPropertySummariesWithFilter(
         userId: Long,
         pagination: Pagination,
         filters: PropertyFilters?
@@ -315,19 +321,17 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    private fun buildWhere(
-        filters: PropertyFilters, onlyAvailable: Boolean = true
-    ): Pair<String, Array<String>> {
+    private fun buildWhere(filters: PropertyFilters): Pair<String, Array<String>> {
         val clauses = mutableListOf<String>()
         val args = mutableListOf<String>()
 
-//        if (filters.landLordId != null) {
-//            clauses.add("${PropertyTable.COLUMN_LANDLORD_ID} = ?")
-//            args.add(filters.landLordId.toString())
-//        }
+        if (filters.landlordId != null) {
+            clauses.add("${PropertyTable.COLUMN_LANDLORD_ID} = ?")
+            args.add(filters.landlordId.toString())
+        }
 
         if (filters.searchQuery.isNotBlank()) {
-            clauses.add("LOWER(${PropertyTable.COLUMN_CITY}) LIKE LOWER(?) OR LOWER(${PropertyTable.COLUMN_LOCALITY}) LIKE LOWER(?)")
+            clauses.add("(LOWER(${PropertyTable.COLUMN_CITY}) LIKE LOWER(?) OR LOWER(${PropertyTable.COLUMN_LOCALITY}) LIKE LOWER(?))")
             args.add("%${filters.searchQuery}%")
             args.add("%${filters.searchQuery}%")
         }
@@ -369,7 +373,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
 
         // Add Condition to get only available products
-        if (onlyAvailable)
+        if (filters.onlyAvailable)
             clauses.add("${PropertyTable.COLUMN_IS_AVAILABLE} = 1")
 
         val joinedWhere = if (clauses.isNotEmpty()) clauses.joinToString(" AND ") else " 1 = 1 "
@@ -445,7 +449,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 builtUpArea = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_BUILT_UP_AREA)),
                 bathRoomCount = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_BATHROOM_COUNT)),
                 isPetAllowed = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_PET_ALLOWED)) == 1,
-                isAvailable = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_AVAILABLE)) == 1,
+                isActive = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_AVAILABLE)) == 1,
                 viewCount = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_VIEW_COUNT)),
                 price = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_PRICE)),
                 isMaintenanceSeparate = getInt(getColumnIndexOrThrow(PropertyTable.COLUMN_IS_MAINTENANCE_SEPARATE)) == 1,

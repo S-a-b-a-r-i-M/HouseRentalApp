@@ -15,6 +15,7 @@ import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyTransactionType
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
+import kotlin.Long
 
 object PropertyMapper {
     fun fromDomain(domain: Property) : PropertyEntity {
@@ -101,6 +102,7 @@ object PropertyMapper {
             isActive = entity.isActive,
             address = PropertyAddressMapper.toDomain(entity.address),
             images = entity.images.map { PropertyImageMapper.toDomain(it) },
+            createdAt = entity.createdAt,
             viewCount = entity.viewCount
         )
     }
@@ -124,6 +126,7 @@ object PropertyMapper {
                     locality = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_LOCALITY)),
                     city = getString(getColumnIndexOrThrow(PropertyTable.COLUMN_CITY))
                 ),
+                createdAt = getLong(getColumnIndexOrThrow(PropertyTable.COLUMN_CREATED_AT)),
                 images = emptyList(), // Will be populated separately
             )
         }

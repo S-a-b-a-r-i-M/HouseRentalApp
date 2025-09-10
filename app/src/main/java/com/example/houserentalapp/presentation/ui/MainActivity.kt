@@ -24,7 +24,6 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
-import kotlinx.coroutines.runBlocking
 
 /*  TODO:
         Existing fix:
@@ -32,6 +31,7 @@ import kotlinx.coroutines.runBlocking
         3. Get Current User Details from db(MainActivity) and place it in shared view model
         4. Have to add batch count in lot of places
         5. Create an base fragment for adding system bars width(if needed)
+        6. Check filters
         New:
         1. Favourites page -> move and remove properties
         2. Filters
@@ -39,7 +39,6 @@ import kotlinx.coroutines.runBlocking
  */
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityMainBinding
     private lateinit var currentUser: User
     val sharedDataViewModel: SharedDataViewModel by viewModels()
