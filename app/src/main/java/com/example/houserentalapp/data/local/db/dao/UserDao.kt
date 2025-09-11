@@ -133,13 +133,16 @@ class UserDao(private val dbHelper: DatabaseHelper) {
 
     // -------------- HELPER METHODS --------------
     private fun mapCursorToUserEntity(cursor: Cursor): UserEntity {
-        return UserEntity(
-            id = cursor.getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_ID)),
-            name = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.COLUMN_NAME)),
-            email = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
-            phone = cursor.getString(cursor.getColumnIndexOrThrow(UserTable.COLUMN_PHONE)),
-            createdAt = cursor.getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_CREATED_AT))
-        )
+        with(cursor) {
+            return UserEntity(
+                id = getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_ID)),
+                name = getString(getColumnIndexOrThrow(UserTable.COLUMN_NAME)),
+                email = getString(getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
+                phone = getString(getColumnIndexOrThrow(UserTable.COLUMN_PHONE)),
+                password = getString(getColumnIndexOrThrow(UserTable.COLUMN_HASHED_PASSWORD)),
+                createdAt = getLong(getColumnIndexOrThrow(UserTable.COLUMN_CREATED_AT))
+            )
+        }
     }
 
     private fun mapCursorToUserPreferenceEntity(cursor: Cursor): UserPreferenceEntity {

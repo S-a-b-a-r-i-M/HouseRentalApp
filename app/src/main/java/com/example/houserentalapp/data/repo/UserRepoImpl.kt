@@ -30,6 +30,7 @@ class UserRepoImpl(context: Context) : UserRepo {
                 name = name,
                 email = email,
                 phone = phoneNumber,
+                password = hashedPassWord,
                 createdAt = System.currentTimeMillis()
             )
 

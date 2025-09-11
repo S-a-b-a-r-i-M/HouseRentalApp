@@ -20,9 +20,9 @@ interface UserRepo {
     // READ
     suspend fun getUserById(userId: Long): Result<User?>
 
-    suspend fun getUserPreferences(userId: Long): Result<UserPreferences?>
-
     suspend fun getUserByPhone(phone: String): Result<User?>
+
+    suspend fun getUserPreferences(userId: Long): Result<UserPreferences?>
 
     // UPDATE
     suspend fun updateUserPreferences(userId: Long, preferences: UserPreferences): Result<Boolean>

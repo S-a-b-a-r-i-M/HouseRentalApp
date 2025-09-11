@@ -4,8 +4,6 @@ import androidx.lifecycle.ViewModel
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
-// TODO-DOUBT: IS VIEW MODEL NEEDED ?
-
 class SharedDataViewModel : ViewModel() {
     lateinit var currentUser: User
         private set

@@ -3,7 +3,6 @@ package com.example.houserentalapp.presentation.ui.listings.adapter
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.BitmapFactory
-import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +27,7 @@ import java.io.File
 
 class MyPropertiesAdapter(
     val onClick: (Long) -> Unit,
-    val onPropertyAction: (Long, PropertyLandlordAction) -> Unit
+    val onPropertyAction: (PropertySummary, PropertyLandlordAction) -> Unit
 )
     : RecyclerView.Adapter<MyPropertiesAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -98,7 +97,7 @@ class MyPropertiesAdapter(
                 summary.address.city,
                 summary.address.locality
             )
-            tvBody2.text = "${summary.price}"
+            tvBody2.text = context.getString(R.string.property_price, summary.price)
             tvFooter.text = context.getString(
                 R.string.property_summary_footer,
                 summary.bhk.readable,
@@ -111,23 +110,19 @@ class MyPropertiesAdapter(
                 var drawable = R.drawable.outline_check_circle_24
                 var colorId = R.color.green_success
                 if (!summary.isActive) {
-                    textId = R.string.inactivated
+                    textId = R.string.inactive
                     drawable = R.drawable.outline_stop_circle_24
                     colorId = R.color.red_error
                 }
 
                 text = context.getString(textId)
                 setTextColor(context.getColor(colorId))
-                setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0)
-                setCompoundDrawablePadding(10)
+                setCompoundDrawablesWithIntrinsicBounds(0, drawable, 0, 0)
+                setCompoundDrawablePadding(0)
                 compoundDrawableTintList = ColorStateList.valueOf(context.resources.getColor(colorId))
             }
 
-            // Set On Click
-//            imageContainer.setOnClickListener {
-//                logInfo("My Property ${summary.id} Clicked")
-//                onClick(summary.id)
-//            }
+            // Set On Clicks
             imageView.setOnClickListener {
                 logInfo("My Property ${summary.id} Clicked")
                 onClick(summary.id)
@@ -151,15 +146,15 @@ class MyPropertiesAdapter(
             popupMenu.setOnMenuItemClickListener { item ->
                 when(item.itemId) {
                     R.id.action_edit -> {
-                        onPropertyAction(summary.id, PropertyLandlordAction.EDIT)
+                        onPropertyAction(summary, PropertyLandlordAction.EDIT)
                         true
                     }
                     R.id.action_change_availability -> {
-                        onPropertyAction(summary.id, PropertyLandlordAction.CHANGE_AVAILABILITY)
+                        onPropertyAction(summary, PropertyLandlordAction.CHANGE_AVAILABILITY)
                         true
                     }
                     R.id.action_delete -> {
-                        onPropertyAction(summary.id, PropertyLandlordAction.DELETE)
+                        onPropertyAction(summary, PropertyLandlordAction.DELETE)
                         true
                     }
                     else -> false
@@ -186,6 +181,7 @@ class MyPropertiesAdapter(
     override fun getItemCount() = dataList.size
 
     fun setDataList(newDataList: List<PropertySummaryUI>) {
+        // TODO: Handle only status change, Handle delete property change
         val diffCallBack = PropertiesDiffCallBack(dataList, newDataList)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 

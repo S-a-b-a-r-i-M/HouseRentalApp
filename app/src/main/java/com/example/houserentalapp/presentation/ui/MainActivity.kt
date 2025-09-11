@@ -27,20 +27,17 @@ import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
 /*  TODO:
         Existing fix:
-        2. Make Use Cases Single Responsibility (optional)
-        3. Get Current User Details from db(MainActivity) and place it in shared view model
-        4. Have to add batch count in lot of places
-        5. Create an base fragment for adding system bars width(if needed)
-        6. Check filters
+        2. Have to add batch count in lot of places
+        3. Create an base fragment for adding system bars width(if needed)
+        4. Handle proper validation in create form and in UI
+        5. Create property images edit
         New:
         1. Favourites page -> move and remove properties
-        2. Filters
-        3. My Properties Page -> List of uploaded properties, edit status, edit details.
+        3. My Properties Page -> edit details.
  */
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private lateinit var currentUser: User
     val sharedDataViewModel: SharedDataViewModel by viewModels()
 
     // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
@@ -62,21 +59,12 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setWindowInsets()
 
-        // Get Current User ID
-        val currentUserId = intent.getIntExtra(CURRENT_USER_ID_KEY, -1)
-        if (currentUserId == -1) {
-            logError("Current User id is not found in intent")
+        // Set Current User Into Shared ViewModel
+        val currentUser = intent.getParcelableExtra<User>(CURRENT_USER_KEY) ?: run {
+            logError("Current User is not found in intent")
             OnBackPressedDispatcher().onBackPressed()
             return
         }
-        // Fetch Current User From ViewModel
-        currentUser = User(
-            id = 1,
-            name = "Owner",
-            phone = "994979988",
-            email = "owner@gmail.com",
-            createdAt = 123465689L
-        )
         sharedDataViewModel.setCurrentUser(currentUser)
 
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
@@ -101,8 +89,6 @@ class MainActivity : AppCompatActivity() {
             insets
         }
     }
-
-    fun getCurrentUser() = currentUser
 
     private fun setBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
@@ -179,6 +165,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val CURRENT_USER_ID_KEY = "currentUserId"
+        const val CURRENT_USER_KEY = "currentUser"
     }
 }
