@@ -15,6 +15,7 @@ import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
+import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
@@ -30,6 +31,7 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 /* TODO
@@ -39,6 +41,7 @@ import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomP
 class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
     private lateinit var mainActivity: MainActivity
+    private lateinit var currentUser: User
     private lateinit var propertiesAdapter: PropertiesAdapter
     private lateinit var propertiesViewModel: PropertiesListViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
@@ -58,6 +61,12 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUser ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
 
         // Decisions based on received values
         hideBottomNav = sharedDataViewModel.propertiesListStore[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false
@@ -156,7 +165,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         val propertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
         val propertyUserActionUC = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(mainActivity))
         val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
-        val currentUser = mainActivity.getCurrentUser()
         val factory = PropertiesListViewModelFactory(
             propertyUC,
             propertyUserActionUC,

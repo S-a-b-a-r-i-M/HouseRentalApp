@@ -12,6 +12,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
+import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
@@ -22,6 +23,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersView
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.search.SearchView
 
@@ -30,6 +32,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var mainActivity: MainActivity
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
+    private lateinit var currentUser: User
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
 
@@ -42,6 +45,12 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUser ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
 
         val isNewSearch = arguments?.getBoolean(IS_NEW_SEARCH) ?: false
         if (isNewSearch) {
@@ -57,7 +66,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
 
         // Load Search Histories
         if (searchHistoryViewModel.searchHistoriesResult.value !is ResultUI.Success)
-            searchHistoryViewModel.loadSearchHistories(mainActivity.getCurrentUser().id)
+            searchHistoryViewModel.loadSearchHistories(currentUser.id)
     }
 
     private fun setupUI() {

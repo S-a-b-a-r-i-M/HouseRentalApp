@@ -19,6 +19,7 @@ import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
@@ -34,6 +35,7 @@ import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
@@ -44,7 +46,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var adapter: PropertyImagesViewAdapter
     private lateinit var mainActivity: MainActivity
-
+    private lateinit var currentUser: User
     private lateinit var viewModel: SinglePropertyDetailViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
@@ -71,6 +73,12 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSinglePropertyDetailBinding.bind(view)
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUser ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
 
         logDebug("Received arguments \n" +
                 "PROPERTY_ID_KEY: $propertyId" +
@@ -114,7 +122,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         val factory = SinglePropertyDetailViewModelFactory(
             getPropertyUseCase,
             propertyUserActionUseCase,
-            mainActivity.getCurrentUser()
+            currentUser
         )
         viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
     }

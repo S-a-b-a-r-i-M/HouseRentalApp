@@ -54,7 +54,12 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMyPropertyBinding.bind(view)
-        currentUser = sharedDataViewModel.currentUser
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUser ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
 
         setupUI()
         setupViewModel()
@@ -191,7 +196,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
 
     fun setupViewModel() {
         val propertyUC = PropertyUseCase(PropertyRepoImpl(requireActivity()))
-        val factory = MyPropertiesViewModelFactory(propertyUC, sharedDataViewModel.currentUser)
+        val factory = MyPropertiesViewModelFactory(propertyUC, currentUser)
         myPropertiesViewModel = ViewModelProvider(this, factory)[MyPropertiesViewModel::class]
         filtersViewModel = ViewModelProvider(this)[FiltersViewModel::class]
 

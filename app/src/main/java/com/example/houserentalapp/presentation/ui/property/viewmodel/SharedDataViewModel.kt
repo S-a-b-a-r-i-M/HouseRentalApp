@@ -5,7 +5,7 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
 class SharedDataViewModel : ViewModel() {
-    lateinit var currentUser: User
+    var currentUser: User? = null
         private set
 
     private val _fPropertiesListStore = mutableMapOf<String, Any>()
