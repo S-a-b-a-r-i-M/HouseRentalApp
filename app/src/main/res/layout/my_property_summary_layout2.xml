@@ -99,7 +99,7 @@
 
         <TextView
             android:id="@+id/tvStatus"
-            style="@style/TextAppearance.App.LabelMedium"
+            style="@style/TextAppearance.App.LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"

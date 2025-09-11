@@ -187,8 +187,44 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
         }
     }
 
+    override suspend fun updatePropertyAvailability(
+        propertyId: Long, isAvailable: Boolean
+    ): Result<Boolean> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val updatedRows = propertyDao.updatePropertyAvailability(propertyId, isAvailable)
+                if (updatedRows > 0) {
+                    logInfo("Property($propertyId) availability changed Available: $isAvailable")
+                    return@withContext Result.Success(true)
+                }
+                else {
+                    logInfo("Failed to update property availability: $isAvailable")
+                    Result.Error("Failed to update property availability($propertyId)")
+                }
+            }
+        } catch (e: Exception) {
+            logError("Error updating property availability ($propertyId)", e)
+            Result.Error(e.message.toString())
+        }
+    }
+
     // -------------- DELETE --------------
     override suspend fun deleteProperty(propertyId: Long, userId: Long): Result<Boolean> {
-        TODO("Not yet implemented")
+        return try {
+            withContext(Dispatchers.IO) {
+                val updatedRows = propertyDao.deleteProperty(propertyId, userId)
+                if (updatedRows > 0) {
+                    logInfo("Property($propertyId) deleted successfully.")
+                    return@withContext Result.Success(true)
+                }
+                else {
+                    logInfo("Failed to delete property($propertyId)")
+                    Result.Error("Failed to delete property")
+                }
+            }
+        } catch (e: Exception) {
+            logError("Error while deleting property($propertyId)", e)
+            Result.Error(e.message.toString())
+        }
     }
 }

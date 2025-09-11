@@ -87,6 +87,7 @@ class PropertiesListViewModel(
         val propertyIdx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
         if (propertyIdx == -1)  {
             logWarning("property $propertyId is not found")
+            onFailure()
             return
         }
 
@@ -103,7 +104,7 @@ class PropertiesListViewModel(
 
             when (result) {
                 is Result.Success<*> -> {
-                    logInfo("property shortlisted toggled")
+                    logInfo("property shortlist state toggled")
                     val newState = !summaryUI.isShortListed
                     if (!newState && recentFilters?.onlyShortlisted == true) // Remove in only shortlisted page
                         propertySummaryUIList.removeAt(propertyIdx)

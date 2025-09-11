@@ -23,6 +23,8 @@ interface PropertyRepo {
     // UPDATE
     suspend fun updateProperty(propertyId: Long, updateFields: Map<String, Any>): Result<Property>
 
+    suspend fun updatePropertyAvailability(propertyId: Long, isAvailable: Boolean): Result<Boolean>
+
     // DELETE
     suspend fun deleteProperty(propertyId: Long, userId: Long): Result<Boolean>
 }

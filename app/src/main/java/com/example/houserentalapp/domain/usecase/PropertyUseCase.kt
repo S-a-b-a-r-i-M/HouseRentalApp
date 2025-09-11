@@ -48,4 +48,38 @@ class PropertyUseCase(private val propertyRepo: PropertyRepo) {
             Result.Error("error")
         }
     }
+
+    suspend fun updatePropertyAvailability(propertyId: Long, isAvailable: Boolean): Result<Boolean> {
+        return try {
+            when(val result = propertyRepo.updatePropertyAvailability(propertyId, isAvailable)){
+                is Result.Success<Boolean> -> {
+                    logInfo("Property(${propertyId}) availability changed successfully")
+                    result
+                }
+                is Result.Error -> {
+                    logError("Property availability change failed")
+                    result
+                }
+            }
+        } catch (exp: Exception) {
+            Result.Error("error")
+        }
+    }
+
+    suspend fun deleteProperty(propertyId: Long, userId: Long): Result<Boolean> {
+        return try {
+            when(val result = propertyRepo.deleteProperty(propertyId, userId)){
+                is Result.Success<Boolean> -> {
+                    logInfo("Property(${propertyId}) deleted successfully")
+                    result
+                }
+                is Result.Error -> {
+                    logError("Property delete action failed")
+                    result
+                }
+            }
+        } catch (exp: Exception) {
+            Result.Error("error")
+        }
+    }
 }

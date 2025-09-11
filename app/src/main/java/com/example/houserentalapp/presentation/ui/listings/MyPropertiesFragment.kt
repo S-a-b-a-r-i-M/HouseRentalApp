@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentMyPropertyBinding
+import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
@@ -27,6 +30,7 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import kotlin.getValue
 
 /* TODO:
@@ -91,8 +95,62 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         mainActivity.addFragment(destinationFragment, true)
     }
 
-    private fun onPropertyAction(propertyId: Long, action: PropertyLandlordAction) {
+    private fun updateAvailability(propertyId: Long, isActive: Boolean) {
+        myPropertiesViewModel.updatePropertyAvailability(
+            propertyId,
+            isActive,
+            { isActivated ->
+                val message = if (isActivated)
+                    "Property activated successfully"
+                else
+                    "Property in-activated successfully"
+                Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT).show()
+            },
+            {
+                Toast.makeText(mainActivity, "Retry later", Toast.LENGTH_SHORT).show()
+            }
+        )
+    }
 
+    private fun deleteProperty(propertyId: Long) {
+        myPropertiesViewModel.deleteProperty(
+            propertyId,
+            { mainActivity.showToast("Property deleted successfully") },
+            { mainActivity.showToast("Retry later") }
+        )
+    }
+
+    private fun onPropertyAction(summary: PropertySummary, action: PropertyLandlordAction) {
+        when(action) {
+            PropertyLandlordAction.EDIT -> {
+
+            }
+            PropertyLandlordAction.CHANGE_AVAILABILITY -> {
+                val newActiveState = !summary.isActive
+                if (newActiveState)
+                    updateAvailability(summary.id, true)
+                else // To make it unavailable Show confirmation dialog first
+                    AlertDialog.Builder(mainActivity)
+                        .setTitle("Make Property Unavailable")
+                        .setMessage("This property will be hidden from listings. Continue?")
+                        .setPositiveButton("Yes") { dialog, which ->
+                            updateAvailability(summary.id,false)
+                        }
+                        .setNegativeButton("No", null)
+                        .show()
+            }
+            PropertyLandlordAction.DELETE -> {
+                // Show confirmation dialog first
+                AlertDialog.Builder(mainActivity)
+                    .setTitle("Delete Property")
+                    .setMessage("This action cannot be undone. Delete this property?")
+                    .setPositiveButton("Delete") { _, _ ->
+                        deleteProperty(summary.id)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+        }
     }
 
     private fun loadProperties() {
@@ -138,8 +196,10 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         filtersViewModel = ViewModelProvider(this)[FiltersViewModel::class]
 
         // Set Initial Filters
-        if (filtersViewModel.filters.value?.onlyUserProperties == false)
+        if (filtersViewModel.filters.value?.onlyUserProperties == false) {
             filtersViewModel.setOnlyLandlordProperty(true)
+            filtersViewModel.setOnlyAvailable(false)
+        }
     }
 
     fun setupListeners() {
@@ -158,7 +218,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
                 }
                 is ResultUI.Error -> {
                     hideProgressBar()
-                    logError("error occured")
+                    logError("error occurred")
                 }
                 ResultUI.Loading -> {
                     showProgressBar()

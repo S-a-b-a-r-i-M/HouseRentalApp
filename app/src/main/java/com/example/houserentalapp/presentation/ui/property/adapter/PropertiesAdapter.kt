@@ -152,7 +152,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
     }
 
     private var dataList: MutableList<PropertySummaryUI> = mutableListOf()
-    private var shortlistToggledPropertyId: Long? = null // TODO: Make this as index
+    private var shortlistToggledPropertyId: Long? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)

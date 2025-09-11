@@ -67,15 +67,61 @@ class MyPropertiesViewModel(
         }
     }
 
-    fun togglePropertyShortlist(propertyId: Long, onSuccess: (Boolean) -> Unit, onFailure: () -> Unit) {
+    fun updatePropertyAvailability(
+        propertyId: Long,
+        isActive: Boolean,
+        onSuccess: (Boolean) -> Unit,
+        onFailure: () -> Unit
+    ) {
         val propertyIdx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
         if (propertyIdx == -1)  {
             logWarning("property $propertyId is not found")
+            onFailure()
             return
         }
 
         viewModelScope.launch {
-            val summaryUI = propertySummaryUIList[propertyIdx]
+            val summary = propertySummaryUIList[propertyIdx].summary
+            when(propertyUC.updatePropertyAvailability(
+                summary.id,
+                isActive
+            )) {
+                is Result.Success<*> -> {
+                    propertySummaryUIList[propertyIdx] = propertySummaryUIList[propertyIdx].copy(
+                        summary = summary.copy(isActive = isActive)
+                    )
+                    _propertySummariesResult.value = ResultUI.Success(propertySummaryUIList)
+                    onSuccess(isActive)
+                }
+                is Result.Error -> {
+                    logError("Error while toggling property to shortlisted")
+                    onFailure()
+                }
+            }
+        }
+    }
+
+    fun deleteProperty(propertyId: Long, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val propertyIdx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
+        if (propertyIdx == -1)  {
+            logWarning("property $propertyId is not found")
+            onFailure()
+            return
+        }
+
+        viewModelScope.launch {
+            val summary = propertySummaryUIList[propertyIdx].summary
+            when(propertyUC.deleteProperty(summary.id, currentUser.id)) {
+                is Result.Success<*> -> {
+                    propertySummaryUIList.removeAt(propertyIdx)
+                    _propertySummariesResult.value = ResultUI.Success(propertySummaryUIList)
+                    onSuccess()
+                }
+                is Result.Error -> {
+                    logError("Error while deleting property")
+                    onFailure()
+                }
+            }
         }
     }
 }

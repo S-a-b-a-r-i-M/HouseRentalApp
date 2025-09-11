@@ -22,8 +22,6 @@ import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -213,6 +211,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             LIMIT ${pagination.limit} OFFSET ${pagination.offset}
         """.trimIndent()
 
+        /* close cursors after use because it's hold native resources that won't be garbage collected. */
         readableDB.rawQuery(query, whereArgs).use { cursor ->
             val result = mutableListOf<Pair<PropertySummaryEntity, Boolean>>()
             while (cursor.moveToNext()) {
@@ -404,6 +403,20 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
+    fun updatePropertyAvailability(propertyId: Long, isAvailable: Boolean): Int {
+        val values = ContentValues().apply {
+            put(PropertyTable.COLUMN_IS_AVAILABLE, isAvailable)
+            put(PropertyTable.COLUMN_MODIFIED_AT, System.currentTimeMillis() / 1000)
+        }
+
+        return writableDB.update(
+            PropertyTable.TABLE_NAME,
+            values,
+            "${PropertyTable.COLUMN_ID} = ?",
+            arrayOf(propertyId.toString())
+        )
+    }
+
     fun incrementViewCount(propertyId: Long): Int {
         return writableDB.use { db ->
             db.execSQL(
@@ -420,7 +433,11 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
 
     // -------------- DELETE --------------
     fun deleteProperty(propertyId: Long, landlordId: Long): Int {
-        TODO("need to implement")
+        return writableDB.delete(
+            PropertyTable.TABLE_NAME,
+            "${PropertyTable.COLUMN_ID} = ? AND ${PropertyTable.COLUMN_LANDLORD_ID} = ?",
+            arrayOf(propertyId.toString(), landlordId.toString())
+        )
     }
 
     // ------------ MAPPERS -------------

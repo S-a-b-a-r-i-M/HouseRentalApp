@@ -116,7 +116,7 @@
     <string name="added_at">at:</string>
     <string name="add_property">Add Property</string>
     <string name="active">ACTIVE</string>
-    <string name="inactivated">INACTIVATED</string>
+    <string name="inactive">INACTIVE</string>
     <string name="property_action">property action</string>
     <string name="property_summary_header">%1$s (%2$s)</string>
     <string name="property_summary_body1">%1$s, %2$s</string>
