@@ -10,7 +10,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ViewCounterBinding
@@ -37,7 +36,6 @@ import com.example.houserentalapp.databinding.ViewCounterBinding
 
 /* TODO
     1. View Counter Color and touch target
-    2.
 */
 
 class CounterView @JvmOverloads constructor(
@@ -58,18 +56,21 @@ class CounterView @JvmOverloads constructor(
     var maxCount = Int.MAX_VALUE
     var count: Int = 0
         set(value) {
-            field = value.coerceIn(minCount, maxCount)
-            binding.tvCount.text = field.toString()
-            onCountChangeListener?.invoke(field)
-            updateButtonStatus()
+            if (value != field) {
+                field = value.coerceIn(minCount, maxCount)
+                binding.tvCount.text = field.toString()
+                onCountChangeListener?.invoke(field)
+                updateButtonStatus()
+            }
         }
 
+    companion object
+    {
+        const val DEFAULT_TEXT_SIZE_IN_SP = 14f // in sp
+        const val DEFAULT_ICON_SIZE_IN_DP = 26f // in dp
+        const val DEFAULT_COLOR = Color.GRAY
+    }
     // STYLING PROPERTIES
-    val DEFAULT_TEXT_SIZE_IN_SP = 14f // in sp
-    val DEFAULT_TEXT_SIZE_IN_PX = DEFAULT_TEXT_SIZE_IN_SP.toInt().spToPx() // in px
-    val DEFAULT_ICON_SIZE_IN_PX = 25.dpToPx() // in px
-    val DEFAULT_COLOR = Color.GRAY
-
     var labelStyle: Typeface = Typeface.DEFAULT
         set(value) {
             field = value
@@ -88,13 +89,13 @@ class CounterView @JvmOverloads constructor(
             binding.tvCount.setTextSize(TypedValue.COMPLEX_UNIT_SP, value)
         }
 
-    var iconWidth: Int = DEFAULT_ICON_SIZE_IN_PX // size in px
+    var iconWidth: Float = DEFAULT_ICON_SIZE_IN_DP // size in dp
         set(value) {
             field = value
             updateIconDimensions()
         }
 
-    var iconHeight: Int = DEFAULT_ICON_SIZE_IN_PX // size in px
+    var iconHeight: Float = DEFAULT_ICON_SIZE_IN_DP // size in dp
         set(value) {
             field = value
             updateIconDimensions()
@@ -143,27 +144,21 @@ class CounterView @JvmOverloads constructor(
                 maxCount = getInt(R.styleable.CounterView_maxCount, maxCount)
 
                 // Text sizes (convert from px to sp)
+                val textSizePx = DEFAULT_TEXT_SIZE_IN_SP.spToPX()
                 labelSize = getDimensionPixelSize(
-                    R.styleable.CounterView_labelSize, DEFAULT_TEXT_SIZE_IN_PX
+                    R.styleable.CounterView_labelSize, textSizePx
                 ).pxToSP()
                 counterSize = getDimensionPixelSize(
-                    R.styleable.CounterView_counterSize, DEFAULT_TEXT_SIZE_IN_PX
+                    R.styleable.CounterView_counterSize, textSizePx
                 ).pxToSP()
-
-//                labelStyle = when(getInt(R.styleable.CounterView_labelStyle, 0)) {
-//                    0 -> Typeface.DEFAULT
-//                    1 -> Typeface.DEFAULT_BOLD
-//                    2 -> Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
-//                    else -> Typeface.DEFAULT
-//                }
 
                 // Icon dimensions
                 iconWidth = getDimensionPixelSize(
-                    R.styleable.CounterView_iconWidth, iconWidth
-                )
+                    R.styleable.CounterView_iconWidth, iconWidth.dpToPX()
+                ).pxToDP()
                 iconHeight = getDimensionPixelSize(
-                    R.styleable.CounterView_iconHeight, iconHeight
-                )
+                    R.styleable.CounterView_iconHeight, iconHeight.dpToPX()
+                ).pxToDP()
 
                 // Colors
                 labelColor = getColor(R.styleable.CounterView_labelColor, DEFAULT_COLOR)
@@ -175,16 +170,20 @@ class CounterView @JvmOverloads constructor(
         }
 
         setClickListeners()
+        updateButtonStatus()
     }
 
     private fun updateIconDimensions() {
+        val widthPx = iconWidth.dpToPX()
+        val heightPx = iconHeight.dpToPX()
+
         binding.btnDecrement.updateLayoutParams {
-            width = iconWidth
-            height = iconHeight
+            width = widthPx
+            height = heightPx
         }
         binding.btnIncrement.updateLayoutParams {
-            width = iconWidth
-            height = iconHeight
+            width = widthPx
+            height = heightPx
         }
     }
 
@@ -192,7 +191,7 @@ class CounterView @JvmOverloads constructor(
         with(binding) {
             if (count == minCount) {
                 btnDecrement.isEnabled = false
-                btnDecrement.alpha = 0.5f
+                btnDecrement.alpha = 0.2f
                 btnDecrement.isClickable = false
             } else if (count == minCount + 1) {
                 btnDecrement.isEnabled = true
@@ -202,7 +201,7 @@ class CounterView @JvmOverloads constructor(
 
             if (count == maxCount) {
                 btnIncrement.isEnabled = false
-                btnIncrement.alpha = 0.5f
+                btnIncrement.alpha = 0.2f
                 btnIncrement.isClickable = false
             } else if (count == maxCount - 1) {
                 btnIncrement.isEnabled = true
@@ -212,40 +211,38 @@ class CounterView @JvmOverloads constructor(
         }
     }
 
-    // SET CLICK LISTENERS
+    // CLICK LISTENERS
     private fun setClickListeners() {
         binding.btnIncrement.setOnClickListener {
-            if (count < maxCount)
+            if (count < maxCount) {
+                ++count
                 onCountIncrementListener?.invoke()
+            }
         }
 
         binding.btnDecrement.setOnClickListener {
-            if (count > minCount)
+            if (count > minCount) {
+                --count
                 onCountDecrementListener?.invoke()
+            }
         }
     }
 
     // PUBLIC METHODS
-    fun reset() {
-        count = 0
-    }
-
     fun setRange(min: Int, max: Int) {
         minCount = min
         maxCount = max
         count = count.coerceIn(minCount, maxCount)
     }
 
-    fun setIconDimensions(widthInDp: Int, heightInDp: Int) {
-        iconWidth = widthInDp.dpToPx()
-        iconHeight = heightInDp.dpToPx()
+    fun setIconDimensions(widthInDp: Float, heightInDp: Float) {
+        iconWidth = widthInDp
+        iconHeight = heightInDp
     }
 
-    // TODO: Convenience methods for common styling (large, medium, small)
-
-
     // HELPER FUNCTIONS
-    private fun Int.dpToPx(): Int = (this * context.resources.displayMetrics.density).toInt()
-    private fun Int.spToPx(): Int = (this * context.resources.displayMetrics.scaledDensity).toInt()
+    private fun Float.dpToPX(): Int = (this * context.resources.displayMetrics.density).toInt()
+    private fun Int.pxToDP(): Float = this / context.resources.displayMetrics.scaledDensity
+    private fun Float.spToPX(): Int = (this * context.resources.displayMetrics.scaledDensity).toInt()
     private fun Int.pxToSP(): Float = this / context.resources.displayMetrics.scaledDensity
 }

@@ -1,6 +1,6 @@
 package com.example.houserentalapp.presentation.ui.property.adapter
 
-import android.net.Uri
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,25 +9,41 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
+import com.example.houserentalapp.domain.model.ImageSource
+import com.example.houserentalapp.domain.model.PropertyImage
+import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import java.io.File
 
-class PropertyImagesEditAdapter(val onDeleteBtnClick: (Uri) -> Unit) :
+class PropertyImagesEditAdapter(val onDeleteBtnClick: (PropertyImage) -> Unit) :
     RecyclerView.Adapter<PropertyImagesEditAdapter.ViewHolder>()
 {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val ibtnDelete: ImageButton = itemView.findViewById(R.id.ibtnDeleteImage)
 
-        fun bind(imageUri: Uri) {
-            imageView.setImageURI(imageUri)
+        fun bind(propertyImage: PropertyImage) {
+            when(val imageSource = propertyImage.imageSource) {
+                is ImageSource.LocalFile -> {
+                    val file = File(imageSource.filePath)
+                    if (!file.exists()) {
+                        logWarning("Image(${imageSource.filePath}) is not exists")
+                        return
+                    }
+                    imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                }
+                is ImageSource.Uri -> {
+                    imageView.setImageURI(imageSource.uri)
+                }
+            }
             ibtnDelete.setOnClickListener {
-                deleteActionTriggeredUri = imageUri
-                onDeleteBtnClick(imageUri)
+                deleteActionTriggeredUri = propertyImage
+                onDeleteBtnClick(propertyImage)
             }
         }
     }
 
-    private val imagesUri = mutableListOf<Uri>()
-    private var deleteActionTriggeredUri: Uri? = null
+    private val images = mutableListOf<PropertyImage>()
+    private var deleteActionTriggeredUri: PropertyImage? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(
@@ -37,34 +53,34 @@ class PropertyImagesEditAdapter(val onDeleteBtnClick: (Uri) -> Unit) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(imagesUri[position])
+        holder.bind(images[position])
     }
 
-    override fun getItemCount() = imagesUri.size
+    override fun getItemCount() = images.size
 
-    fun setDataList(newUris: List<Uri>) {
+    fun setDataList(newImages: List<PropertyImage>) {
         // Check if this is a result of deletion
         // TODO: IS this worth of handling separately ?
-        if (deleteActionTriggeredUri != null && imagesUri.size - 1 == newUris.size ) {
-            val removedItemIdx = imagesUri.indexOfFirst { it == deleteActionTriggeredUri }
+        if (deleteActionTriggeredUri != null && images.size - 1 == newImages.size ) {
+            val removedItemIdx = images.indexOfFirst { it == deleteActionTriggeredUri }
             deleteActionTriggeredUri = null // make it null
-            imagesUri.removeAt(removedItemIdx)
+            images.removeAt(removedItemIdx)
             notifyItemRemoved(removedItemIdx)
             return
         }
 
         // Calculate the differences using diff util
-        val diffCallBack = PropertyImagesDiffCallBack(imagesUri, newUris)
+        val diffCallBack = PropertyImagesDiffCallBack(images, newImages)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
-        imagesUri.clear()
-        imagesUri.addAll(newUris)
+        images.clear()
+        images.addAll(newImages)
         diffResult.dispatchUpdatesTo(this)
     }
 }
 
 class PropertyImagesDiffCallBack(
-    private val oldList: List<Uri>,
-    private val newList: List<Uri>
+    private val oldList: List<PropertyImage>,
+    private val newList: List<PropertyImage>
 ) : DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
 

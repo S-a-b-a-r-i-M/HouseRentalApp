@@ -10,14 +10,37 @@
     android:paddingHorizontal="10dp"
     tools:context=".presentation.ui.property.PropertyImagesBottomSheet">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnClose"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_margin="6dp"
-        android:layout_gravity="end"
-        android:background="@drawable/baseline_close_24"
-        app:backgroundTint="@color/icon_button_color" />
+    <LinearLayout
+        android:layout_marginVertical="8dp"
+        android:layout_marginHorizontal="4dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClose"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_margin="6dp"
+            android:layout_gravity="start"
+            android:background="@drawable/baseline_close_24"
+            app:backgroundTint="@color/icon_button_color" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAddMoreImages"
+            style="@style/Widget.App.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:text="@string/add_more"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvImages"

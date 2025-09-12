@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -26,6 +27,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
@@ -59,14 +61,6 @@ import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
 
-
-/* TODO:
-    1. FIX: Property description, issue: horizontal scroll
-    3. Validation for Maintenance charges
-    4. Image Upload (Click From Camera , Upload From Gallery) With Api's essential permissions
-    7. Enhance the counter view design
-*/
-
 class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private lateinit var binding: FragmentCreatePropertyBinding
     private lateinit var mainActivity: MainActivity
@@ -98,7 +92,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 it.data?.data?.let { uri ->  imageUris.add(uri) }
 
             if (imageUris.isNotEmpty()) {
-                viewModel.setPropertyImages(imageUris)
+                viewModel.addPropertyImages(imageUris)
                 requireActivity().showToast("${imageUris.size} selected successfully")
             }
         }
@@ -413,8 +407,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun observeImageUri() {
         with(binding) {
-            viewModel.imageUris.observe(viewLifecycleOwner) { uris ->
-                if (uris.isEmpty()) {
+            viewModel.images.observe(viewLifecycleOwner) { propertyImages ->
+                if (propertyImages.isEmpty()) {
                     cvUploadImages.visibility = View.VISIBLE
                     cvTakeImages.visibility = View.VISIBLE
                     tvOR.visibility = View.VISIBLE
@@ -427,7 +421,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                     // Load Images
                     val context = requireActivity()
-                    val imageWidth = ((context.resources.displayMetrics.widthPixels) / 4.2).toInt()
+                    val imageWidth = ((context.resources.displayMetrics.widthPixels) / 4.1).toInt()
                     val params = LinearLayout.LayoutParams(
                         imageWidth,
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -435,56 +429,65 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                     // Display Only 3 Images
                     llUploadedImages.removeAllViews()
-                    for (i in 0 until uris.size.coerceAtMost(3)) {
+                    val maxImageDisplaySize = 3
+                    for (i in 0 until propertyImages.size.coerceAtMost(maxImageDisplaySize)) {
                         val imageView = ShapeableImageView(context).apply {
-                            setImageURI(uris[i])
                             scaleType = ImageView.ScaleType.CENTER_CROP
                             shapeAppearanceModel = ShapeAppearanceModel.builder()
                                 .setAllCornerSizes(12f)
                                 .build()
+                            // On Click Event
+                            setOnClickListener {
+                                imagesBottomSheet.show(parentFragmentManager, "imagesBottomSheet")
+                            }
+
                             setLayoutParams(params)
+                        }
+                        when(val imageSource = propertyImages[i].imageSource) {
+                            is ImageSource.LocalFile -> {
+                                val file = File(imageSource.filePath)
+                                if (!file.exists()) {
+                                    logWarning("Image(${imageSource.filePath}) is not exists")
+                                    continue
+                                }
+                                imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                            }
+                            is ImageSource.Uri -> {
+                                imageView.setImageURI(imageSource.uri)
+                            }
                         }
 
                         // Add Image to the view
                         llUploadedImages.addView(imageView)
                     }
 
-                    // Add action button
-                    val button = MaterialButton(context).apply {
-                        textSize = 14f
-                        setTextColor(context.resources.getColor(R.color.primary_blue_dark))
-                        backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
+                    // Add button
+                    if (propertyImages.size > maxImageDisplaySize) {
+                        val button = MaterialButton(context).apply {
+                            text = context.getString(
+                                R.string.number_of_images,
+                                propertyImages.size - maxImageDisplaySize
+                            )
+                            textSize = 14f
+                            setTextColor(context.resources.getColor(R.color.primary_blue_dark))
+                            backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
 
-                        setPadding(0)
-                        setLayoutParams(
-                            LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                            ).apply { setMargins(5.dpToPx(context)) }
-                        )
-                    }
-
-                    if (uris.size > 3) {
-                        button.apply {
-                            text = context.getString(R.string.number_of_images, uris.size - 3)
                             // On Click Event
                             setOnClickListener {
                                 imagesBottomSheet.show(parentFragmentManager, "imagesBottomSheet")
-                                logInfo("view images clicked.......")
                             }
+
+                            setPadding(0)
+                            setLayoutParams(
+                                LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                                    LinearLayout.LayoutParams.MATCH_PARENT,
+                                ).apply { setMargins(5.dpToPx(context)) }
+                            )
                         }
-                    } else {
-                        button.apply {
-                            text = "+ Add"
-                            // On Click Event
-                            setOnClickListener {
-                                imagesBottomSheet.show(parentFragmentManager, "imagesBottomSheet")
-                                logInfo("add more clicked.......")
-                            }
-                        }
+                        // Add Button to the view
+                        llUploadedImages.addView(button)
                     }
-                    // Add Button to the view
-                    llUploadedImages.addView(button)
                 }
             }
         }
@@ -555,7 +558,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         visibility = View.GONE
                     }
                 },
-                1000
+                1500
             )
         }
     }
@@ -577,11 +580,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun setSingleSelectableChipGroupListeners() {
         fun updateValueInViewModel(field: PropertyFormField, chipId: Int) = when(field) {
-            PropertyFormField.BHK -> viewModel.updateBHK(chipIdToBHK.getValue(chipId))
-            PropertyFormField.TYPE -> viewModel.updatePropertyType(chipIdToPropertyType.getValue(chipId))
-            PropertyFormField.FURNISHING_TYPE -> viewModel.updateFurnishing(chipIdToFurnishingType.getValue(chipId))
+            PropertyFormField.BHK -> viewModel.updateFormValue(field, chipIdToBHK.getValue(chipId))
+            PropertyFormField.TYPE -> viewModel.updateFormValue(field, chipIdToPropertyType.getValue(chipId))
+            PropertyFormField.FURNISHING_TYPE -> viewModel.updateFormValue(field, chipIdToFurnishingType.getValue(chipId))
             PropertyFormField.IS_PET_FRIENDLY -> viewModel.updateFormValue(field, chipId == R.id.chipPetFriendlyYes)
-            PropertyFormField.PREFERRED_BACHELOR_TYPE -> viewModel.updatePreferredBachelor(chipIdToBachelorType.getValue(chipId))
+            PropertyFormField.PREFERRED_BACHELOR_TYPE -> viewModel.updateFormValue(field, chipIdToBachelorType.getValue(chipId))
             PropertyFormField.IS_MAINTENANCE_SEPARATE -> viewModel.updateFormValue(field, chipId == R.id.chipSeparate)
             else -> logWarning("Invalid PropertyFormField for updateValueInViewModel")
         }
@@ -593,8 +596,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             }
         }
 
-        binding.chipSeparate.setOnCheckedChangeListener { _, isChecked ->
-            onMaintenanceSeparateSelect(isChecked)
+        binding.chipSeparate.setOnCheckedChangeListener { chip, _ ->
+            onMaintenanceSeparateSelect(chip.isChecked)
         }
     }
 
@@ -697,16 +700,16 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             // Handling Preferred Tenant Selection
             chipGroupTenantType.setOnCheckedStateChangeListener { _, checkedIds ->
                 val tenants = mutableListOf<TenantType>()
-                if (R.id.chipFamily in checkedIds)
-                    tenants.add(TenantType.FAMILY)
-                else if (R.id.chipBachelors in checkedIds)
-                    tenants.add(TenantType.BACHELORS)
+
+                if (R.id.chipFamily in checkedIds) tenants.add(TenantType.FAMILY)
+                if (R.id.chipBachelors in checkedIds) tenants.add(TenantType.BACHELORS)
 
                 viewModel.updatePreferredTenants(tenants)
             }
 
-            chipBachelors.setOnCheckedChangeListener { _, isChecked ->
-                onBachelorsSelectChange(isChecked)
+            chipBachelors.setOnCheckedChangeListener { chip, _ ->
+                // Note: 2nd param isChecked is not giving correct data.
+                onBachelorsSelectChange(chip.isChecked)
             }
         }
     }
@@ -747,16 +750,17 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun onBachelorsSelectChange(isSelected: Boolean) {
-        logInfo("<------------ onBachelorsSelectChange: $isSelected ------------>")
         if (isSelected) {
             binding.hScrollOfPreferredBachelors.visibility = View.VISIBLE
             binding.chipOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
-        } else
+        } else {
             binding.hScrollOfPreferredBachelors.visibility = View.GONE
+            // Remove selected bachelors
+            viewModel.updateFormValue(PropertyFormField.PREFERRED_BACHELOR_TYPE, null)
+        }
     }
 
     private fun onMaintenanceSeparateSelect(isSelected: Boolean) {
-        logInfo("<------------ onMaintenanceSeparateSelect: $isSelected ------------>")
         binding.tilMaintenanceCharge.visibility = if (isSelected) View.VISIBLE else View.GONE
     }
 

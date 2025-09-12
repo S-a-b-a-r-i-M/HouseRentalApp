@@ -57,7 +57,7 @@
     <string name="family">Family</string>
     <string name="bachelors">Bachelors</string>
     <string name="add_furnishing_amenities">+ Add Furnishing/Amenities</string>
-    <string name="maintenance_charges_per_month">Maintenance Changes(per month)</string>
+    <string name="maintenance_charges_per_month">Maintenance (per month)</string>
     <string name="maintenance_charges">Maintenance Charges</string>
     <string name="include_in_rent">Include in rent</string>
     <string name="separate">Separate</string>
@@ -132,4 +132,5 @@
     <string name="property_images">Property Images</string>
     <string name="increment">increment</string>
     <string name="decrement">decrement</string>
+    <string name="add_more">+ Add More</string>
 </resources>

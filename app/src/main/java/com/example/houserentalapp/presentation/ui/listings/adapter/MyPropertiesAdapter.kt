@@ -45,49 +45,33 @@ class MyPropertiesAdapter(
         @SuppressLint("UseCompatTextViewDrawableApis")
         fun bind(summaryUI: PropertySummaryUI) {
             val context = itemView.context
-            // Calc. Image Width Based On Screen Width Pixels
-            val screenWidth = context.resources.displayMetrics.widthPixels
-            val imageWidth = (screenWidth / 2.2).toInt()
             val summary = summaryUI.summary
 
             // Add images programmatically
-            if (summary.images.isNotEmpty())
-                summary.images.forEach {
-                    try {
-                        if (it.isPrimary)
-                            when(it.imageSource) {
-                                is ImageSource.LocalFile -> {
-                                    val file = File(it.imageSource.filePath)
-                                    if (!file.exists()) {
-                                        logWarning(
-                                            "Image(${it.imageSource.filePath}) is not exists, property:${summary.id}"
-                                        )
-                                        return@forEach
-                                    }
-                                    imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
-                                }
-                                is ImageSource.Uri -> {
-                                    imageView.setImageURI(it.imageSource.uri)
-                                }
-                            }
-
-                        // val shapableImageView = context.getShapableImageView(imageWidth)
-//                        shapableImageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
-//                        imageContainer.addView(shapableImageView)
-                    } catch (exp: Exception) {
-                        logError("Error on Add images programmatically exp:${exp.message}")
+            if (summary.images.isNotEmpty()) try {
+                val image = summary.images[0]
+                if (image.isPrimary)
+                    when(image.imageSource) {
+                        is ImageSource.LocalFile -> {
+                            val file = File(image.imageSource.filePath)
+                            if (!file.exists())
+                                logWarning(
+                                    "Image(${image.imageSource.filePath}) is not exists, property:${summary.id}"
+                                )
+                            else
+                                imageView.setImageBitmap(
+                                    BitmapFactory.decodeFile(file.absolutePath)
+                                )
+                        }
+                        is ImageSource.Uri -> {
+                            imageView.setImageURI(image.imageSource.uri)
+                        }
                     }
+                } catch (exp: Exception) {
+                    logError("Error on Add images programmatically exp:${exp.message}")
                 }
             else // Add Place Holder Image
                 imageView.setImageResource(R.drawable.room_1)
-                /*repeat(2) {
-                    val shapableImageView =  context.getShapableImageView(imageWidth)
-                    shapableImageView.setImageResource(
-                        listOf(R.drawable.interior, R.drawable.room_1).random()
-                    )
-                    imageView.setImageResource(R.drawable.room_1)
-                    // imageContainer.addView(shapableImageView)
-                }*/
 
             // Add Details
             tvAddedDate.text = summary.createdAt.fromEpoch()
