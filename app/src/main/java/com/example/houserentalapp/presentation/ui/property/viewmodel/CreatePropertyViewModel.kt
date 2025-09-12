@@ -17,7 +17,6 @@ import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
-import com.example.houserentalapp.domain.model.enums.LookingTo
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
@@ -25,13 +24,16 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.enums.PropertyFormField
+import com.example.houserentalapp.presentation.model.PropertyAddressUI
+import com.example.houserentalapp.presentation.model.PropertyBasicUI
+import com.example.houserentalapp.presentation.model.PropertyPreferencesUI
+import com.example.houserentalapp.presentation.model.PropertyPricingUI
 import com.example.houserentalapp.presentation.utils.helpers.toEpochSeconds
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import kotlinx.coroutines.launch
 
 class CreatePropertyViewModel(
@@ -40,14 +42,17 @@ class CreatePropertyViewModel(
     private val _createPropertyResult = MutableLiveData<ResultUI<Long>?>()
     val createPropertyResult: LiveData<ResultUI<Long>?> = _createPropertyResult
 
-    private val formDataMap = PropertyFormField.entries.associateWith {
-        MutableLiveData<String?>(null)
-    }
+    // Property Data Models
+    private val _propertyBasicUI = MutableLiveData((PropertyBasicUI()))
+    val propertyBasicUI: LiveData<PropertyBasicUI> = _propertyBasicUI
+    private val _propertyPreferencesUI = MutableLiveData(PropertyPreferencesUI())
+    val propertyPreferencesUI: LiveData<PropertyPreferencesUI> = _propertyPreferencesUI
+    private val _propertyPricingUI = MutableLiveData(PropertyPricingUI())
+    val propertyPricingUI: LiveData<PropertyPricingUI> = _propertyPricingUI
+    private val _propertyAddressUI = MutableLiveData(PropertyAddressUI())
+    val propertyAddressUI: LiveData<PropertyAddressUI> = _propertyAddressUI
 
-    private val formErrorMap = PropertyFormField.entries.associateWith {
-        MutableLiveData<String?>(null)
-    }
-
+    // Images
     private val _imageUris = MutableLiveData<List<Uri>>(emptyList())
     val imageUris: LiveData<List<Uri>> = _imageUris
 
@@ -59,18 +64,46 @@ class CreatePropertyViewModel(
     private val _socialAmenitySet = MutableLiveData<Set<SocialAmenity>>(emptySet())
     val socialAmenitySet: LiveData<Set<SocialAmenity>> = _socialAmenitySet
 
+    private val formErrorMap = PropertyFormField.entries.filter { it.isRequired }.associateWith {
+        MutableLiveData<String?>(null)
+    }
+
     private val _validationError = MutableLiveData<String?>()
     val validationError: LiveData<String?> = _validationError
 
-    fun getFormDataMap(field: PropertyFormField) : LiveData<String?> = formDataMap.getValue(field)
-
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
 
-    fun updateFormValue(field: PropertyFormField, value: String) {
-        val formFieldData = formDataMap.getValue(field)
+    private fun updateFormFieldError(field: PropertyFormField) {
         val formFieldErr = formErrorMap.getValue(field)
-        formFieldData.value = value
         if (formFieldErr.value != null) formFieldErr.value = null
+    }
+
+    private fun updatePropertyBasic(field: PropertyFormField, update: (PropertyBasicUI) -> PropertyBasicUI) {
+        val currentValue = _propertyBasicUI.value!!
+        _propertyBasicUI.value = update(currentValue)
+        if (field.isRequired)
+            updateFormFieldError(field)
+    }
+
+    private fun updatePreferences(field: PropertyFormField, update: (PropertyPreferencesUI) -> PropertyPreferencesUI) {
+        val currentValue = _propertyPreferencesUI.value!!
+        _propertyPreferencesUI.value = update(currentValue)
+        if (field.isRequired)
+            updateFormFieldError(field)
+    }
+
+    private fun updatePricing(field: PropertyFormField, update: (PropertyPricingUI) -> PropertyPricingUI) {
+        val currentValue = _propertyPricingUI.value!!
+        _propertyPricingUI.value = update(currentValue)
+        if (field.isRequired)
+            updateFormFieldError(field)
+    }
+
+    private fun updateAddress(field: PropertyFormField, update: (PropertyAddressUI) -> PropertyAddressUI) {
+        val currentValue = _propertyAddressUI.value!!
+        _propertyAddressUI.value = update(currentValue)
+        if (field.isRequired)
+            updateFormFieldError(field)
     }
 
     fun updateInternalCountableAmenity(amenity: CountableInternalAmenity, updateValue: Int) {
@@ -82,6 +115,55 @@ class CreatePropertyViewModel(
             mutableMap.put(amenity, newValue)
 
         _icAmenityMap.value = mutableMap
+    }
+
+    fun updateFormValue(field: PropertyFormField, value: String) {
+        when (field) {
+            PropertyFormField.NAME -> updatePropertyBasic(field) { it.copy(name = value) }
+            PropertyFormField.DESCRIPTION -> updatePropertyBasic(field) { it.copy(description = value) }
+            PropertyFormField.STREET -> updateAddress(field) { it.copy(street = value)}
+            PropertyFormField.LOCALITY -> updateAddress(field) { it.copy(locality = value)}
+            PropertyFormField.CITY -> updateAddress(field) { it.copy(city = value)}
+            PropertyFormField.PRICE -> updatePricing(field) { it.copy(price = value) }
+            PropertyFormField.MAINTENANCE_CHARGES -> updatePricing(field) { it.copy(maintenanceCharges = value) }
+            PropertyFormField.BUILT_UP_AREA -> updatePropertyBasic(field) { it.copy(builtUpArea = value) }
+            PropertyFormField.SECURITY_DEPOSIT -> updatePricing(field) { it.copy(securityDepositAmount = value) }
+            PropertyFormField.BATH_ROOM_COUNT -> updatePropertyBasic(field) { it.copy(bathRoomCount = value) }
+            PropertyFormField.COVERED_PARKING_COUNT -> updatePreferences(field) { it.copy(countOfCoveredParking = value) }
+            PropertyFormField.OPEN_PARKING_COUNT -> updatePreferences(field) { it.copy(countOfOpenParking = value) }
+            PropertyFormField.AVAILABLE_FROM -> updatePreferences(field) { it.copy(availableFrom = value) }
+            else -> logWarning("Invalid field for updateFormValue: $field")
+        }
+    }
+
+    fun updateFormValue(field: PropertyFormField, value: Boolean) {
+        when (field) {
+            PropertyFormField.IS_PET_FRIENDLY -> updatePreferences(field) { it.copy(isPetAllowed = value) }
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> updatePricing(field) { it.copy(isMaintenanceSeparate = value) }
+            else -> logWarning("Invalid field for updateFormValue: $field")
+        }
+    }
+
+    // Update Functions For Basic UI
+    fun updatePropertyType(value: PropertyType) = updatePropertyBasic(PropertyFormField.TYPE) {
+        it.copy(type = value)
+    }
+
+    fun updateBHK(value: BHK) = updatePropertyBasic(PropertyFormField.BHK) {
+        it.copy(bhk = value)
+    }
+
+    // Update Functions For PropertyPreferencesUI
+    fun updateFurnishing(value: FurnishingType) = updatePreferences(PropertyFormField.FURNISHING_TYPE) {
+        it.copy(furnishingType = value)
+    }
+
+    fun updatePreferredTenants(value: List<TenantType>) = updatePreferences(PropertyFormField.PREFERRED_TENANT_TYPE) {
+        it.copy(preferredTenantTypes = value)
+    }
+
+    fun updatePreferredBachelor(value: BachelorType) = updatePreferences(PropertyFormField.PREFERRED_BACHELOR_TYPE) {
+        it.copy(preferredBachelorType = value)
     }
 
     fun onInternalAmenityChanged(amenity: InternalAmenity, value: Boolean) {
@@ -164,108 +246,97 @@ class CreatePropertyViewModel(
         _createPropertyResult.value = null
 
         // Reset Form Data
-        formDataMap.forEach { (key, _) ->
-            formDataMap.getValue(key).value = null
-        }
-
-        // Reset Images
+        _propertyBasicUI.value = PropertyBasicUI()
+        _propertyPreferencesUI.value = PropertyPreferencesUI()
+        _propertyAddressUI.value = PropertyAddressUI()
+        _propertyPricingUI.value = PropertyPricingUI()
         _imageUris.value = emptyList()
-
-        // Reset Form Error
-        formErrorMap.forEach { (key, _) ->
-            formErrorMap.getValue(key).value = null
-        }
-
         // Reset Amenities
         _icAmenityMap.value = emptyMap()
         _internalAmenitySet.value = emptySet()
         _socialAmenitySet.value = emptySet()
 
+        // Reset Form Error
+        formErrorMap.forEach { (key, _) -> formErrorMap.getValue(key).value = null }
         logInfo("Form reset is done.")
     }
 
     private fun checkValidation(): Boolean {
+        val basicData = _propertyBasicUI.value!!
+        val preferencesData = _propertyPreferencesUI.value!!
+        val pricingData = _propertyPricingUI.value!!
+        val addressData = _propertyAddressUI.value!!
         var isValidationSuccess = true
 
         // Helper function to reduce repetition
-        fun validateField(field: PropertyFormField, validator: (Any?) -> String?): Any? {
-            val value = formDataMap.getValue(field).value
+        fun updateError(field: PropertyFormField, errorMessage: String) {
             val errorField = formErrorMap.getValue(field)
-            val errorMessage = validator(value)
-
-            if (errorMessage != null) {
-                errorField.value = errorMessage
-                isValidationSuccess = false
-            }
-            return value
+            errorField.value = errorMessage
+            isValidationSuccess = false
         }
 
         // Name Validation
-        validateField(PropertyFormField.NAME) { value ->
-            when {
-                value == null || (value as? String)?.isEmpty() == true -> "enter valid input"
-                (value as String).length < 3 -> "length should be greater than 3"
-                value.length > 100 -> "length should be less than 100"
-                else -> null
-            }
+        when {
+            basicData.name.isEmpty() -> "enter valid input"
+            basicData.name.length < 3 -> "length should be greater than 3"
+            basicData.name.length > 100 -> "length should be less than 100"
+            else -> null
+        }?.let {
+            updateError(PropertyFormField.NAME, it)
         }
 
-        // LOOKING_TO, TYPE, FURNISHING_TYPE, BHK Validation
+        fun getFormData(field: PropertyFormField) = when (field) {
+            PropertyFormField.TYPE -> basicData.type
+            PropertyFormField.BHK -> basicData.bhk
+            PropertyFormField.FURNISHING_TYPE -> preferencesData.furnishingType
+            PropertyFormField.PREFERRED_TENANT_TYPE -> preferencesData.preferredTenantTypes
+            PropertyFormField.NAME -> basicData.name
+            PropertyFormField.DESCRIPTION -> basicData.description
+            PropertyFormField.KIND -> basicData.kind
+            PropertyFormField.PREFERRED_BACHELOR_TYPE -> preferencesData.preferredBachelorType
+            PropertyFormField.COVERED_PARKING_COUNT -> preferencesData.countOfCoveredParking
+            PropertyFormField.OPEN_PARKING_COUNT -> preferencesData.countOfOpenParking
+            PropertyFormField.AVAILABLE_FROM -> preferencesData.availableFrom
+            PropertyFormField.BUILT_UP_AREA -> basicData.builtUpArea
+            PropertyFormField.BATH_ROOM_COUNT -> basicData.bathRoomCount
+            PropertyFormField.IS_PET_FRIENDLY -> preferencesData.isPetAllowed
+            PropertyFormField.PRICE -> pricingData.price
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> pricingData.isMaintenanceSeparate
+            PropertyFormField.MAINTENANCE_CHARGES -> pricingData.maintenanceCharges
+            PropertyFormField.SECURITY_DEPOSIT -> pricingData.securityDepositAmount
+            PropertyFormField.STREET -> addressData.street
+            PropertyFormField.LOCALITY -> addressData.locality
+            PropertyFormField.CITY -> addressData.city
+            PropertyFormField.IMAGES -> TODO()
+        }
+
+        // Selectable enum types validation
         listOf(
-            Pair(PropertyFormField.LOOKING_TO, LookingTo),
-            Pair(PropertyFormField.TYPE, PropertyType),
-            Pair(PropertyFormField.FURNISHING_TYPE, FurnishingType),
-            Pair(PropertyFormField.BHK, BHK)
-        ).forEach { (filed, enum) ->
-            validateField(filed) { value ->
-                when {
-                    value == null -> "select one"
-                    !enum.isValid(value as String) -> {
-                        logWarning("Value $value is not found in ${enum.simpleClassName}")
-                        "error"
-                    }
-                    else -> null
-                }
-            }
+            PropertyFormField.TYPE,
+            PropertyFormField.FURNISHING_TYPE,
+            PropertyFormField.BHK,
+            PropertyFormField.PREFERRED_TENANT_TYPE,
+            PropertyFormField.IS_MAINTENANCE_SEPARATE,
+            PropertyFormField.IS_PET_FRIENDLY
+        ).forEach { filed ->
+            if (getFormData(filed) == null)
+                updateError(filed, "select one")
         }
-
-        // PREFERRED_TENANT_TYPE Validation
-        val tenantValue = validateField(PropertyFormField.PREFERRED_TENANT_TYPE) { value ->
-            when (value){
-                null, "" -> "select one"
-                else -> null
-            }
-        } as? String
-
-        // PREFERRED_BACHELOR_TYPE Validation (conditional)
-        if (tenantValue?.contains(TenantType.BACHELORS.readable) == true)
-            validateField(PropertyFormField.PREFERRED_BACHELOR_TYPE) { value ->
-                when (value){
-                    null, "" -> "select one"
-                    else -> null
-                }
-            }
-
-        // IS_MAINTENANCE_SEPARATE Validation
-        val maintenanceSeparate = validateField(PropertyFormField.IS_MAINTENANCE_SEPARATE) { value ->
-            if (value == null) "select one" else null
-        } as? String
 
         // MAINTENANCE_CHARGES Validation
-        if (maintenanceSeparate != null)
-            validateField(PropertyFormField.MAINTENANCE_CHARGES) { value ->
-                if (maintenanceSeparate.lowercase() == "separate" &&
-                    (value !is String || value.toIntOrNull() == null))
-                    "enter valid input"
-                else
-                    null
-            }
+        if (pricingData.isMaintenanceSeparate == true && pricingData.maintenanceCharges.isEmpty())
+            updateError(PropertyFormField.MAINTENANCE_CHARGES, "enter valid input")
+
 
         // Int Input Validations
-        listOf(PropertyFormField.BUILT_UP_AREA, PropertyFormField.PRICE, PropertyFormField.SECURITY_DEPOSIT).forEach {
-            validateField(it) { value ->
-                if (value !is String || value.toIntOrNull() == null) "enter valid input" else null
-            }
+        listOf(
+            PropertyFormField.BUILT_UP_AREA,
+            PropertyFormField.PRICE,
+            PropertyFormField.SECURITY_DEPOSIT
+        ).forEach {
+            val value = getFormData(it)
+            if (value !is String || value.toIntOrNull() == null)
+                updateError(it, "enter valid input")
         }
 
         // String Input Validations
@@ -274,11 +345,10 @@ class CreatePropertyViewModel(
             PropertyFormField.STREET,
             PropertyFormField.LOCALITY,
             PropertyFormField.CITY,
-            PropertyFormField.IS_PET_FRIENDLY
         ).forEach {
-            validateField(it) { value ->
-                if (value !is String || value.isBlank()) "enter valid input" else null
-            }
+            val value = getFormData(it) as? String
+            if (value.isNullOrEmpty())
+                updateError(it, "enter valid input")
         }
 
         return isValidationSuccess
@@ -320,67 +390,53 @@ class CreatePropertyViewModel(
 
     fun builtPropertyDomain() : Property? {
         try {
-            with(formDataMap) {
-                val tenantTypes = getValue(PropertyFormField.PREFERRED_TENANT_TYPE).value!!
-                    .split(",")
-                    .map { TenantType.fromString(it) }
-                val bachelorType = if (TenantType.BACHELORS in tenantTypes) {
-                    val bachelorStr = getValue(PropertyFormField.PREFERRED_BACHELOR_TYPE).value!!
-                    BachelorType.fromString(bachelorStr)
-                }
-                else
-                    null
+            val basicData = _propertyBasicUI.value!!
+            val preferencesData = _propertyPreferencesUI.value!!
+            val pricingData = _propertyPricingUI.value!!
+            val addressData = _propertyAddressUI.value!!
 
-                val isMaintenanceSeparate = getValue(
-                    PropertyFormField.IS_MAINTENANCE_SEPARATE
-                ).value?.lowercase() == "separate"
-                val maintenanceCharges = if (isMaintenanceSeparate) getValue(
-                    PropertyFormField.MAINTENANCE_CHARGES
-                ).value!!.toInt() else 0
+            val address = PropertyAddress(
+                streetName = addressData.street,
+                locality = addressData.locality,
+                city = addressData.city
+            )
 
-                val address = PropertyAddress(
-                    streetName = getValue(PropertyFormField.STREET).value!!,
-                    locality = getValue(PropertyFormField.LOCALITY).value!!,
-                    city = getValue(PropertyFormField.CITY).value!!
-                )
+            val amenities = buildAmenities()
 
-                val propertyImages = _imageUris.value?.map {
-                    PropertyImage(null, imageSource = ImageSource.Uri(it), isPrimary = false)
-                } ?: emptyList()
+            val propertyImages = _imageUris.value?.map {
+                PropertyImage(null, ImageSource.Uri(it), false)
+            } ?: emptyList()
 
-                val amenities = buildAmenities()
-
-                return Property(
-                    id = null,
-                    landlordId = 1,
-                    name = getValue(PropertyFormField.NAME).value!!,
-                    description = getValue(PropertyFormField.DESCRIPTION).value,
-                    lookingTo = LookingTo.fromString(getValue(PropertyFormField.LOOKING_TO).value!!),
-                    kind = PropertyKind.COMMERCIAL,
-                    type = PropertyType.fromString(getValue(PropertyFormField.TYPE).value!!),
-                    furnishingType = FurnishingType.fromString(getValue(PropertyFormField.FURNISHING_TYPE).value!!),
-                    amenities = amenities,
-                    preferredTenantType = tenantTypes,
-                    preferredBachelorType = bachelorType,
-                    transactionType = null,
-                    ageOfProperty = 0,
-                    countOfCoveredParking = getValue(PropertyFormField.COVERED_PARKING_COUNT).value?.toInt() ?: 0,
-                    countOfOpenParking = getValue(PropertyFormField.OPEN_PARKING_COUNT).value?.toInt() ?: 0,
-                    availableFrom = getValue(PropertyFormField.AVAILABLE_FROM).value!!.toEpochSeconds(),
-                    bhk = BHK.fromString(getValue(PropertyFormField.BHK).value!!),
-                    builtUpArea = getValue(PropertyFormField.BUILT_UP_AREA).value?.toInt() ?: 0,
-                    bathRoomCount = getValue(PropertyFormField.BATH_ROOM_COUNT).value?.toInt() ?: 0,
-                    isPetAllowed = getValue(PropertyFormField.IS_PET_FRIENDLY).value?.toBoolean() ?: false,
-                    isActive = true,
-                    price = getValue(PropertyFormField.BUILT_UP_AREA).value!!.toInt(),
-                    isMaintenanceSeparate = isMaintenanceSeparate,
-                    maintenanceCharges = maintenanceCharges,
-                    securityDepositAmount = getValue(PropertyFormField.SECURITY_DEPOSIT).value!!.toInt(),
-                    address = address,
-                    images = propertyImages,
-                    createdAt = System.currentTimeMillis()
-                )
-            }
+            return Property(
+                id = null,
+                landlordId = 1,
+                name = basicData.name,
+                description = basicData.description,
+                lookingTo = basicData.lookingTo,
+                kind = PropertyKind.RESIDENTIAL,
+                type = basicData.type!!,
+                furnishingType = preferencesData.furnishingType!!,
+                amenities = amenities,
+                preferredTenantType = preferencesData.preferredTenantTypes!!,
+                preferredBachelorType = preferencesData.preferredBachelorType,
+                transactionType = null,
+                ageOfProperty = 0,
+                countOfCoveredParking = preferencesData.countOfCoveredParking.toInt(),
+                countOfOpenParking = preferencesData.countOfOpenParking.toInt(),
+                availableFrom = preferencesData.availableFrom.toEpochSeconds(),
+                bhk = basicData.bhk!!,
+                builtUpArea = basicData.builtUpArea.toInt(),
+                bathRoomCount = basicData.bathRoomCount.toInt(),
+                isPetAllowed = preferencesData.isPetAllowed!!,
+                isActive = true,
+                price = pricingData.price.toInt(),
+                isMaintenanceSeparate = pricingData.isMaintenanceSeparate!!,
+                maintenanceCharges = pricingData.maintenanceCharges.toIntOrNull(),
+                securityDepositAmount = pricingData.securityDepositAmount.toInt(),
+                address = address,
+                images = propertyImages,
+                createdAt = System.currentTimeMillis()
+            )
         } catch (exp: Exception) {
             logError(exp.message.toString(), exp)
             return null

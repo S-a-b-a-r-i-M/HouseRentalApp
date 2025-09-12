@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui.property
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
@@ -25,6 +26,10 @@ import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
+import com.example.houserentalapp.domain.model.enums.BHK
+import com.example.houserentalapp.domain.model.enums.BachelorType
+import com.example.houserentalapp.domain.model.enums.FurnishingType
+import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
@@ -35,10 +40,12 @@ import com.example.houserentalapp.presentation.utils.extensions.createPropertyVi
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getRequiredStyleLabel
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -49,6 +56,8 @@ import com.google.android.material.textfield.TextInputLayout
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.collections.component1
+import kotlin.collections.component2
 
 
 /* TODO:
@@ -71,7 +80,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private val formTextInputFieldInfoList = mutableListOf<TextInputFieldInfo>()
     private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
-    private val formSGButtonsInfoList = mutableListOf<SelectableGroupedButtonsInfo>()
+    private val formSingleSelectChipGroupsInfo = mutableListOf<SingleSelectableChipGroupInfo>()
 
     private val imagesPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -135,61 +144,269 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
         // Observe View Model
         observeViewModel()
-
-        println("CreatePropertyFragment viewModel: $viewModel")
     }
 
-    private fun observeEditTextFields() {
-        // Helper function to observe
-        fun observeError(field: PropertyFormField, observer: (String?) -> Unit) {
-            // Observer Error
-            viewModel.getFormErrorMap(field).observe(viewLifecycleOwner) {
-                observer(it)
-                logDebug("observeEditTextFields -> observeError -> $field: $it")
-            }
-        }
+    private fun setupUI() {
+        // Always hide bottom nav
+        mainActivity.hideBottomNav()
+        // Add paddingBottom to avoid system bar overlay
+        setSystemBarBottomPadding(binding.root)
 
-        fun observeValue(field: PropertyFormField, et: TextInputEditText) {
-            // Observe Value
-            viewModel.getFormDataMap(field).observe(viewLifecycleOwner) {
-                if (it != null && et.text.toString() != it) {
-                    et.setText(it)
-                    logDebug("observeEditTextFields -> observeValue -> $field: $it")
-                }
-            }
-        }
+        groupRelatedFields()
+        setRequiredFieldIndicator()
 
         with(binding) {
-            formTextInputFieldInfoList.forEach {
-                observeValue(it.field, it.editText)
-                if (it.isRequired)
-                    observeError(it.field) { error -> it.inputLayout.error = error }
+            toolbar.title = getString(R.string.create_property)
+            toolbar.setNavigationOnClickListener {
+                parentFragmentManager.popBackStack()
+            }
+
+            @SuppressLint("ClickableViewAccessibility")
+            etPropertyDes.setOnTouchListener { v, event ->
+                v.parent.requestDisallowInterceptTouchEvent(true)
+                false
             }
         }
     }
 
-    private fun observeGroupedButtonFields() {
-        // Helper function to observe Err
-        fun observeError(field: PropertyFormField, onChange: (String?) -> Unit) {
-            viewModel.getFormErrorMap(field).observe(viewLifecycleOwner) {
-                onChange(it)
-                logDebug("observeGroupedButtonFields -> observeError -> $field: $it")
+    private fun groupRelatedFields() {
+        // Grouping Related Fields with views
+        with(binding) {
+            formTextInputFieldInfoList.apply {
+                add(TextInputFieldInfo(
+                    PropertyFormField.NAME,
+                    tilPropertyName,
+                    etPropertyName
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.DESCRIPTION,
+                    tilPropertyDes,
+                    etPropertyDes,
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.AVAILABLE_FROM,
+                    tilAvailableFrom,
+                    etAvailableFrom
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.BUILT_UP_AREA,
+                    tilBuiltUpArea,
+                    etBuiltUpArea
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.PRICE,
+                    tilPrice,
+                    etPrice
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.MAINTENANCE_CHARGES,
+                    tilMaintenanceCharge,
+                    etMaintenanceCharge
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.SECURITY_DEPOSIT,
+                    tilSecurityDeposit,
+                    etSecurityDeposit
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.STREET, tilStreet, etStreet
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.LOCALITY, tilLocality, etLocality
+                ))
+                add(TextInputFieldInfo(
+                    PropertyFormField.CITY, tilCity, etCity
+                ))
             }
+
+            formCounterViewList.apply {
+                add(Pair(PropertyFormField.COVERED_PARKING_COUNT, coveredParkingCounter))
+                add(Pair(PropertyFormField.OPEN_PARKING_COUNT, openParkingCounter))
+                add(Pair(PropertyFormField.BATH_ROOM_COUNT, bathRoomCounter))
+            }
+
+            formSingleSelectChipGroupsInfo.apply {
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.TYPE, tvPropertyType, chipGroupPropertyType
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.BHK, tvBHK, chipGroupBHK
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.FURNISHING_TYPE, tvFurnishing, chipGroupFurnishing
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.IS_PET_FRIENDLY, tvPetFriendly, chipGroupPetFriendly
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.PREFERRED_BACHELOR_TYPE, tvPreferredBachelor, chipGroupBachelorPreference
+                ))
+                add(SingleSelectableChipGroupInfo(
+                    PropertyFormField.IS_MAINTENANCE_SEPARATE, tvMaintenanceSeparate, chipGroupMaintenance
+                ))
+            }
+        }
+    }
+
+    private fun setRequiredFieldIndicator() {
+        with(binding) {
+            formTextInputFieldInfoList.forEach {
+                if (it.field.isRequired)
+                    it.inputLayout.hint = getRequiredStyleLabel(
+                        it.inputLayout.hint.toString(), mainActivity
+                    )
+            }
+
+            formSingleSelectChipGroupsInfo.forEach {
+                if (it.field.isRequired)
+                    it.label.text = getRequiredStyleLabel(
+                        it.label.text.toString(), mainActivity
+                    )
+            }
+
+            tvTenantType.text = getRequiredStyleLabel(
+                tvTenantType.text.toString(), mainActivity
+            )
+
+            tvPropertyImages.text = getRequiredStyleLabel(
+                tvPropertyImages.text.toString(), mainActivity
+            )
+        }
+    }
+
+    private val chipIdToBHK = mapOf(
+        R.id.chip1BHK to BHK.ONE_BHK,
+        R.id.chip2BHK to BHK.TWO_BHK,
+        R.id.chip3BHK to BHK.THREE_BHK,
+        R.id.chip4BHK to BHK.FOUR_BHK,
+        // R.id.chip5BHK to BHK.FIVE_PLUS_BHK,
+        R.id.chip5aboveBHK to BHK.FIVE_PLUS_BHK,
+    )
+    private val bhkToChipId = chipIdToBHK.entries.associate { (k, v) -> v to k }
+
+    private val chipIdToPropertyType = mapOf(
+        R.id.chipApartment to PropertyType.APARTMENT,
+        R.id.chipVilla to PropertyType.VILLA,
+        R.id.chipIndependentHouse to PropertyType.INDEPENDENT_HOUSE,
+        R.id.chipFarmHouse to PropertyType.FARM_HOUSE,
+        R.id.chipStudio to PropertyType.STUDIO,
+        R.id.chipOther to PropertyType.OTHER,
+    )
+    private val propertyTypeToChipId = chipIdToPropertyType.entries.associate { (k, v) -> v to k }
+
+    private val chipIdToFurnishingType = mapOf(
+        R.id.chipFullyFurnished to FurnishingType.FULLY_FURNISHED,
+        R.id.chipUnFurnished to FurnishingType.UN_FURNISHED,
+        R.id.chipSemiFurnished to FurnishingType.SEMI_FURNISHED,
+    )
+    private val furnishingTypeToChipId = chipIdToFurnishingType.entries.associate { (k, v) -> v to k }
+
+    private val chipIdToTenantType = mapOf(
+        R.id.chipFamily to TenantType.FAMILY,
+        R.id.chipBachelor to TenantType.BACHELORS
+    )
+    private val tenantTypeToChipId = chipIdToTenantType.entries.associate { (k, v) -> v to k }
+
+    private val chipIdToBachelorType = mapOf(
+        R.id.chipOpenForBoth to BachelorType.BOTH,
+        R.id.chipOnlyMen to BachelorType.MEN,
+        R.id.chipOnlyWomen to BachelorType.WOMEN,
+    )
+    private val bachelorTypeToChipId = chipIdToBachelorType.entries.associate { (k, v) -> v to k }
+
+    private fun observeErrors() {
+        formTextInputFieldInfoList.forEach { fieldInfo ->
+            if (fieldInfo.field.isRequired)
+                viewModel.getFormErrorMap(fieldInfo.field).observe(viewLifecycleOwner) { error ->
+                    fieldInfo.inputLayout.error = error
+                    logDebug("observeEditTextErrors -> observeError -> ${fieldInfo.field}: $error")
+                }
         }
 
         fun getErrorState(err: String?) = resources.getColor(
             if (err != null) R.color.red_error else R.color.gray_dark
         )
 
+        formSingleSelectChipGroupsInfo.forEach {
+        if (it.field.isRequired)
+            viewModel.getFormErrorMap(it.field).observe(viewLifecycleOwner) { error ->
+                it.label.setTextColor(getErrorState(error))
+                logDebug("observeChipGroupErrors -> observeError -> ${it.field}: $error")
+            }
+        }
+
+        viewModel.getFormErrorMap(PropertyFormField.PREFERRED_TENANT_TYPE).observe(viewLifecycleOwner) {
+            binding.tvTenantType.setTextColor(getErrorState(it))
+        }
+
+        viewModel.getFormErrorMap(PropertyFormField.IMAGES).observe(viewLifecycleOwner) {
+            binding.tvPropertyImages.setTextColor(getErrorState(it))
+        }
+    }
+
+    private fun updateTextInputIfNeeds(editText: TextInputEditText, value: String) {
+        if (value != editText.text.toString())
+            editText.setText(value)
+    }
+
+    private fun updateCountIfNeeds(counterView: CounterView, value: String) {
+        val count = value.toIntOrNull()
+        if (count != null && count != counterView.count)
+            counterView.count = value.toIntOrNull() ?: 0
+    }
+
+    private fun observePropertyBasic() {
         with(binding) {
-            formSGButtonsInfoList.forEach {
-                observeError(it.field) { error ->
-                    it.label.setTextColor(getErrorState(error))
+            viewModel.propertyBasicUI.observe(viewLifecycleOwner) { data ->
+                updateTextInputIfNeeds(etPropertyName, data.name)
+                updateTextInputIfNeeds(etPropertyDes, data.description)
+                updateTextInputIfNeeds(etBuiltUpArea, data.builtUpArea)
+                updateCountIfNeeds(bathRoomCounter, data.bathRoomCount)
+                if (data.type != null)
+                    chipGroupPropertyType.check(propertyTypeToChipId.getValue(data.type))
+                if (data.bhk != null)
+                    chipGroupBHK.check(bhkToChipId.getValue(data.bhk))
+            }
+        }
+    }
+
+    private fun observePropertyPreferences() {
+        with(binding) {
+            viewModel.propertyPreferencesUI.observe(viewLifecycleOwner) {
+                updateCountIfNeeds(coveredParkingCounter, it.countOfCoveredParking)
+                updateCountIfNeeds(openParkingCounter, it.countOfOpenParking)
+                updateTextInputIfNeeds(etAvailableFrom, it.availableFrom)
+                if (it.furnishingType != null)
+                    chipGroupFurnishing.check(furnishingTypeToChipId.getValue(it.furnishingType))
+                if (it.preferredBachelorType != null)
+                    chipGroupBachelorPreference.check(bachelorTypeToChipId.getValue(it.preferredBachelorType))
+                if (it.isPetAllowed != null)
+                    chipPetFriendlyYes.isChecked = it.isPetAllowed
+                it.preferredTenantTypes?.forEach { tenant ->
+                    chipGroupTenantType.check(tenantTypeToChipId.getValue(tenant))
                 }
             }
+        }
+    }
 
-            observeError(PropertyFormField.PREFERRED_TENANT_TYPE) {
-                tvTenantType.setTextColor(getErrorState(it))
+    private fun observePropertyPricing() {
+        with(binding) {
+            viewModel.propertyPricingUI.observe(viewLifecycleOwner) {
+                updateTextInputIfNeeds(etPrice, it.price)
+                updateTextInputIfNeeds(etMaintenanceCharge, it.maintenanceCharges)
+                updateTextInputIfNeeds(etSecurityDeposit, it.securityDepositAmount)
+                if (it.isMaintenanceSeparate != null)
+                    chipSeparate.isChecked = it.isMaintenanceSeparate
+            }
+        }
+    }
+
+    private fun observePropertyAddress() {
+        with(binding) {
+            viewModel.propertyAddressUI.observe(viewLifecycleOwner) {
+                updateTextInputIfNeeds(etStreet, it.street)
+                updateTextInputIfNeeds(etLocality, it.locality)
+                updateTextInputIfNeeds(etCity, it.city)
             }
         }
     }
@@ -274,18 +491,14 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun observeViewModel() {
-        observeEditTextFields()
-        observeGroupedButtonFields()
+        observeErrors()
+        observePropertyBasic()
+        observePropertyPreferences()
+        observePropertyPricing()
+        observePropertyAddress()
         observeImageUri()
 
         with(viewModel) {
-            // Counter Views
-            formCounterViewList.forEach { (field, counterView) ->
-                getFormDataMap(field).observe(viewLifecycleOwner) { count ->
-                    counterView.count = count?.toIntOrNull() ?: 0
-                }
-            }
-
             // Creation Result
             createPropertyResult.observe(viewLifecycleOwner) { result ->
                 if (result == null) return@observe
@@ -351,234 +564,37 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     }
 
-    private fun setupUI() {
-        // Always hide bottom nav
-        mainActivity.hideBottomNav()
-        // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
-
-        setupSingleSelectableGroupedButtons()
-        groupRelatedFields()
-        setRequiredFieldIndicator()
-
-        with(binding) {
-            toolbar.title = getString(R.string.create_property)
-            toolbar.setNavigationOnClickListener {
-                parentFragmentManager.popBackStack()
-            }
-        }
-    }
-
-    private fun groupRelatedFields() {
-        // Grouping Related Fields with views
-        with(binding) {
-            formTextInputFieldInfoList.apply {
-                add(TextInputFieldInfo(
-                    PropertyFormField.NAME,
-                    tilPropertyName,
-                    etPropertyName
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.DESCRIPTION,
-                    tilPropertyDes,
-                    etPropertyDes,
-                    false
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.AVAILABLE_FROM,
-                    tilAvailableFrom,
-                    etAvailableFrom
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.BUILT_UP_AREA,
-                    tilBuiltUpArea,
-                    etBuiltUpArea
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.PRICE,
-                    tilPrice,
-                    etPrice
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.MAINTENANCE_CHARGES,
-                    tilMaintenanceCharge,
-                    etMaintenanceCharge
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.SECURITY_DEPOSIT,
-                    tilSecurityDeposit,
-                    etSecurityDeposit
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.STREET, tilStreet, etStreet
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.LOCALITY, tilLocality, etLocality
-                ))
-                add(TextInputFieldInfo(
-                    PropertyFormField.CITY, tilCity, etCity
-                ))
-            }
-
-            formCounterViewList.apply {
-                add(Pair(PropertyFormField.COVERED_PARKING_COUNT, coveredParkingCounter))
-                add(Pair(PropertyFormField.OPEN_PARKING_COUNT, openParkingCounter))
-                add(Pair(PropertyFormField.BATH_ROOM_COUNT, bathRoomCounter))
-            }
-        }
-    }
-
-    private fun setRequiredFieldIndicator() {
-        with(binding) {
-            formTextInputFieldInfoList.forEach {
-                if (it.isRequired)
-                    it.inputLayout.hint = getRequiredStyleLabel(
-                        it.inputLayout.hint.toString(), mainActivity
-                    )
-            }
-
-            formSGButtonsInfoList.forEach {
-                if (it.isRequired)
-                    it.label.text = getRequiredStyleLabel(
-                        it.label.text.toString(), mainActivity
-                    )
-            }
-        }
-    }
-
-    private fun setupSingleSelectableGroupedButtons() {
-        with(binding) {
-            // LOOKING TO
-            val sgbLookingTo = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnRent, ::onRentSelectChange),
-                    SelectableButtonData(btnSell)
-                )
-            )
-
-            // PROPERTY TYPE
-            val sgbPropertyType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnApartment),
-                    SelectableButtonData(btnVilla),
-                    SelectableButtonData(btnIndependentHouse),
-                    SelectableButtonData(btnFormHouse),
-                    SelectableButtonData(btnStudio),
-                    SelectableButtonData(btnOther),
-                )
-            )
-
-            // BHK
-            val sgbBhk = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btn1BHK),
-                    SelectableButtonData(btn2BHK),
-                    SelectableButtonData(btn3BHK),
-                    SelectableButtonData(btn4BHK),
-                    SelectableButtonData(btn5AboveBHK),
-                )
-            )
-
-            // FURNISHING TYPE
-            val sgbFurnishingType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnFullyFurnished),
-                    SelectableButtonData(btnSemiFurnished),
-                    SelectableButtonData(btnUnFurnished),
-                )
-            )
-
-            // PET FRIENDLY
-            val sgbPetFriendly = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnPetFriendlyYes),
-                    SelectableButtonData(btnPetFriendlyNo),
-                )
-            )
-
-            // PREFERRED BACHELOR TYPE
-            val sgbBachelorType = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnOpenForBoth),
-                    SelectableButtonData(btnOnlyMen),
-                    SelectableButtonData(btnOnlyWomen)
-                )
-            )
-
-            // Maintenance Charge
-            val sgbIsMaintenanceSeparate = SingleSelectableGroupedButtons(
-                listOf(
-                    SelectableButtonData(btnIncludeInRent),
-                    SelectableButtonData(
-                        btnSeparate,
-                        ::onMaintenanceSeparateSelect,
-                    )
-                )
-            )
-
-            formSGButtonsInfoList.apply {
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.LOOKING_TO, tvLookingTo, sgbLookingTo
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.TYPE, tvPropertyType, sgbPropertyType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.BHK, tvBHK, sgbBhk
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.FURNISHING_TYPE, tvFurnishing, sgbFurnishingType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.IS_PET_FRIENDLY, tvPetFriendly, sgbPetFriendly
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.PREFERRED_BACHELOR_TYPE, tvPreferredBachelor, sgbBachelorType
-                ))
-                add(SelectableGroupedButtonsInfo(
-                    PropertyFormField.IS_MAINTENANCE_SEPARATE, tvMaintenanceSeparate, sgbIsMaintenanceSeparate
-                ))
-            }
-        }
-    }
-
     private fun setEditTextListeners() {
-        with(binding) {
-            // ALL EDIT TEXT FIELDS
-            fun onStartTyping(et: TextInputEditText, field: PropertyFormField) {
-                et.addTextChangedListener {
-                    viewModel.updateFormValue(field, et.text.toString())
-                }
-            }
-
-            formTextInputFieldInfoList.forEach{
-                onStartTyping(it.editText, it.field)
+        formTextInputFieldInfoList.forEach{ textInputFieldInfo ->
+            textInputFieldInfo.editText.addTextChangedListener {
+                viewModel.updateFormValue(
+                    textInputFieldInfo.field,
+                    textInputFieldInfo.editText.text.toString()
+                )
             }
         }
     }
 
-    private fun setSelectableGroupedButtonListeners() {
-        fun setOnOptionSelectedListener(
-            selectableGroupedButtons: SingleSelectableGroupedButtons,
-            field: PropertyFormField
-        ) {
-            selectableGroupedButtons.setOnOptionSelectedListener { buttonData ->
-                logDebug("${buttonData.button.text} Selected in $field Group")
-                // Button text is same as enum prop readable
-                viewModel.updateFormValue(field, buttonData.button.text.toString())
+    private fun setSingleSelectableChipGroupListeners() {
+        fun updateValueInViewModel(field: PropertyFormField, chipId: Int) = when(field) {
+            PropertyFormField.BHK -> viewModel.updateBHK(chipIdToBHK.getValue(chipId))
+            PropertyFormField.TYPE -> viewModel.updatePropertyType(chipIdToPropertyType.getValue(chipId))
+            PropertyFormField.FURNISHING_TYPE -> viewModel.updateFurnishing(chipIdToFurnishingType.getValue(chipId))
+            PropertyFormField.IS_PET_FRIENDLY -> viewModel.updateFormValue(field, chipId == R.id.chipPetFriendlyYes)
+            PropertyFormField.PREFERRED_BACHELOR_TYPE -> viewModel.updatePreferredBachelor(chipIdToBachelorType.getValue(chipId))
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> viewModel.updateFormValue(field, chipId == R.id.chipSeparate)
+            else -> logWarning("Invalid PropertyFormField for updateValueInViewModel")
+        }
+
+        formSingleSelectChipGroupsInfo.forEach {
+            it.chipGroup.setOnCheckedStateChangeListener { chipGroup, checkedIds ->
+                if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
+                updateValueInViewModel(it.field, checkedIds[0])
             }
         }
 
-        with(binding) {
-            formSGButtonsInfoList.forEach {
-                setOnOptionSelectedListener(it.groupedButtons, it.field)
-            }
-
-            btnRent.performClick() // As of now only supporting Rent
-            btnSell.apply {
-                isClickable = false
-                alpha = 0.5f
-            }
+        binding.chipSeparate.setOnCheckedChangeListener { _, isChecked ->
+            onMaintenanceSeparateSelect(isChecked)
         }
     }
 
@@ -622,7 +638,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun setListeners() {
         setEditTextListeners()
-        setSelectableGroupedButtonListeners()
+        setSingleSelectableChipGroupListeners()
         setCounterViewsListeners()
         setPreferredTenantListeners()
 
@@ -652,16 +668,23 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun setCounterViewsListeners() {
+        fun getCurrentValue(filed: PropertyFormField) = when (filed) {
+            PropertyFormField.COVERED_PARKING_COUNT -> viewModel.propertyPreferencesUI.value?.countOfCoveredParking
+            PropertyFormField.OPEN_PARKING_COUNT -> viewModel.propertyPreferencesUI.value?.countOfOpenParking
+            PropertyFormField.BATH_ROOM_COUNT -> viewModel.propertyBasicUI.value?.bathRoomCount
+            else -> null
+        }
+
         with(binding) {
             // Parking, BathRoom
             formCounterViewList.forEach { (field, counterView) ->
                 counterView.apply {
                     onCountIncrementListener = {
-                        val newValue = (viewModel.getFormDataMap(field).value?.toIntOrNull() ?: 0) + 1
+                        val newValue = (getCurrentValue(field)?.toIntOrNull() ?: 0) + 1
                         viewModel.updateFormValue(field , newValue.toString())
                     }
                     onCountDecrementListener = {
-                        val newValue = (viewModel.getFormDataMap(field).value?.toIntOrNull() ?: 0) - 1
+                        val newValue = (getCurrentValue(field)?.toIntOrNull() ?: 0) - 1
                         viewModel.updateFormValue(field , newValue.toString())
                     }
                 }
@@ -672,25 +695,17 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun setPreferredTenantListeners() {
         with(binding) {
             // Handling Preferred Tenant Selection
-            val preferredTenants = mutableSetOf<String>()
-            fun onChangePreferredTenants(value: String, isAdded: Boolean) {
-                if (isAdded)
-                    preferredTenants.add(value)
-                else
-                    preferredTenants.remove(value)
+            chipGroupTenantType.setOnCheckedStateChangeListener { _, checkedIds ->
+                val tenants = mutableListOf<TenantType>()
+                if (R.id.chipFamily in checkedIds)
+                    tenants.add(TenantType.FAMILY)
+                else if (R.id.chipBachelors in checkedIds)
+                    tenants.add(TenantType.BACHELORS)
 
-                viewModel.updateFormValue(
-                    PropertyFormField.PREFERRED_TENANT_TYPE,
-                    preferredTenants.joinToString(",")
-                )
+                viewModel.updatePreferredTenants(tenants)
             }
 
-            btnFamily.addOnCheckedChangeListener { _, isChecked ->
-                onChangePreferredTenants(TenantType.FAMILY.readable, isChecked)
-            }
-
-            btnBachelors.addOnCheckedChangeListener { _, isChecked ->
-                onChangePreferredTenants(TenantType.BACHELORS.readable, isChecked)
+            chipBachelors.setOnCheckedChangeListener { _, isChecked ->
                 onBachelorsSelectChange(isChecked)
             }
         }
@@ -731,18 +746,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         return datePicker
     }
 
-    private fun onRentSelectChange(isSelected: Boolean) {
-        val text = if (isSelected) "₹ Monthly Rent" else "Budget"
-        binding.tilPrice.hint = getRequiredStyleLabel(text, mainActivity)
-    }
-
     private fun onBachelorsSelectChange(isSelected: Boolean) {
         logInfo("<------------ onBachelorsSelectChange: $isSelected ------------>")
         if (isSelected) {
-            binding.preferredBachelorContainer.visibility = View.VISIBLE
-            binding.btnOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
+            binding.hScrollOfPreferredBachelors.visibility = View.VISIBLE
+            binding.chipOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
         } else
-            binding.preferredBachelorContainer.visibility = View.GONE
+            binding.hScrollOfPreferredBachelors.visibility = View.GONE
     }
 
     private fun onMaintenanceSeparateSelect(isSelected: Boolean) {
@@ -758,14 +768,12 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private data class TextInputFieldInfo (
         val field: PropertyFormField,
         val inputLayout: TextInputLayout,
-        val editText: TextInputEditText,
-        val isRequired: Boolean = true
+        val editText: TextInputEditText
     )
 
-    private data class SelectableGroupedButtonsInfo (
+    private data class SingleSelectableChipGroupInfo (
         val field: PropertyFormField,
         val label: TextView,
-        val groupedButtons: SingleSelectableGroupedButtons,
-        val isRequired: Boolean = true
+        val chipGroup: ChipGroup,
     )
 }

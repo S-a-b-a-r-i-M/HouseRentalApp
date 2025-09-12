@@ -48,6 +48,7 @@
             <!-- LOOKING TO -->
             <TextView
                 android:id="@+id/tvLookingTo"
+                android:visibility="gone"
                 style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -55,41 +56,38 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tvLookingToErr"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupLookingTo"
                 android:visibility="gone"
-                android:background="@drawable/baseline_error_24"
-                android:backgroundTint="@color/red_error"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRent"
-                style="@style/Widget.App.OutlinedButton"
-                android:layout_width="0dp"
+                style="@style/Widget.App.ChipGroup"
+                app:singleSelection="true"
+                app:selectionRequired="true"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="10dp"
-                android:checkable="true"
-                android:text="@string/rent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvLookingTo" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLookingTo"
+                app:layout_constraintStart_toStartOf="parent">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSell"
-                style="@style/Widget.App.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="10dp"
-                android:checkable="true"
-                android:text="@string/sell"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/tvLookingTo" />
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipRent"
+                    style="@style/Widget.App.Chip.Input"
+                    android:minWidth="100dp"
+                    android:minHeight="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="@string/rent" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSell"
+                    style="@style/Widget.App.Chip.Input"
+                    android:minWidth="100dp"
+                    android:minHeight="50dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="@string/sell" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <!-- City -->
             <com.google.android.material.textfield.TextInputLayout
@@ -97,12 +95,11 @@
                 style="@style/Widget.App.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:hint="@string/city"
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnSell">
+                app:layout_constraintTop_toBottomOf="@+id/chipGroupLookingTo">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etCity"
@@ -172,72 +169,66 @@
                 app:layout_constraintTop_toBottomOf="@+id/til_street" />
 
             <HorizontalScrollView
-                android:id="@+id/listOfProperties"
+                android:id="@+id/hScrollOfProperties"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvPropertyType">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupPropertyType"
+                    style="@style/Widget.App.ChipGroup"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="4dp">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnApartment"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipApartment"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checkable="true"
                         android:text="@string/apartment" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnVilla"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipVilla"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/villa" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnIndependentHouse"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipIndependentHouse"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/independent_house" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnFormHouse"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFarmHouse"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/farm_house" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnStudio"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipStudio"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/studio" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnOther"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOther"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/other" />
 
-                </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
 
             </HorizontalScrollView>
 
@@ -250,66 +241,71 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/bhk"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listOfProperties" />
+                app:layout_constraintTop_toBottomOf="@+id/hScrollOfProperties" />
 
             <HorizontalScrollView
-                android:id="@+id/listOfBHK"
+                android:id="@+id/hScrollOfBHK"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvBHK">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupBHK"
+                    style="@style/Widget.App.ChipGroup"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="4dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvBHK">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn1BHK"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip1BHK"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checkable="true"
                         android:text="@string/_1_bhk" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn2BHK"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip2BHK"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/_2_bhk" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn3BHK"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip3BHK"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/_3_bhk" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn4BHK"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip4BHK"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/_4_bhk" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn5AboveBHK"
-                        style="@style/Widget.App.OutlinedButton"
+<!--                    <com.google.android.material.chip.Chip-->
+<!--                        android:id="@+id/chip5BHK"-->
+<!--                        style="@style/Widget.App.Chip.Input"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="@string/_5_bhk" />-->
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip5aboveBHK"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="10dp"
-                        android:checkable="true"
                         android:text="@string/_5_above_bhk" />
 
-                </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
 
             </HorizontalScrollView>
 
@@ -324,7 +320,7 @@
                 app:counterMaxLength="100"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listOfBHK">
+                app:layout_constraintTop_toBottomOf="@+id/hScrollOfBHK">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPropertyName"
@@ -357,6 +353,9 @@
                     android:gravity="top"
                     android:imeOptions="actionNext"
                     android:inputType="textMultiLine|textCapSentences"
+                    android:overScrollMode="always"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="insideInset"
                     android:maxLines="5"
                     android:minLines="3" />
 
@@ -374,7 +373,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/tilPropertyDes" />
 
             <HorizontalScrollView
-                android:id="@+id/listOfFurnishingType"
+                android:id="@+id/hScrollOfFurnishingType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -382,40 +381,40 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvFurnishing">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupFurnishing"
+                    style="@style/Widget.App.ChipGroup"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="4dp"
+                    app:singleSelection="true"
+                    app:selectionRequired="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvFurnishing">
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnFullyFurnished"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipFullyFurnished"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:checkable="true"
                         android:text="@string/furnished" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSemiFurnished"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipSemiFurnished"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:checkable="true"
-                        android:text="@string/semi_furnished"
-                        android:textAlignment="center" />
+                        android:text="@string/semi_furnished" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnUnFurnished"
-                        style="@style/Widget.App.OutlinedButton"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipUnFurnished"
+                        style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="10dp"
-                        android:checkable="true"
                         android:text="@string/un_furnished" />
 
-                </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
 
             </HorizontalScrollView>
 
@@ -429,8 +428,9 @@
                 app:cornerRadius="12dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/listOfFurnishingType" />
+                app:layout_constraintTop_toBottomOf="@+id/hScrollOfFurnishingType" />
 
+            <!-- Bathroom Count -->
             <com.example.houserentalapp.presentation.ui.common.CounterView
                 android:id="@+id/bathRoomCounter"
                 android:layout_width="0dp"
@@ -447,7 +447,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/btn_add_amenities"/>
 
-            <!-- Parking -->
             <!-- Covered Parking -->
             <com.example.houserentalapp.presentation.ui.common.CounterView
                 android:id="@+id/coveredParkingCounter"
@@ -494,33 +493,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/openParkingCounter" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPetFriendlyYes"
-                style="@style/Widget.App.OutlinedButton"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupPetFriendly"
+                style="@style/Widget.App.ChipGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
                 android:layout_marginTop="4dp"
-                android:checkable="true"
-                app:icon="@drawable/baseline_pets_24"
-                app:iconGravity="start"
-                android:text="@string/yes"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:singleSelection="true"
+                app:selectionRequired="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvPetFriendly" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnPetFriendlyNo"
-                style="@style/Widget.App.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="10dp"
-                android:checkable="true"
-                android:text="@string/no"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/tvPetFriendly" />
+                app:layout_constraintTop_toBottomOf="@+id/tvPetFriendly">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPetFriendlyYes"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/yes" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipPetFriendlyNo"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/no" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <!-- Tenant Type -->
             <TextView
@@ -531,87 +534,97 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/preferred_tenant_type"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnPetFriendlyYes" />
+                app:layout_constraintTop_toBottomOf="@+id/chipGroupPetFriendly" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnFamily"
-                style="@style/Widget.App.OutlinedButton"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupTenantType"
+                style="@style/Widget.App.ChipGroup"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="10dp"
-                android:checkable="true"
-                android:text="@string/family"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
+                app:selectionRequired="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTenantType" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnBachelors"
-                style="@style/Widget.App.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="10dp"
-                android:checkable="true"
-                android:text="@string/bachelors"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/tvTenantType" />
+                app:layout_constraintTop_toBottomOf="@+id/tvTenantType">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFamily"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/family" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBachelors"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/bachelors" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <!-- Preferred Bachelor Type -->
-            <GridLayout
-                android:id="@+id/preferredBachelorContainer"
-                android:columnCount="2"
+            <TextView
+                android:id="@+id/tvPreferredBachelor"
+                style="@style/TextAppearance.App.LabelMedium"
                 android:visibility="gone"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
                 android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/select_your_preference_for_bachelors"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnFamily" >
+                app:layout_constraintTop_toBottomOf="@+id/chipGroupTenantType" />
 
-                <TextView
-                    android:id="@+id/tvPreferredBachelor"
-                    style="@style/TextAppearance.App.LabelMedium"
-                    android:layout_width="match_parent"
+            <HorizontalScrollView
+                android:id="@+id/hScrollOfPreferredBachelors"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPreferredBachelor">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/chipGroupBachelorPreference"
+                    style="@style/Widget.App.ChipGroup"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_columnSpan="2"
                     android:layout_marginTop="4dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/select_your_preference_for_bachelors" />
+                    app:singleSelection="true"
+                    app:selectionRequired="true">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_open_for_both"
-                    style="@style/Widget.App.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_columnWeight="1"
-                    android:checkable="true"
-                    android:text="@string/open_for_both" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOpenForBoth"
+                        style="@style/Widget.App.Chip.Input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_for_both" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnOnlyMen"
-                    style="@style/Widget.App.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_marginStart="10dp"
-                    android:checkable="true"
-                    android:text="@string/men_only" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOnlyMen"
+                        style="@style/Widget.App.Chip.Input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/men_only" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnOnlyWomen"
-                    style="@style/Widget.App.OutlinedButton"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_columnWeight="1"
-                    android:layout_marginEnd="10dp"
-                    android:checkable="true"
-                    android:text="@string/women_only" />
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chipOnlyWomen"
+                        style="@style/Widget.App.Chip.Input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/women_only" />
 
-            </GridLayout>
+                </com.google.android.material.chip.ChipGroup>
+
+            </HorizontalScrollView>
 
             <!-- Built-Up Area -->
             <com.google.android.material.textfield.TextInputLayout
@@ -625,7 +638,7 @@
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/preferredBachelorContainer">
+                app:layout_constraintTop_toBottomOf="@+id/hScrollOfPreferredBachelors">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etBuiltUpArea"
@@ -669,6 +682,7 @@
                 android:layout_marginTop="4dp"
                 app:hintAnimationEnabled="true"
                 app:counterEnabled="false"
+                android:hint="@string/monthly_rent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilAvailableFrom">
@@ -693,31 +707,37 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilPrice" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnIncludeInRent"
-                style="@style/Widget.App.OutlinedButton"
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupMaintenance"
+                style="@style/Widget.App.ChipGroup"
+                app:singleSelection="true"
+                app:selectionRequired="true"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:layout_marginEnd="10dp"
-                android:checkable="true"
-                android:text="@string/include_in_rent"
-                app:layout_constraintEnd_toStartOf="@+id/guideline"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceSeparate" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSeparate"
-                style="@style/Widget.App.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="10dp"
-                android:checkable="true"
-                android:text="@string/separate"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceSeparate" />
+                app:layout_constraintTop_toBottomOf="@+id/tvMaintenanceSeparate">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipIncludeInRent"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/include_in_rent" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSeparate"
+                    style="@style/Widget.App.Chip.Input"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100dp"
+                    android:textAlignment="center"
+                    android:text="@string/separate" />
+
+            </com.google.android.material.chip.ChipGroup>
 
             <!-- If Separate MaintenanceChanges -->
             <com.google.android.material.textfield.TextInputLayout
@@ -732,7 +752,7 @@
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btnIncludeInRent">
+                app:layout_constraintTop_toBottomOf="@+id/chipGroupMaintenance">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etMaintenanceCharge"
@@ -819,7 +839,7 @@
                 android:text="@string/or"
                 android:textColor="@color/gray_dark"
                 android:elevation="5dp"
-                android:background="@drawable/dashed_oval_shape"
+                android:background="@drawable/dashed_oval_bg"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/cvTakeImages"
                 app:layout_constraintStart_toStartOf="@+id/cvUploadImages"

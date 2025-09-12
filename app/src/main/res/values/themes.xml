@@ -21,10 +21,13 @@
 
     <style name="Widget.App.Chip.Input" parent="Widget.Material3.Chip.Input">
         <item name="closeIconVisible">false</item>
+        <item name="chipBackgroundColor">@color/chip_input_color</item>
+        <item name="chipStrokeColor">@color/chip_input_stroke_color</item>
     </style>
 
     <style name="Widget.App.Chip.Input.Elevated" parent="Widget.Material3.Chip.Input.Elevated">
         <item name="closeIconVisible">false</item>
+        <item name="chipBackgroundColor">@color/chip_input_color</item>
     </style>
 
     <style name="Widget.App.ChipGroup" parent="Widget.Material3.ChipGroup">
