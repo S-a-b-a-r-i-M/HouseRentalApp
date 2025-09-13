@@ -7,8 +7,8 @@
     <color name="primary_blue">#1CA6EF</color>
     <color name="stroke_color">#1CA6EF</color>
     <color name="primary_blue_dark">#2D74CF</color>
-    <color name="primary_blue_very_light">#DBEAF0</color>
     <color name="primary_blue_light">#A4CEE5</color>
+    <color name="primary_blue_very_light">#DBEAF0</color>
 
     <color name="gray_medium">#adb5bd</color>
     <color name="separator_color">#adb5bd</color>

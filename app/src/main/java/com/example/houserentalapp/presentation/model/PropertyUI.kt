@@ -10,7 +10,7 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 
 data class PropertyBasicUI(
     val name: String = "",
-    val description: String = "",
+    val description: String? = null,
     val lookingTo: LookingTo = LookingTo.RENT,
     val kind: PropertyKind? = PropertyKind.RESIDENTIAL,
     val type: PropertyType? = null,
@@ -32,7 +32,7 @@ data class PropertyPreferencesUI(
 data class PropertyPricingUI(
     val price: String = "",
     val isMaintenanceSeparate: Boolean? = null,
-    val maintenanceCharges: String = "",
+    val maintenanceCharges: String? = null,
     val securityDepositAmount: String = ""
 )
 

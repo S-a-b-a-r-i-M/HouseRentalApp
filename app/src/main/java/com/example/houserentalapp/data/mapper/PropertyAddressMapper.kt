@@ -6,7 +6,7 @@ import com.example.houserentalapp.domain.model.PropertyAddress
 object PropertyAddressMapper {
     fun fromDomain(address: PropertyAddress): PropertyAddressEntity {
         return PropertyAddressEntity(
-            streetName = address.streetName,
+            streetName = address.street,
             locality = address.locality,
             city = address.city
         )
@@ -14,7 +14,7 @@ object PropertyAddressMapper {
 
     fun toDomain(entity: PropertyAddressEntity): PropertyAddress {
         return PropertyAddress(
-            streetName = entity.streetName,
+            street = entity.streetName,
             locality = entity.locality,
             city = entity.city
         )

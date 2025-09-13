@@ -186,7 +186,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     private fun bindBasicCardDetails(property: Property) {
         with(binding) {
             tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
-            tvAddress.text = property.address.let { "${it.streetName}, ${it.locality}, ${it.city}" }
+            tvAddress.text = property.address.let { "${it.street}, ${it.locality}, ${it.city}" }
             tvFurnishingType.text = property.furnishingType.readable
             tvBuiltArea.text = "${property.builtUpArea} sq.ft."
             tvPreferredTenant.text = property.preferredTenantType.joinToString(",") { it.readable }
