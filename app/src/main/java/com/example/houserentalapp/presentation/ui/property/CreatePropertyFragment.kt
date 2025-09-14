@@ -619,11 +619,15 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun setEditTextListeners() {
         formTextInputFieldInfoList.forEach{ textInputFieldInfo ->
-            textInputFieldInfo.editText.addTextChangedListener {
-                viewModel.updateFormValue(
-                    textInputFieldInfo.field,
-                    textInputFieldInfo.editText.text.toString()
-                )
+            textInputFieldInfo.editText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) return@OnFocusChangeListener
+
+                val text = textInputFieldInfo.editText.text.toString()
+                if (text.isNotEmpty())
+                    viewModel.updateFormValue(
+                        textInputFieldInfo.field,
+                        textInputFieldInfo.editText.text.toString()
+                    )
             }
         }
     }
@@ -698,7 +702,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         // Other Listeners
         with(binding) {
             // Available From Date Picker
-            etAvailableFrom.onFocusChangeListener = View.OnFocusChangeListener { view, hasFocus ->
+            etAvailableFrom.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
                 if (hasFocus) myDatePicker.show(parentFragmentManager, "DATE_PICKER")
             }
 
@@ -715,6 +719,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
             // Save Button
             btnSubmit.setOnClickListener {
+                binding.root.clearFocus() // Clear Focus To Update Changes to ViewModel
                 if (propertyIdToEdit == null)
                     viewModel.createProperty(currentUser.id)
                 else {
