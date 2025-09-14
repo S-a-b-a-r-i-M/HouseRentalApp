@@ -25,3 +25,12 @@ fun Long.fromEpoch(format: String = "dd/MM/yyyy"): String {
     val formatter = DateTimeFormatter.ofPattern(format)
     return formatter.format(zonedDateTime)
 }
+
+fun Long.getTimePeriod(): String {
+    val currentHour = this.fromEpoch("HH").toInt()
+    return when {
+        currentHour < 12 -> "\uD83C\uDF24\uFE0F Good Morning"
+        currentHour < 18 -> "☀️ Good Afternoon"
+        else -> "Hope you had a great day"
+    }
+}

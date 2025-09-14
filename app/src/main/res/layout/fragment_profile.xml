@@ -29,7 +29,7 @@
         android:id="@+id/img_user_profile"
         android:layout_width="125dp"
         android:layout_height="125dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         app:shapeAppearanceOverlay="@style/CircleImage"
         android:src="@drawable/room_1"
         android:scaleType="centerCrop" />
@@ -40,7 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Good Morning User 🌤️"
+        android:text="Good Morning User "
+        android:textSize="15sp"
         android:textColor="@color/black" />
 
     <TextView
