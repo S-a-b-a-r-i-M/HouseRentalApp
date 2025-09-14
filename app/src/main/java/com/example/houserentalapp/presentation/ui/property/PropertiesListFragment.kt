@@ -62,7 +62,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUser ?: run {
+        currentUser = sharedDataViewModel.currentUserData ?: run {
             mainActivity.showToast("Login again...")
             mainActivity.finish()
             return

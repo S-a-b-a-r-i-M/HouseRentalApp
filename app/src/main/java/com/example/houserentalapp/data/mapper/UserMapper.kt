@@ -5,9 +5,7 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logError
 
 object UserMapper {
-    fun entityToDomain(entity: UserEntity): User? {
-        requireNotNull(entity.id)
-
+    fun entityToDomain(entity: UserEntity): User {
         return User(
             id = entity.id,
             name = entity.name,

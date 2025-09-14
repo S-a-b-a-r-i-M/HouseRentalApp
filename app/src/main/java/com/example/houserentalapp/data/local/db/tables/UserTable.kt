@@ -6,6 +6,7 @@ object UserTable {
     const val COLUMN_NAME = "name" // Min - 3, Max - 50
     const val COLUMN_EMAIL = "email"
     const val COLUMN_PHONE = "phone"
+    const val COLUMN_PROFILE_IMAGE_ADDRESS = "profile_image"
     const val COLUMN_HASHED_PASSWORD = "hashed_password"
     const val COLUMN_CREATED_AT = "created_at"
 //    const val COLUMN_MODIFIED_AT = "modified_at"
@@ -16,6 +17,7 @@ object UserTable {
             $COLUMN_NAME TEXT NOT NULL,
             $COLUMN_EMAIL TEXT UNIQUE NOT NULL UNIQUE,
             $COLUMN_PHONE TEXT UNIQUE NOT NULL UNIQUE,
+            $COLUMN_PROFILE_IMAGE_ADDRESS TEXT,
             $COLUMN_HASHED_PASSWORD TEXT NOT NULL,
             $COLUMN_CREATED_AT INTEGER NOT NULL DEFAULT (strftime('%s', 'now'))
         )

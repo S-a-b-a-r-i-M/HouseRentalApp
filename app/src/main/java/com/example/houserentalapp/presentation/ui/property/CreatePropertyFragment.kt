@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
@@ -141,7 +140,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreatePropertyBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUser ?: run {
+        currentUser = sharedDataViewModel.currentUserData ?: run {
             mainActivity.showToast("Login again...")
             mainActivity.finish()
             return
@@ -175,7 +174,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         if (viewModel.isFormDirty())
             AlertDialog.Builder(mainActivity)
                 .setTitle("Discard Changes")
-                .setMessage("Are you sure you want to discard the form?")
+                .setMessage("Are you sure you want to discard the changes ?")
                 .setPositiveButton("Discard") { _, _ ->
                     viewModel.resetForm()
                     parentFragmentManager.popBackStack()

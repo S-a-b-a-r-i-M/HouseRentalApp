@@ -124,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:textColor="@color/primary_blue_dark"
+        android:textColor="?attr/colorPrimaryDark"
         app:layout_constraintStart_toEndOf="@id/tvMinBudgetLabel"
         app:layout_constraintTop_toBottomOf="@id/tvBudget"/>
 
@@ -145,7 +145,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:textColor="@color/primary_blue_dark"
+        android:textColor="?attr/colorPrimaryDark"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvBudget"/>
 

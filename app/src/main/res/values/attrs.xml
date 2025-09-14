@@ -1,23 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="label" format="string" />
+    <attr name="labelSize" format="dimension" />
+    <attr name="iconWidth" format="dimension" />
+    <attr name="iconHeight" format="dimension" />
+    <attr name="labelColor" format="color" />
+
     <declare-styleable name="CounterView">
-        <attr name="label" format="string" />
+        <attr name="label" />
         <attr name="count" format="integer" />
         <attr name="minCount" format="integer" />
         <attr name="maxCount" format="integer" />
 
         <!-- TEXT SIZES -->
-        <attr name="labelSize" format="dimension" />
+        <attr name="labelSize" />
         <attr name="counterSize" format="dimension" />
 
         <!-- ICON DIMENSIONS -->
-        <attr name="iconWidth" format="dimension" />
-        <attr name="iconHeight" format="dimension" />
+        <attr name="iconWidth" />
+        <attr name="iconHeight" />
 
         <!-- COLORS -->
-        <attr name="labelColor" format="color" />
+        <attr name="labelColor" />
         <attr name="counterColor" format="color" />
         <attr name="iconTintColor" format="color" />
         <attr name="iconBackgroundColor" format="color" />
+    </declare-styleable>
+
+    <declare-styleable name="InlineEditView">
+        <attr name="label" />
+        <attr name="value" format="string" />
+
+        <!-- TEXT SIZES -->
+        <attr name="labelSize" />
+
+        <!-- ICON DIMENSIONS -->
+        <attr name="iconWidth" />
+        <attr name="iconHeight" />
+
+        <!-- COLORS -->
+        <attr name="labelColor" />
+        <attr name="valueColor" format="color" />
+        <attr name="editIconTintColor" format="color" />
+        <attr name="editIconBackgroundColor" format="color" />
+        <attr name="saveIconTintColor" format="color" />
+        <attr name="saveIconBackgroundColor" format="color" />
+        <attr name="cancelIconTintColor" format="color" />
+        <attr name="cancelIconBackgroundColor" format="color" />
     </declare-styleable>
 </resources>

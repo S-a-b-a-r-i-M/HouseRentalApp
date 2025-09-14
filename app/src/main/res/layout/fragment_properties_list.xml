@@ -62,7 +62,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/toolBarLayout"
-                    app:strokeColor="@color/primary_blue"
+                    app:strokeColor="?attr/colorPrimary"
                     app:strokeWidth="2dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -70,7 +70,7 @@
                     android:minWidth="60dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:backgroundTint="@color/primary_blue"
+                    android:backgroundTint="?attr/colorPrimary"
                     android:layout_marginHorizontal="4dp"
                     android:padding="0dp"
                     app:cornerRadius="4dp"
@@ -82,7 +82,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
                     android:layout_margin="4dp"
-                    app:tint="@color/primary_blue"
+                    app:tint="?attr/colorPrimary"
                     android:background="@drawable/image_btn_background"
                     android:src="@drawable/outline_swap_vert_24"
                     android:contentDescription="@string/sort"/>
@@ -99,7 +99,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="25dp"
         android:layout_marginBottom="25dp"
-        app:tint="@color/primary_blue"
+        app:tint="?attr/colorPrimary"
         android:backgroundTint="@color/primary_blue_very_light"
         android:src="@drawable/baseline_favorite_filled"
         android:contentDescription="@string/open_shortlists"
@@ -120,7 +120,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:indeterminateTint="@color/primary_blue"
+        android:indeterminateTint="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

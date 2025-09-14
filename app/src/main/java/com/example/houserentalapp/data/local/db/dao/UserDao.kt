@@ -8,7 +8,8 @@ import com.example.houserentalapp.data.local.db.entity.UserEntity
 import com.example.houserentalapp.data.local.db.entity.UserPreferenceEntity
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
-import com.example.houserentalapp.presentation.utils.extensions.logError
+import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.domain.model.enums.UserField
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -48,7 +49,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- READ --------------
-    suspend fun getUserById(userId: Long): UserEntity? = withContext(Dispatchers.IO) {
+    suspend fun getUserById(userId: Long): UserEntity = withContext(Dispatchers.IO) {
         val cursor = readableDB.query(
             UserTable.TABLE_NAME,
             null,
@@ -58,10 +59,11 @@ class UserDao(private val dbHelper: DatabaseHelper) {
         )
 
         cursor.use {
-            return@withContext if (it.moveToFirst()) {
-                mapCursorToUserEntity(it)
-            } else null
+             if (it.moveToFirst())
+                return@withContext mapCursorToUserEntity(it)
         }
+
+        throw IllegalArgumentException("User Not found at the given id: $userId")
     }
 
     suspend fun getUserByPhone(phone: String): UserEntity? =
@@ -128,6 +130,25 @@ class UserDao(private val dbHelper: DatabaseHelper) {
             values,
             "${UserPreferenceTable.COLUMN_USER_ID} = ?",
             arrayOf(entity.userId.toString())
+        )
+    }
+
+    fun updateUser(modifiedUser: User, updatedFields: List<UserField>) : Int {
+        val values = ContentValues()
+        updatedFields.forEach { field ->
+            when (field) {
+                UserField.NAME -> values.put(UserTable.COLUMN_NAME, modifiedUser.name)
+                UserField.PHONE -> values.put(UserTable.COLUMN_EMAIL, modifiedUser.email)
+                UserField.EMAIL -> values.put(UserTable.COLUMN_PHONE, modifiedUser.phone)
+                UserField.PROFILE_IMAGE -> { }
+            }
+        }
+
+        return writableDB.update(
+            UserTable.TABLE_NAME,
+            values,
+            "${UserTable.COLUMN_ID} = ?",
+            arrayOf(modifiedUser.id.toString())
         )
     }
 

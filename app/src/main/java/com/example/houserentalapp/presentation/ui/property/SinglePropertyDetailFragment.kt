@@ -75,7 +75,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSinglePropertyDetailBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUser ?: run {
+        currentUser = sharedDataViewModel.currentUserData ?: run {
             mainActivity.showToast("Login again...")
             mainActivity.finish()
             return

@@ -42,7 +42,7 @@
             android:src="@drawable/outline_ellipsis"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/primary_blue_dark" />
+            app:tint="?attr/colorPrimaryDark" />
 
         <View
             android:id="@+id/separator2"

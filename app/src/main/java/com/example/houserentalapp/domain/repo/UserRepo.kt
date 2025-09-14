@@ -2,6 +2,7 @@ package com.example.houserentalapp.domain.repo
 
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPreferences
+import com.example.houserentalapp.domain.model.enums.UserField
 import com.example.houserentalapp.domain.utils.Result
 
 interface UserRepo {
@@ -26,6 +27,8 @@ interface UserRepo {
 
     // UPDATE
     suspend fun updateUserPreferences(userId: Long, preferences: UserPreferences): Result<Boolean>
+
+    suspend fun updateUser(modifiedUser: User, updatedFields: List<UserField>): Result<User>
 
     // DELETE
     suspend fun removeUserSession(userId: Long): Result<Boolean> // On Logout

@@ -138,4 +138,20 @@
     <string name="add_more">+ Add More</string>
     <string name="area_with_sq_ft">%1$d sq.ft.</string>
     <string name="pre_for_suff">%1$s for %2$s</string>
+    <string name="email">email</string>
+    <string name="email_c">Email</string>
+    <string name="phone">phone</string>
+    <string name="phone_c">Phone</string>
+    <string name="log_out">Log Out</string>
+    <string name="name">Name</string>
+    <string name="change_image">Change Image</string>
+    <string name="save">Save</string>
+    <string name="_9987654321">9987654321</string>
+    <string name="andmin_gmail_com">andmin@gmail.com</string>
+    <string name="call_us">Call Us</string>
+    <string name="email_us">Email Us</string>
+    <string name="email_gmail_com">email@gmail.com</string>
+    <string name="_9988776655">9988776655</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="customer_support">Customer Support</string>
 </resources>

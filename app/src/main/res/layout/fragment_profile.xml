@@ -1,16 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".presentation.ui.profile.ProfileFragment"
     android:background="@color/white_blue">
 
-    <!-- TODO: Update blank fragment layout -->
+    <!--  APP BAR  -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/toolBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Profile"
+            app:titleTextAppearance="@style/TextAppearance.App.Toolbar"
+            app:menu="@menu/profile_toolbar_menu" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/img_user_profile"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_marginTop="30dp"
+        app:shapeAppearanceOverlay="@style/CircleImage"
+        android:src="@drawable/room_1"
+        android:scaleType="centerCrop" />
+
     <TextView
+        android:id="@+id/tvWelcome"
+        style="@style/TextAppearance.App.Body1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="profile_fragment" />
+        android:layout_marginTop="8dp"
+        android:text="Good Morning User 🌤️"
+        android:textColor="@color/black" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tvUserEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/email_gmail_com"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvLabelName"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabelName" />
+
+    <TextView
+        android:id="@+id/tvUserPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/_9988776655"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tvLabelName"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabelEmail" />
+
+    <TextView
+        android:id="@+id/tvEditProfile"
+        style="@style/TextAppearance.App.LabelMedium"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:text="@string/edit_profile"
+        android:clickable="true"
+        android:focusable="true"
+        android:textColor="?attr/colorPrimaryDark"
+        app:drawableStartCompat="@drawable/outline_person_edit_16"
+        app:drawableTint="?attr/colorPrimaryDark"
+        android:drawablePadding="2dp"/>
+
+    <TextView
+        android:id="@+id/tvCustomerSupport"
+        style="@style/TextAppearance.App.Body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="8dp"
+        android:text="@string/customer_support" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        android:layout_margin="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp">
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.50" />
+
+            <TextView
+                android:id="@+id/tvCall"
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/call_us"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvAdminPhone"
+                style="@style/TextAppearance.App.LabelMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/_9987654321"
+                android:textStyle="normal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvCall"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"/>
+
+            <ImageButton
+                android:id="@+id/ibtnDialAdmin"
+                android:layout_width="40dp"
+                android:layout_height="45dp"
+                android:src="@drawable/baseline_call_24"
+                android:backgroundTint="?attr/colorPrimary"
+                app:layout_constraintBottom_toTopOf="@+id/guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/phone"
+                app:tint="@color/white" />
+
+            <View
+                android:id="@+id/separator"
+                style="@style/Separator"
+                android:layout_width="match_parent"
+                android:layout_height="0.25dp"
+                android:layout_marginTop="2dp"
+                app:layout_constraintTop_toTopOf="@id/guideline"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/tvEmail"
+                style="@style/TextAppearance.Material3.LabelLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/email_us"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+            <TextView
+                android:id="@+id/tvAdminEmail"
+                style="@style/TextAppearance.App.LabelMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/andmin_gmail_com"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+
+            <ImageButton
+                android:id="@+id/ibtnEmailAdmin"
+                android:layout_width="40dp"
+                android:layout_height="45dp"
+                android:layout_marginTop="4dp"
+                android:backgroundTint="?attr/colorPrimary"
+                android:contentDescription="@string/email"
+                android:src="@drawable/baseline_email_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline"
+                app:tint="@color/white" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

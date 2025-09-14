@@ -46,7 +46,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUser ?: run {
+        currentUser = sharedDataViewModel.currentUserData ?: run {
             mainActivity.showToast("Login again...")
             mainActivity.finish()
             return

@@ -68,7 +68,7 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
         }
     }
 
-    private val permissionLauncher = registerForActivityResult(
+    private val cameraPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
@@ -133,7 +133,7 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
         if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.CAMERA)
             != PackageManager.PERMISSION_GRANTED
         )
-            permissionLauncher.launch(Manifest.permission.CAMERA)
+            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
         else
             openCamera()
     }

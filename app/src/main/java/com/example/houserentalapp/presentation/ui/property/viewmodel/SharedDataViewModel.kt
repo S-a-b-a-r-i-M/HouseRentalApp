@@ -1,16 +1,20 @@
 package com.example.houserentalapp.presentation.ui.property.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
 class SharedDataViewModel : ViewModel() {
-    var currentUser: User? = null
+    var currentUserData: User? = null
         private set
+
+    private val _currentUser = MutableLiveData<User>()
+    val currentUser: LiveData<User> = _currentUser
 
     private val _fPropertiesListStore = mutableMapOf<String, Any>()
     val propertiesListStore: Map<String, Any> = _fPropertiesListStore
-
     private val _fSearchViewStore = mutableMapOf<String, Any>()
     val fSearchViewStore: Map<String, Any> = _fSearchViewStore
 
@@ -34,7 +38,8 @@ class SharedDataViewModel : ViewModel() {
     }
 
     fun setCurrentUser(user: User) {
-        logDebug("CurrentUser is initialized: $user")
-        currentUser = user
+        logDebug("CurrentUser is set: $user")
+        currentUserData = user
+        _currentUser.value = user
     }
 }

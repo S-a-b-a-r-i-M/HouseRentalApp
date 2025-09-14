@@ -9,8 +9,10 @@ import com.example.houserentalapp.data.mapper.UserMapper
 import com.example.houserentalapp.data.mapper.UserPreferencesMapper
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPreferences
+import com.example.houserentalapp.domain.model.enums.UserField
 import com.example.houserentalapp.domain.repo.UserRepo
 import com.example.houserentalapp.domain.utils.Result
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
@@ -27,6 +29,7 @@ class UserRepoImpl(context: Context) : UserRepo {
     ): Result<Long> {
         return try {
             val userEntity = UserEntity(
+                id = 0,
                 name = name,
                 email = email,
                 phone = phoneNumber,
@@ -63,9 +66,9 @@ class UserRepoImpl(context: Context) : UserRepo {
     }
 
     // -------------- READ --------------
-    override suspend fun getUserById(userId: Long): Result<User?> {
+    override suspend fun getUserById(userId: Long): Result<User> {
         return try {
-            val entity = userDao.getUserById(userId) ?: return Result.Success(null)
+            val entity = userDao.getUserById(userId)
             Result.Success(UserMapper.entityToDomain(entity))
         } catch (e: Exception) {
             Result.Error(e.message.toString())
@@ -98,6 +101,22 @@ class UserRepoImpl(context: Context) : UserRepo {
             val entity = UserPreferencesMapper.domainToEntity(userId, preferences)
             val rowsAffected = userDao.updateUserPreferences(entity)
             Result.Success(rowsAffected > 0)
+        } catch (e: Exception) {
+            Result.Error(e.message.toString())
+        }
+    }
+
+    override suspend fun updateUser(
+        modifiedUser: User, updatedFields: List<UserField>
+    ): Result<User> {
+        return try {
+            if (UserField.PROFILE_IMAGE in updatedFields) {
+                // delete existing profile image
+                // store new profile image
+            }
+            val rowsAffected = userDao.updateUser(modifiedUser, updatedFields)
+            logDebug("Update user details row count: $rowsAffected")
+            return getUserById(modifiedUser.id)
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
