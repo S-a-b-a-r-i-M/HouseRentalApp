@@ -46,6 +46,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getRequiredStyleLabel
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
@@ -487,19 +488,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                             setLayoutParams(params)
                         }
-                        when(val imageSource = propertyImages[i].imageSource) {
-                            is ImageSource.LocalFile -> {
-                                val file = File(imageSource.filePath)
-                                if (!file.exists()) {
-                                    logWarning("Image(${imageSource.filePath}) is not exists")
-                                    continue
-                                }
-                                imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
-                            }
-                            is ImageSource.Uri -> {
-                                imageView.setImageURI(imageSource.uri)
-                            }
-                        }
+                        loadImageSourceToImageView(propertyImages[i].imageSource, imageView)
 
                         // Add Image to the view
                         llUploadedImages.addView(imageView)

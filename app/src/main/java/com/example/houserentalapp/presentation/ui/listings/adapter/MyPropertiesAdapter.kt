@@ -21,9 +21,9 @@ import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesDiffCallBack
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
-import java.io.File
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.google.android.material.imageview.ShapeableImageView
 
 class MyPropertiesAdapter(
     val onClick: (Long) -> Unit,
@@ -31,8 +31,7 @@ class MyPropertiesAdapter(
 )
     : RecyclerView.Adapter<MyPropertiesAdapter.ViewHolder>() {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-//        private var imageContainer: LinearLayout = itemView.findViewById(R.id.imageContainer)
-        private var imageView: ImageView = itemView.findViewById(R.id.imgProperty)
+        private var imageView: ShapeableImageView = itemView.findViewById(R.id.imgProperty)
         private var tvHeader: TextView = itemView.findViewById(R.id.tvHeader)
         private var tvBody1: TextView = itemView.findViewById(R.id.tvBody1)
         private var tvBody2: TextView = itemView.findViewById(R.id.tvBody2)
@@ -49,23 +48,7 @@ class MyPropertiesAdapter(
 
             // Add images programmatically
             if (summary.images.isNotEmpty()) try {
-                val image = summary.images[0]
-                when(image.imageSource) {
-                    is ImageSource.LocalFile -> {
-                        val file = File(image.imageSource.filePath)
-                        if (!file.exists())
-                            logWarning(
-                                "Image(${image.imageSource.filePath}) is not exists, property:${summary.id}"
-                            )
-                        else
-                            imageView.setImageBitmap(
-                                BitmapFactory.decodeFile(file.absolutePath)
-                            )
-                    }
-                    is ImageSource.Uri -> {
-                        imageView.setImageURI(image.imageSource.uri)
-                    }
-                }
+                loadImageSourceToImageView(summary.images[0].imageSource, imageView)
             } catch (exp: Exception) {
                 logError("Error on Add images programmatically exp:${exp.message}")
             }

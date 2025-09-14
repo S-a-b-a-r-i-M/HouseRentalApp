@@ -11,13 +11,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
-import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import java.io.File
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 
 // TODO: Fix Image iteration
 class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Long) -> Unit)? = null)
@@ -44,21 +42,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                     try {
                         val shapableImageView = context.getShapableImageView(imageWidth)
                         // Load Image
-                        when(it.imageSource) {
-                            is ImageSource.LocalFile -> {
-                                val file = File(it.imageSource.filePath)
-                                if (!file.exists()) {
-                                    logWarning(
-                                        "Image(${it.imageSource.filePath}) is not exists, property:${summary.id}"
-                                    )
-                                    return@forEach
-                                }
-                                shapableImageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
-                            }
-                            is ImageSource.Uri -> {
-                                shapableImageView.setImageURI(it.imageSource.uri)
-                            }
-                        }
+                        loadImageSourceToImageView(it.imageSource, shapableImageView)
                         imageContainer.addView(shapableImageView)
                         // TODO: Need to check this
                        // Glide.with(itemView).load(file).into(shapableImageView)

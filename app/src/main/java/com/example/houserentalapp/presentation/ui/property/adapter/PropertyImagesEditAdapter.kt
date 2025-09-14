@@ -12,29 +12,19 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.google.android.material.imageview.ShapeableImageView
 import java.io.File
 
 class PropertyImagesEditAdapter(val onDeleteBtnClick: (PropertyImage) -> Unit) :
     RecyclerView.Adapter<PropertyImagesEditAdapter.ViewHolder>()
 {
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val imageView: ShapeableImageView = itemView.findViewById(R.id.imageView)
         val ibtnDelete: ImageButton = itemView.findViewById(R.id.ibtnDeleteImage)
 
         fun bind(propertyImage: PropertyImage) {
-            when(val imageSource = propertyImage.imageSource) {
-                is ImageSource.LocalFile -> {
-                    val file = File(imageSource.filePath)
-                    if (!file.exists()) {
-                        logWarning("Image(${imageSource.filePath}) is not exists")
-                        return
-                    }
-                    imageView.setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
-                }
-                is ImageSource.Uri -> {
-                    imageView.setImageURI(imageSource.uri)
-                }
-            }
+            loadImageSourceToImageView(propertyImage.imageSource, imageView)
             ibtnDelete.setOnClickListener {
                 deleteActionTriggeredUri = propertyImage
                 onDeleteBtnClick(propertyImage)
