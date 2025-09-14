@@ -3,7 +3,7 @@ package com.example.houserentalapp.data.local.db
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import com.example.houserentalapp.data.local.db.entity.PropertyAddressEntity
-import com.example.houserentalapp.data.local.db.entity.PropertyAmenityEntity
+import com.example.houserentalapp.data.local.db.entity.AmenityEntity
 import com.example.houserentalapp.data.local.db.entity.PropertyEntity
 import com.example.houserentalapp.data.local.db.tables.PropertyAmenitiesTable
 import com.example.houserentalapp.data.local.db.tables.PropertyImagesTable
@@ -23,7 +23,7 @@ import java.sql.SQLException
 
 fun getDummyPropertyEntity(index: Int, userId: Long) =
     PropertyEntity(
-        id = null,
+        id = 0,
         landlordId = userId,
         name = listOf("Hulk Home", "Tony Stark Home", "Captain Home", "Black Widow Home", "Thor Home", "Vijay", "Rajini", "Ajith", "Kamalhasan", "Ambani", "Aadhani", "Elon Musk").random() + index,
         description = "Description is a brief way to tell about your house.",
@@ -32,26 +32,26 @@ fun getDummyPropertyEntity(index: Int, userId: Long) =
         type = PropertyType.entries.random().readable,
         furnishingType = FurnishingType.entries.random().readable,
         amenities = listOf(
-            PropertyAmenityEntity(
-                id = null,
+            AmenityEntity(
+                id = 0,
                 name = CountableInternalAmenity.FAN.readable,
                 type = AmenityType.INTERNAL_COUNTABLE.readable,
                 count = 2
             ),
-            PropertyAmenityEntity(
-                id = null,
+            AmenityEntity(
+                id = 0,
                 name = InternalAmenity.FRIDGE.readable,
                 type = AmenityType.INTERNAL.readable,
                 count = null
             ),
-            PropertyAmenityEntity(
-                id = null,
+            AmenityEntity(
+                id = 0,
                 name = SocialAmenity.SWIMMING_POOL.readable,
                 type = AmenityType.SOCIAL.readable,
                 count = null
             ),
-            PropertyAmenityEntity(
-                id = null,
+            AmenityEntity(
+                id = 0,
                 name = SocialAmenity.POWER_BACKUP.readable,
                 type = AmenityType.SOCIAL.readable,
                 count = null
@@ -165,7 +165,7 @@ fun insertInitialData(db: SQLiteDatabase) {
                     put(PropertyImagesTable.COLUMN_IS_PRIMARY, if (it.isPrimary) 1 else 0)
                 }
 
-                it.id = db.insert(PropertyImagesTable.TABLE_NAME, null, values)
+                db.insert(PropertyImagesTable.TABLE_NAME, null, values)
             }
 
             entity.amenities.forEach {

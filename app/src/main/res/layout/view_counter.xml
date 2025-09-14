@@ -11,12 +11,14 @@
         android:layout_gravity="start"
         android:layout_weight="1" />
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/btnDecrement"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:background="@drawable/outline_remove_24"
-        app:backgroundTint="@color/icon_button_color" />
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:src="@drawable/outline_remove_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/decrement"
+        app:tint="@color/gray_medium" />
 
     <TextView
         android:id="@+id/tvCount"
@@ -27,10 +29,12 @@
         android:text="0"
         android:layout_marginHorizontal="5dp" />
 
-    <com.google.android.material.button.MaterialButton
+    <ImageButton
         android:id="@+id/btnIncrement"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
-        android:background="@drawable/outline_add_24"
-        app:backgroundTint="@color/icon_button_color" />
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:src="@drawable/outline_add_24"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/increment"
+        app:tint="@color/gray_medium" />
 </merge>

@@ -47,7 +47,7 @@
 
             <ImageButton
                 android:id="@+id/ibtnAction"
-                android:layout_width="24dp"
+                android:layout_width="28dp"
                 android:layout_height="24dp"
                 android:layout_marginEnd="4dp"
                 android:background="?attr/selectableItemBackgroundBorderless"

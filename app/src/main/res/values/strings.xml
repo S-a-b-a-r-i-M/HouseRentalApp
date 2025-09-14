@@ -72,6 +72,9 @@
     <string name="select_your_preference_for_bachelors">Select your preference for bachelors</string>
     <string name="open_for_both">Open for Both</string>
     <string name="post_property">Post Property</string>
+    <string name="posting">Posting...</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="saving">Saving...</string>
     <string name="back">back</string>
     <string name="hamburger">hamburger</string>
     <string name="sort">sort</string>
@@ -133,4 +136,6 @@
     <string name="increment">increment</string>
     <string name="decrement">decrement</string>
     <string name="add_more">+ Add More</string>
+    <string name="area_with_sq_ft">%1$d sq.ft.</string>
+    <string name="pre_for_suff">%1$s for %2$s</string>
 </resources>

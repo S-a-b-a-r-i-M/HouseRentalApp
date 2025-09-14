@@ -1,7 +1,7 @@
 package com.example.houserentalapp.data.local.db.entity
 
 data class PropertyEntity (
-    val id: Long?,
+    val id: Long,
     val landlordId: Long,
     val name: String,
     val description: String?,
@@ -9,7 +9,7 @@ data class PropertyEntity (
     val kind: String,
     val type: String,
     val furnishingType: String,
-    val amenities: List<PropertyAmenityEntity>,
+    val amenities: List<AmenityEntity>,
     val preferredTenants: String,
     val preferredBachelorType: String?,
     val transactionType: String?,

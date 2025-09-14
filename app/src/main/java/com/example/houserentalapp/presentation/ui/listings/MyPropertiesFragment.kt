@@ -2,8 +2,10 @@ package com.example.houserentalapp.presentation.ui.listings
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
@@ -33,10 +35,6 @@ import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import kotlin.getValue
 
-/* TODO:
-    1. Think about icon click -> edit, un available, delete
-
- */
 class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     private lateinit var binding: FragmentMyPropertyBinding
     private lateinit var mainActivity: MainActivity
@@ -128,7 +126,11 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     private fun onPropertyAction(summary: PropertySummary, action: PropertyLandlordAction) {
         when(action) {
             PropertyLandlordAction.EDIT -> {
-
+                val destinationFragment = CreatePropertyFragment()
+                destinationFragment.arguments = Bundle().apply {
+                    putLong(CreatePropertyFragment.PROPERTY_ID_KEY, summary.id)
+                }
+                mainActivity.addFragment(destinationFragment, true)
             }
             PropertyLandlordAction.CHANGE_AVAILABILITY -> {
                 val newActiveState = !summary.isActive

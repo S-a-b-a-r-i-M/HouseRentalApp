@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -33,10 +35,6 @@ import com.example.houserentalapp.databinding.ViewCounterBinding
         app:counterColor="@color/primary_blue"
         app:iconTintColor="@color/primary_blue" />
  */
-
-/* TODO
-    1. View Counter Color and touch target
-*/
 
 class CounterView @JvmOverloads constructor(
     context: Context,
@@ -119,8 +117,8 @@ class CounterView @JvmOverloads constructor(
     var iconTintColor: Int = DEFAULT_COLOR
         set(value) {
             field = value
-            binding.btnDecrement.backgroundTintList = ColorStateList.valueOf(value)
-            binding.btnIncrement.backgroundTintList = ColorStateList.valueOf(value)
+            binding.btnDecrement.imageTintList = ColorStateList.valueOf(value)
+            binding.btnIncrement.imageTintList = ColorStateList.valueOf(value)
         }
 
     // CLICK LISTENERS
@@ -173,6 +171,28 @@ class CounterView @JvmOverloads constructor(
         updateButtonStatus()
     }
 
+    // Save Into State
+    override fun onSaveInstanceState(): Parcelable? {
+        return Bundle().apply {
+            // Save Parent Sate
+            putParcelable("superState", super.onSaveInstanceState())
+            // Save Our Class States
+            putInt("count", count)
+        }
+    }
+
+    // Restore From State
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        if (state is Bundle) {
+            // Parse Our Class State
+            count = state.getInt("count")
+            // Parse Parent State
+            super.onRestoreInstanceState(state.getParcelable("superState"))
+        }
+        else
+            super.onRestoreInstanceState(state)
+    }
+
     private fun updateIconDimensions() {
         val widthPx = iconWidth.dpToPX()
         val heightPx = iconHeight.dpToPX()
@@ -190,23 +210,31 @@ class CounterView @JvmOverloads constructor(
     private fun updateButtonStatus() {
         with(binding) {
             if (count == minCount) {
-                btnDecrement.isEnabled = false
-                btnDecrement.alpha = 0.2f
-                btnDecrement.isClickable = false
-            } else if (count == minCount + 1) {
-                btnDecrement.isEnabled = true
-                btnDecrement.alpha = 1f
-                btnDecrement.isClickable = true
+                btnDecrement.apply {
+                    isEnabled = false
+                    alpha = 0.2f
+                    isClickable = false
+                }
+            } else if (count > minCount) {
+                btnDecrement.apply {
+                    isEnabled = true
+                    alpha = 1f
+                    isClickable = true
+                }
             }
 
             if (count == maxCount) {
-                btnIncrement.isEnabled = false
-                btnIncrement.alpha = 0.2f
-                btnIncrement.isClickable = false
-            } else if (count == maxCount - 1) {
-                btnIncrement.isEnabled = true
-                btnIncrement.alpha = 1f
-                btnIncrement.isClickable = true
+                btnIncrement.apply {
+                    isEnabled = false
+                    alpha = 0.2f
+                    isClickable = false
+                }
+            } else if (count < maxCount) {
+                btnIncrement.apply {
+                    isEnabled = true
+                    alpha = 1f
+                    isClickable = true
+                }
             }
         }
     }
@@ -242,7 +270,7 @@ class CounterView @JvmOverloads constructor(
 
     // HELPER FUNCTIONS
     private fun Float.dpToPX(): Int = (this * context.resources.displayMetrics.density).toInt()
-    private fun Int.pxToDP(): Float = this / context.resources.displayMetrics.scaledDensity
-    private fun Float.spToPX(): Int = (this * context.resources.displayMetrics.scaledDensity).toInt()
-    private fun Int.pxToSP(): Float = this / context.resources.displayMetrics.scaledDensity
+    private fun Int.pxToDP(): Float = this / context.resources.displayMetrics.density
+    private fun Float.spToPX(): Int = (this * context.resources.displayMetrics.density).toInt()
+    private fun Int.pxToSP(): Float = this / context.resources.displayMetrics.density
 }

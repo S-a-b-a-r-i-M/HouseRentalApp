@@ -4,6 +4,7 @@ import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
+import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.repo.PropertyRepo
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logError
@@ -32,11 +33,28 @@ class PropertyUseCase(private val propertyRepo: PropertyRepo) {
         }
     }
 
-    suspend fun createProperty(property: Property): Result<Long> { // invoke() is Kotlin's way to make objects "callable" like functions
+    suspend fun createProperty(property: Property): Result<Long> {
         return try {
             when(val result = propertyRepo.createProperty(property)){
                 is Result.Success<Long> -> {
                     logInfo("Property(${property.name}) created successfully with id: ${result.data}")
+                    result
+                }
+                is Result.Error -> {
+                    logError("Property Creation failed")
+                    result
+                }
+            }
+        } catch (exp: Exception) {
+            Result.Error("error")
+        }
+    }
+
+    suspend fun updateProperty(property: Property, updatedFields: List<PropertyFields>): Result<Boolean> {
+        return try {
+            when(val result = propertyRepo.updateProperty(property, updatedFields)){
+                is Result.Success<Boolean> -> {
+                    logInfo("Property(${property.name}) updated successfully with id: ${property.id}")
                     result
                 }
                 is Result.Error -> {

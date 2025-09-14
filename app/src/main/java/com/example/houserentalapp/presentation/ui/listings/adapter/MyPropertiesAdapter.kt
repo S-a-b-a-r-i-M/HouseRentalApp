@@ -50,26 +50,25 @@ class MyPropertiesAdapter(
             // Add images programmatically
             if (summary.images.isNotEmpty()) try {
                 val image = summary.images[0]
-                if (image.isPrimary)
-                    when(image.imageSource) {
-                        is ImageSource.LocalFile -> {
-                            val file = File(image.imageSource.filePath)
-                            if (!file.exists())
-                                logWarning(
-                                    "Image(${image.imageSource.filePath}) is not exists, property:${summary.id}"
-                                )
-                            else
-                                imageView.setImageBitmap(
-                                    BitmapFactory.decodeFile(file.absolutePath)
-                                )
-                        }
-                        is ImageSource.Uri -> {
-                            imageView.setImageURI(image.imageSource.uri)
-                        }
+                when(image.imageSource) {
+                    is ImageSource.LocalFile -> {
+                        val file = File(image.imageSource.filePath)
+                        if (!file.exists())
+                            logWarning(
+                                "Image(${image.imageSource.filePath}) is not exists, property:${summary.id}"
+                            )
+                        else
+                            imageView.setImageBitmap(
+                                BitmapFactory.decodeFile(file.absolutePath)
+                            )
                     }
-                } catch (exp: Exception) {
-                    logError("Error on Add images programmatically exp:${exp.message}")
+                    is ImageSource.Uri -> {
+                        imageView.setImageURI(image.imageSource.uri)
+                    }
                 }
+            } catch (exp: Exception) {
+                logError("Error on Add images programmatically exp:${exp.message}")
+            }
             else // Add Place Holder Image
                 imageView.setImageResource(R.drawable.room_1)
 

@@ -17,6 +17,7 @@ import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.CountableInternalAmenity
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.InternalAmenity
+import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.ReadableEnum
@@ -25,47 +26,57 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.enums.PropertyFormField
-import com.example.houserentalapp.presentation.model.PropertyAddressUI
-import com.example.houserentalapp.presentation.model.PropertyBasicUI
-import com.example.houserentalapp.presentation.model.PropertyPreferencesUI
-import com.example.houserentalapp.presentation.model.PropertyPricingUI
+import com.example.houserentalapp.presentation.model.PropertyDataUI
 import com.example.houserentalapp.presentation.utils.helpers.toEpochSeconds
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import kotlinx.coroutines.launch
+import kotlin.String
+import kotlin.collections.emptyMap
 
 class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : ViewModel() {
-    private val _createPropertyResult = MutableLiveData<ResultUI<Long>?>()
-    val createPropertyResult: LiveData<ResultUI<Long>?> = _createPropertyResult
 
-    private val propertyToEdit: Property? = null
+    private object InitialData {
+        var basic = PropertyDataUI()
+        var images = emptyList<PropertyImage>()
+        var icAmenity = emptyMap<CountableInternalAmenity, AmenityDomain>()
+        var internalAmenity = emptyMap<InternalAmenity, AmenityDomain>()
+        var socialAmenity = emptyMap<SocialAmenity, AmenityDomain>()
 
-    // Property Data Models
-    private val _propertyBasicUI = MutableLiveData((PropertyBasicUI()))
-    val propertyBasicUI: LiveData<PropertyBasicUI> = _propertyBasicUI
-    private val _propertyPreferencesUI = MutableLiveData(PropertyPreferencesUI())
-    val propertyPreferencesUI: LiveData<PropertyPreferencesUI> = _propertyPreferencesUI
-    private val _propertyPricingUI = MutableLiveData(PropertyPricingUI())
-    val propertyPricingUI: LiveData<PropertyPricingUI> = _propertyPricingUI
-    private val _propertyAddressUI = MutableLiveData(PropertyAddressUI())
-    val propertyAddressUI: LiveData<PropertyAddressUI> = _propertyAddressUI
+        fun reset() {
+            basic = PropertyDataUI()
+            images = emptyList()
+            icAmenity = emptyMap()
+            internalAmenity = emptyMap()
+            socialAmenity = emptyMap()
+        }
+    }
+
+    private val _submitPropertyResult = MutableLiveData<ResultUI<Boolean>?>()
+    val submitPropertyResult: LiveData<ResultUI<Boolean>?> = _submitPropertyResult
+    private val _propertyToEditResult = MutableLiveData<ResultUI<Property?>?>(null)
+    val propertyToEditResult: LiveData<ResultUI<Property?>?> = _propertyToEditResult
+    private var propertyToEdit: Property? = null
+
+    // Property Data
+    private val _propertyDataUI = MutableLiveData(InitialData.basic)
+    val propertyDataUI: LiveData<PropertyDataUI> = _propertyDataUI
 
     // Images
-    private val _imageUris = MutableLiveData<List<Uri>>(emptyList())
-
-    private val _images = MutableLiveData<List<PropertyImage>>(emptyList())
+    private val _images = MutableLiveData(InitialData.images)
     val images: LiveData<List<PropertyImage>> = _images
 
     // Amenities
-    private val _icAmenityMap = MutableLiveData<Map<CountableInternalAmenity, Int>>(emptyMap())
-    val icAmenityMap: LiveData<Map<CountableInternalAmenity, Int>> = _icAmenityMap
-    private val _internalAmenitySet = MutableLiveData<Set<InternalAmenity>>(emptySet())
-    val internalAmenitySet: LiveData<Set<InternalAmenity>> = _internalAmenitySet
-    private val _socialAmenitySet = MutableLiveData<Set<SocialAmenity>>(emptySet())
-    val socialAmenitySet: LiveData<Set<SocialAmenity>> = _socialAmenitySet
+    private val _icAmenityMap = MutableLiveData(InitialData.icAmenity)
+    val icAmenityMap: LiveData<Map<CountableInternalAmenity, AmenityDomain>> = _icAmenityMap
+    private val _internalAmenityMap = MutableLiveData(InitialData.internalAmenity)
+    val internalAmenityMap: LiveData<Map<InternalAmenity, AmenityDomain>> = _internalAmenityMap
+    private val _socialAmenityMap = MutableLiveData(InitialData.socialAmenity)
+    val socialAmenityMap: LiveData<Map<SocialAmenity, AmenityDomain>> = _socialAmenityMap
 
     private val _validationError = MutableLiveData<String?>()
     val validationError: LiveData<String?> = _validationError
@@ -80,57 +91,36 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         if (formFieldErr.value != null) formFieldErr.value = null
     }
 
-    private fun updatePropertyBasic(field: PropertyFormField, update: (PropertyBasicUI) -> PropertyBasicUI) {
-        val currentValue = _propertyBasicUI.value!!
-        _propertyBasicUI.value = update(currentValue)
-        if (field.isRequired)
-            updateFormFieldError(field)
-    }
-
-    private fun updatePreferences(field: PropertyFormField, update: (PropertyPreferencesUI) -> PropertyPreferencesUI) {
-        val currentValue = _propertyPreferencesUI.value!!
-        _propertyPreferencesUI.value = update(currentValue)
-        if (field.isRequired)
-            updateFormFieldError(field)
-    }
-
-    private fun updatePricing(field: PropertyFormField, update: (PropertyPricingUI) -> PropertyPricingUI) {
-        val currentValue = _propertyPricingUI.value!!
-        _propertyPricingUI.value = update(currentValue)
-        if (field.isRequired)
-            updateFormFieldError(field)
-    }
-
-    private fun updateAddress(field: PropertyFormField, update: (PropertyAddressUI) -> PropertyAddressUI) {
-        val currentValue = _propertyAddressUI.value!!
-        _propertyAddressUI.value = update(currentValue)
+    private fun updatePropertyData(field: PropertyFormField, update: (PropertyDataUI) -> PropertyDataUI) {
+        val currentValue = _propertyDataUI.value!!
+        _propertyDataUI.value = update(currentValue)
         if (field.isRequired)
             updateFormFieldError(field)
     }
 
     fun updateFormValue(field: PropertyFormField, value: String) {
         when (field) {
-            PropertyFormField.NAME -> updatePropertyBasic(field) { it.copy(name = value) }
-            PropertyFormField.DESCRIPTION -> updatePropertyBasic(field) { it.copy(description = value) }
-            PropertyFormField.STREET -> updateAddress(field) { it.copy(street = value)}
-            PropertyFormField.LOCALITY -> updateAddress(field) { it.copy(locality = value)}
-            PropertyFormField.CITY -> updateAddress(field) { it.copy(city = value)}
-            PropertyFormField.PRICE -> updatePricing(field) { it.copy(price = value) }
-            PropertyFormField.MAINTENANCE_CHARGES -> updatePricing(field) { it.copy(maintenanceCharges = value) }
-            PropertyFormField.BUILT_UP_AREA -> updatePropertyBasic(field) { it.copy(builtUpArea = value) }
-            PropertyFormField.SECURITY_DEPOSIT -> updatePricing(field) { it.copy(securityDepositAmount = value) }
-            PropertyFormField.BATH_ROOM_COUNT -> updatePropertyBasic(field) { it.copy(bathRoomCount = value) }
-            PropertyFormField.COVERED_PARKING_COUNT -> updatePreferences(field) { it.copy(countOfCoveredParking = value) }
-            PropertyFormField.OPEN_PARKING_COUNT -> updatePreferences(field) { it.copy(countOfOpenParking = value) }
-            PropertyFormField.AVAILABLE_FROM -> updatePreferences(field) { it.copy(availableFrom = value) }
+            PropertyFormField.NAME -> updatePropertyData(field) { it.copy(name = value) }
+            PropertyFormField.DESCRIPTION -> updatePropertyData(field) { it.copy(description = value) }
+            PropertyFormField.STREET -> updatePropertyData(field) { it.copy(street = value)}
+            PropertyFormField.LOCALITY -> updatePropertyData(field) { it.copy(locality = value)}
+            PropertyFormField.CITY -> updatePropertyData(field) { it.copy(city = value)}
+            PropertyFormField.PRICE -> updatePropertyData(field) { it.copy(price = value) }
+            PropertyFormField.MAINTENANCE_CHARGES -> updatePropertyData(field) { it.copy(maintenanceCharges = value) }
+            PropertyFormField.BUILT_UP_AREA -> updatePropertyData(field) { it.copy(builtUpArea = value) }
+            PropertyFormField.SECURITY_DEPOSIT -> updatePropertyData(field) { it.copy(securityDepositAmount = value) }
+            PropertyFormField.BATH_ROOM_COUNT -> updatePropertyData(field) { it.copy(bathRoomCount = value) }
+            PropertyFormField.COVERED_PARKING_COUNT -> updatePropertyData(field) { it.copy(countOfCoveredParking = value) }
+            PropertyFormField.OPEN_PARKING_COUNT -> updatePropertyData(field) { it.copy(countOfOpenParking = value) }
+            PropertyFormField.AVAILABLE_FROM -> updatePropertyData(field) { it.copy(availableFrom = value) }
             else -> logWarning("Invalid field for updateFormValue String: $field")
         }
     }
 
     fun updateFormValue(field: PropertyFormField, value: Boolean) {
         when (field) {
-            PropertyFormField.IS_PET_FRIENDLY -> updatePreferences(field) { it.copy(isPetAllowed = value) }
-            PropertyFormField.IS_MAINTENANCE_SEPARATE -> updatePricing(field) { it.copy(isMaintenanceSeparate = value) }
+            PropertyFormField.IS_PET_FRIENDLY -> updatePropertyData(field) { it.copy(isPetAllowed = value) }
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> updatePropertyData(field) { it.copy(isMaintenanceSeparate = value) }
             else -> logWarning("Invalid field for updateFormValue Boolean: $field")
         }
     }
@@ -138,25 +128,25 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
     fun updateFormValue(field: PropertyFormField, value: ReadableEnum?) {
         when (field) {
             PropertyFormField.TYPE -> {
-                if (value is PropertyType) updatePropertyBasic(field) {
+                if (value is PropertyType) updatePropertyData(field) {
                     it.copy(type = value)
                 } else
                     logWarning("Invalid value for property type $value")
             }
             PropertyFormField.BHK -> {
-                if (value is BHK) updatePropertyBasic(field) {
+                if (value is BHK) updatePropertyData(field) {
                     it.copy(bhk = value)
                 } else
                     logWarning("Invalid value for property BHK $value")
             }
             PropertyFormField.FURNISHING_TYPE -> {
-                if (value is FurnishingType) updatePreferences(field) {
+                if (value is FurnishingType) updatePropertyData(field) {
                     it.copy(furnishingType = value)
                 } else
                     logWarning("Invalid value for furnishing type $value")
             }
             PropertyFormField.PREFERRED_BACHELOR_TYPE -> {
-                if (value == null || value is BachelorType) updatePreferences(field) {
+                if (value == null || value is BachelorType) updatePropertyData(field) {
                     it.copy(preferredBachelorType = value)
                 } else
                     logWarning("Invalid value for property type $value")
@@ -165,7 +155,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         }
     }
 
-    fun updatePreferredTenants(value: List<TenantType>) = updatePreferences(
+    fun updatePreferredTenants(value: List<TenantType>) = updatePropertyData(
         PropertyFormField.PREFERRED_TENANT_TYPE
     ) {
         it.copy(preferredTenantTypes = value)
@@ -173,30 +163,45 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
 
     fun updateInternalCountableAmenity(amenity: CountableInternalAmenity, updateValue: Int) {
         val mutableMap = _icAmenityMap.value!!.toMutableMap()
-        val newValue = mutableMap.getOrDefault(amenity, 0) + updateValue
-        if (newValue == 0)
+        val amenityDomain = mutableMap.getOrDefault(
+        amenity,
+        AmenityDomain(
+            0,
+            amenity,
+            AmenityType.INTERNAL_COUNTABLE,
+            0
+        ))
+
+        val newCount = (amenityDomain.count ?: 0) + updateValue
+        if (newCount == 0)
             mutableMap.remove(amenity)
         else
-            mutableMap.put(amenity, newValue)
+            mutableMap.put(amenity, amenityDomain.copy(count = newCount))
 
         _icAmenityMap.value = mutableMap
     }
 
     fun onInternalAmenityChanged(amenity: InternalAmenity, value: Boolean) {
-        _internalAmenitySet.value = _internalAmenitySet.value!!.toMutableSet().apply {
+        val currentMap = _internalAmenityMap.value!!
+        if (value && currentMap.containsKey(amenity)) return // Don't add exists value
+
+        _internalAmenityMap.value = currentMap.toMutableMap().apply {
             if (value)
-                add(amenity)
+                put(amenity, AmenityDomain(0L, amenity, AmenityType.INTERNAL))
             else
                 remove(amenity)
         }
     }
 
     fun onSocialAmenityChanged(amenity: SocialAmenity, value: Boolean) {
-        _socialAmenitySet.value = _socialAmenitySet.value!!.apply {
+        val currentMap = _socialAmenityMap.value!!
+        if (value && currentMap.containsKey(amenity)) return // Don't add exists value
+
+        _socialAmenityMap.value = currentMap.toMutableMap().apply {
             if (value)
-                this + amenity
+                put(amenity, AmenityDomain(0L, amenity, AmenityType.SOCIAL))
             else
-                this - amenity
+                remove(amenity)
         }
     }
 
@@ -226,66 +231,280 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         _images.value = currentImages
     }
 
-    fun createProperty() {
+    fun createProperty(currentUserId: Long) {
         // Run validation
         if (!checkValidation()) {
-            logDebug("Validation failed to continue create property, aborting...")
+            logDebug("Validation failed, aborting...")
             _validationError.value = "Validation Failed"
             return
         }
-
         logDebug("Validation success")
+
         // Handle logic
-        val property: Property? = builtPropertyDomain()
+        val property: Property? = builtPropertyDomain(currentUserId)
         if (property == null) {
             logError("Built Property failed")
             return
         }
 
         viewModelScope.launch {
-            _createPropertyResult.value = ResultUI.Loading
+            _submitPropertyResult.value = ResultUI.Loading
             when (val result = propertyUseCase.createProperty(property)) {
                 is Result.Success<Long> -> {
-                    _createPropertyResult.value = ResultUI.Success(result.data)
+                    _submitPropertyResult.value = ResultUI.Success(true)
                     logInfo("Property(${result.data}) Created Successfully")
                 }
                 is Result.Error -> {
-                    _createPropertyResult.value = ResultUI.Error(result.message)
+                    _submitPropertyResult.value = ResultUI.Error(result.message)
                     logError("Property Creation failed")
                 }
             }
         }
     }
 
+    private fun getModifiedFields(
+        oldProperty: Property, modifiedProperty: Property
+    ): List<PropertyFields> {
+        val updatedFields = mutableListOf<PropertyFields>()
+
+        // Basic property fields
+        if (oldProperty.name != modifiedProperty.name) updatedFields.add(PropertyFields.NAME)
+
+        if (oldProperty.description != modifiedProperty.description)
+            updatedFields.add(PropertyFields.DESCRIPTION)
+
+        if (oldProperty.kind != modifiedProperty.kind) updatedFields.add(PropertyFields.KIND)
+
+        if (oldProperty.type != modifiedProperty.type) updatedFields.add(PropertyFields.TYPE)
+
+        if (oldProperty.furnishingType != modifiedProperty.furnishingType)
+            updatedFields.add(PropertyFields.FURNISHING_TYPE)
+
+        // List comparison for preferred tenant types
+        if (oldProperty.preferredTenantType != modifiedProperty.preferredTenantType)
+            updatedFields.add(PropertyFields.PREFERRED_TENANT_TYPE)
+
+        if (oldProperty.preferredBachelorType != modifiedProperty.preferredBachelorType)
+            updatedFields.add(PropertyFields.PREFERRED_BACHELOR_TYPE)
+
+        // Numeric fields
+        if (oldProperty.bathRoomCount != modifiedProperty.bathRoomCount)
+            updatedFields.add(PropertyFields.BATH_ROOM_COUNT)
+
+        if (oldProperty.countOfCoveredParking != modifiedProperty.countOfCoveredParking)
+            updatedFields.add(PropertyFields.COVERED_PARKING_COUNT)
+
+        if (oldProperty.countOfOpenParking != modifiedProperty.countOfOpenParking)
+            updatedFields.add(PropertyFields.OPEN_PARKING_COUNT)
+
+        if (oldProperty.availableFrom != modifiedProperty.availableFrom)
+            updatedFields.add(PropertyFields.AVAILABLE_FROM)
+
+        if (oldProperty.bhk != modifiedProperty.bhk) updatedFields.add(PropertyFields.BHK)
+
+        if (oldProperty.builtUpArea != modifiedProperty.builtUpArea)
+            updatedFields.add(PropertyFields.BUILT_UP_AREA)
+
+        // Boolean fields
+        if (oldProperty.isPetAllowed != modifiedProperty.isPetAllowed)
+            updatedFields.add(PropertyFields.IS_PET_FRIENDLY)
+
+        // Pricing fields
+        if (oldProperty.price != modifiedProperty.price) updatedFields.add(PropertyFields.PRICE)
+
+        if (oldProperty.isMaintenanceSeparate != modifiedProperty.isMaintenanceSeparate)
+            updatedFields.add(PropertyFields.IS_MAINTENANCE_SEPARATE)
+
+        if (oldProperty.maintenanceCharges != modifiedProperty.maintenanceCharges)
+            updatedFields.add(PropertyFields.MAINTENANCE_CHARGES)
+
+        if (oldProperty.securityDepositAmount != modifiedProperty.securityDepositAmount)
+            updatedFields.add(PropertyFields.SECURITY_DEPOSIT)
+
+        // Address comparison
+        if (oldProperty.address != modifiedProperty.address) {
+            val addressChanges = getModifiedAddressFields(
+                oldProperty.address, modifiedProperty.address
+            )
+            updatedFields.addAll(addressChanges)
+        }
+
+        // Amenities comparison
+        if (oldProperty.amenities.toSet() != modifiedProperty.amenities.toSet()) // Converting to set because it wont compare insertion order
+            updatedFields.add(PropertyFields.AMENITIES)
+
+        // Images comparison
+        if (oldProperty.images != modifiedProperty.images)
+            updatedFields.add(PropertyFields.IMAGES)
+
+        return updatedFields
+    }
+
+    // Helper function for address field comparison
+    private fun getModifiedAddressFields(oldAddress: PropertyAddress, newAddress: PropertyAddress) =
+        mutableListOf<PropertyFields>().apply {
+            if (oldAddress.city != newAddress.city) add(PropertyFields.CITY)
+
+            if (oldAddress.street != newAddress.street) add(PropertyFields.STREET)
+
+            if (oldAddress.locality != newAddress.locality) add(PropertyFields.LOCALITY)
+        }
+
+    fun updateProperty(currentUserId: Long) {
+        // Run validation
+        if (!checkValidation()) {
+            logDebug("Validation failed, aborting...")
+            _validationError.value = "Validation Failed"
+            return
+        }
+        logDebug("Validation success")
+
+        val oldProperty = propertyToEdit
+        if (oldProperty == null) {
+            logError("propertyToEdit Should not be null for update property")
+            return
+        }
+
+        // Handle logic
+        val property: Property? = builtPropertyDomain(currentUserId, oldProperty.id)
+        if (property == null) {
+            logError("Built Property failed")
+            return
+        }
+
+        viewModelScope.launch {
+            _submitPropertyResult.value = ResultUI.Loading
+            // Get Modified Fields
+            val updatedFields = getModifiedFields(oldProperty, property)
+            when (val result = propertyUseCase.updateProperty(property, updatedFields)) {
+                is Result.Success<*> -> {
+                    _submitPropertyResult.value = ResultUI.Success(true)
+                    logInfo("Property(${result.data}) updated successfully")
+                }
+                is Result.Error -> {
+                    _submitPropertyResult.value = ResultUI.Error(result.message)
+                    logError("Property update failed")
+                }
+            }
+        }
+    }
+
+    fun loadPropertyToEdit(propertyId: Long) {
+        _propertyToEditResult.value = ResultUI.Loading
+        viewModelScope.launch {
+            try {
+                when (val res = propertyUseCase.getProperty(propertyId)) {
+                    is Result.Success<Property> -> {
+                        logInfo("successfully loaded property(id: $propertyId)")
+                        _propertyToEditResult.value = ResultUI.Success(res.data)
+                        propertyToEdit = res.data
+                        bindPropertyUIData(res.data)
+                    }
+                    is Result.Error -> {
+                        _propertyToEditResult.value = ResultUI.Error(res.message)
+                        logError("Error on loadProperty : ${res.message}")
+                    }
+                }
+            } catch (exp: Exception) {
+                _propertyToEditResult.value = ResultUI.Error("Unexpected Error")
+                logError("Error on loadProperty : ${exp.message}")
+            }
+        }
+    }
+
+    private fun bindPropertyDataUI(property: Property) {
+        val basicUI = PropertyDataUI(
+            name = property.name,
+            description = property.description ?: "",
+            lookingTo= property.lookingTo,
+            kind = property.kind,
+            type = property.type,
+            bhk = property.bhk,
+            builtUpArea = property.builtUpArea.toString(),
+            bathRoomCount = property.bathRoomCount.toString(),
+            price = property.price.toString(),
+            isMaintenanceSeparate = property.isMaintenanceSeparate,
+            maintenanceCharges = property.maintenanceCharges?.toString() ?: "",
+            securityDepositAmount = property.securityDepositAmount.toString(),
+            furnishingType = property.furnishingType,
+            preferredTenantTypes = property.preferredTenantType,
+            preferredBachelorType = property.preferredBachelorType,
+            isPetAllowed = property.isPetAllowed,
+            countOfCoveredParking = property.countOfCoveredParking.toString(),
+            countOfOpenParking = property.countOfOpenParking.toString(),
+            availableFrom = property.availableFrom.fromEpoch(),
+            street = property.address.street,
+            locality = property.address.locality,
+            city = property.address.city,
+        )
+        InitialData.basic = basicUI
+        _propertyDataUI.value = basicUI
+    }
+
+    private fun bindAmenitiesUI(amenities: List<AmenityDomain>) {
+        if (amenities.isEmpty()) return
+
+        val icAmenities = mutableMapOf<CountableInternalAmenity, AmenityDomain>()
+        val internalAmenities = mutableMapOf<InternalAmenity, AmenityDomain>()
+        val societyAmenities = mutableMapOf<SocialAmenity, AmenityDomain>()
+
+        amenities.forEach {
+            when(it.type) {
+                AmenityType.INTERNAL -> {
+                    internalAmenities[it.name as InternalAmenity] = it
+                }
+                AmenityType.SOCIAL -> {
+                    societyAmenities[it.name as SocialAmenity] = it
+                }
+                AmenityType.INTERNAL_COUNTABLE -> {
+                    it.count ?: run {
+                        logWarning("Countable Internal Amenity(${it.name}) count is null")
+                        return@forEach
+                    }
+                    icAmenities[it.name as CountableInternalAmenity] = it
+                }
+            }
+        }
+
+        _icAmenityMap.value = icAmenities
+        _internalAmenityMap.value = internalAmenities
+        _socialAmenityMap.value = societyAmenities
+        InitialData.icAmenity = icAmenities
+        InitialData.internalAmenity = internalAmenities
+        InitialData.socialAmenity = societyAmenities
+    }
+
+    private fun bindPropertyUIData(property: Property) {
+        bindPropertyDataUI(property)
+        bindAmenitiesUI(property.amenities)
+
+        _images.value = property.images
+        InitialData.images = property.images
+    }
+
     fun resetForm() {
         // Reset Main Result
-        _createPropertyResult.value = null
+        _submitPropertyResult.value = null
+        _propertyToEditResult.value = null
+
+        // Reset Initial data
+        InitialData.reset()
 
         // Reset Form Data
-        _propertyBasicUI.value = PropertyBasicUI()
-        _propertyPreferencesUI.value = PropertyPreferencesUI()
-        _propertyAddressUI.value = PropertyAddressUI()
-        _propertyPricingUI.value = PropertyPricingUI()
-        _images.value = emptyList()
+        _propertyDataUI.value = InitialData.basic
+        _images.value = InitialData.images
         // Reset Amenities
-        _icAmenityMap.value = emptyMap()
-        _internalAmenitySet.value = emptySet()
-        _socialAmenitySet.value = emptySet()
+        _icAmenityMap.value = InitialData.icAmenity
+        _internalAmenityMap.value = InitialData.internalAmenity
+        _socialAmenityMap.value = InitialData.socialAmenity
 
         // Reset Form Error
         formErrorMap.forEach { (key, _) -> formErrorMap.getValue(key).value = null }
         logInfo("Form reset is done.")
     }
 
-    fun isFormDirty() {
-
-    }
-
     private fun checkValidation(): Boolean {
-        val basicData = _propertyBasicUI.value!!
-        val preferencesData = _propertyPreferencesUI.value!!
-        val pricingData = _propertyPricingUI.value!!
-        val addressData = _propertyAddressUI.value!!
+        val propertyData = _propertyDataUI.value!!
         var isValidationSuccess = true
 
         // Helper function to reduce repetition
@@ -297,36 +516,36 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
 
         // Name Validation
         when {
-            basicData.name.isEmpty() -> "enter valid input"
-            basicData.name.length < 3 -> "length should be greater than 3"
-            basicData.name.length > 100 -> "length should be less than 100"
+            propertyData.name.isEmpty() -> "enter valid input"
+            propertyData.name.length < 3 -> "length should be greater than 3"
+            propertyData.name.length > 100 -> "length should be less than 100"
             else -> null
         }?.let {
             updateError(PropertyFormField.NAME, it)
         }
 
         fun getDataByField(field: PropertyFormField) = when (field) {
-            PropertyFormField.TYPE -> basicData.type
-            PropertyFormField.BHK -> basicData.bhk
-            PropertyFormField.FURNISHING_TYPE -> preferencesData.furnishingType
-            PropertyFormField.PREFERRED_TENANT_TYPE -> preferencesData.preferredTenantTypes
-            PropertyFormField.NAME -> basicData.name
-            PropertyFormField.DESCRIPTION -> basicData.description
-            PropertyFormField.KIND -> basicData.kind
-            PropertyFormField.PREFERRED_BACHELOR_TYPE -> preferencesData.preferredBachelorType
-            PropertyFormField.COVERED_PARKING_COUNT -> preferencesData.countOfCoveredParking
-            PropertyFormField.OPEN_PARKING_COUNT -> preferencesData.countOfOpenParking
-            PropertyFormField.AVAILABLE_FROM -> preferencesData.availableFrom
-            PropertyFormField.BUILT_UP_AREA -> basicData.builtUpArea
-            PropertyFormField.BATH_ROOM_COUNT -> basicData.bathRoomCount
-            PropertyFormField.IS_PET_FRIENDLY -> preferencesData.isPetAllowed
-            PropertyFormField.PRICE -> pricingData.price
-            PropertyFormField.IS_MAINTENANCE_SEPARATE -> pricingData.isMaintenanceSeparate
-            PropertyFormField.MAINTENANCE_CHARGES -> pricingData.maintenanceCharges
-            PropertyFormField.SECURITY_DEPOSIT -> pricingData.securityDepositAmount
-            PropertyFormField.STREET -> addressData.street
-            PropertyFormField.LOCALITY -> addressData.locality
-            PropertyFormField.CITY -> addressData.city
+            PropertyFormField.TYPE -> propertyData.type
+            PropertyFormField.BHK -> propertyData.bhk
+            PropertyFormField.FURNISHING_TYPE -> propertyData.furnishingType
+            PropertyFormField.PREFERRED_TENANT_TYPE -> propertyData.preferredTenantTypes
+            PropertyFormField.NAME -> propertyData.name
+            PropertyFormField.DESCRIPTION -> propertyData.description
+            PropertyFormField.KIND -> propertyData.kind
+            PropertyFormField.PREFERRED_BACHELOR_TYPE -> propertyData.preferredBachelorType
+            PropertyFormField.COVERED_PARKING_COUNT -> propertyData.countOfCoveredParking
+            PropertyFormField.OPEN_PARKING_COUNT -> propertyData.countOfOpenParking
+            PropertyFormField.AVAILABLE_FROM -> propertyData.availableFrom
+            PropertyFormField.BUILT_UP_AREA -> propertyData.builtUpArea
+            PropertyFormField.BATH_ROOM_COUNT -> propertyData.bathRoomCount
+            PropertyFormField.IS_PET_FRIENDLY -> propertyData.isPetAllowed
+            PropertyFormField.PRICE -> propertyData.price
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> propertyData.isMaintenanceSeparate
+            PropertyFormField.MAINTENANCE_CHARGES -> propertyData.maintenanceCharges
+            PropertyFormField.SECURITY_DEPOSIT -> propertyData.securityDepositAmount
+            PropertyFormField.STREET -> propertyData.street
+            PropertyFormField.LOCALITY -> propertyData.locality
+            PropertyFormField.CITY -> propertyData.city
             PropertyFormField.IMAGES -> null
         }
 
@@ -344,9 +563,8 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         }
 
         // MAINTENANCE_CHARGES Validation
-        if (pricingData.isMaintenanceSeparate == true && pricingData.maintenanceCharges.isEmpty())
+        if (propertyData.isMaintenanceSeparate == true && propertyData.maintenanceCharges.isEmpty())
             updateError(PropertyFormField.MAINTENANCE_CHARGES, "enter valid input")
-
 
         // Int Input Validations
         listOf(
@@ -374,46 +592,42 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         return isValidationSuccess
     }
 
-    private fun builtPropertyDomain() : Property? {
+    private fun builtPropertyDomain(currentUserId: Long, propertyId: Long = 0L) : Property? {
         try {
-            val basicData = _propertyBasicUI.value!!
-            val preferencesData = _propertyPreferencesUI.value!!
-            val pricingData = _propertyPricingUI.value!!
-            val addressData = _propertyAddressUI.value!!
-
+            val basicData = _propertyDataUI.value!!
             val amenities = buildAmenities()
             val address = PropertyAddress(
-                streetName = addressData.street,
-                locality = addressData.locality,
-                city = addressData.city
+                street = basicData.street,
+                locality = basicData.locality,
+                city = basicData.city
             )
 
             return Property(
-                id = null,
-                landlordId = 1,
+                id = propertyId,
+                landlordId = currentUserId,
                 name = basicData.name,
                 description = basicData.description,
                 lookingTo = basicData.lookingTo,
                 kind = PropertyKind.RESIDENTIAL,
                 type = basicData.type!!,
-                furnishingType = preferencesData.furnishingType!!,
+                furnishingType = basicData.furnishingType!!,
                 amenities = amenities,
-                preferredTenantType = preferencesData.preferredTenantTypes!!,
-                preferredBachelorType = preferencesData.preferredBachelorType,
+                preferredTenantType = basicData.preferredTenantTypes!!,
+                preferredBachelorType = basicData.preferredBachelorType,
                 transactionType = null,
                 ageOfProperty = 0,
-                countOfCoveredParking = preferencesData.countOfCoveredParking.toInt(),
-                countOfOpenParking = preferencesData.countOfOpenParking.toInt(),
-                availableFrom = preferencesData.availableFrom.toEpochSeconds(),
+                countOfCoveredParking = basicData.countOfCoveredParking.toInt(),
+                countOfOpenParking = basicData.countOfOpenParking.toInt(),
+                availableFrom = basicData.availableFrom.toEpochSeconds(),
                 bhk = basicData.bhk!!,
                 builtUpArea = basicData.builtUpArea.toInt(),
                 bathRoomCount = basicData.bathRoomCount.toInt(),
-                isPetAllowed = preferencesData.isPetAllowed!!,
+                isPetAllowed = basicData.isPetAllowed!!,
                 isActive = true,
-                price = pricingData.price.toInt(),
-                isMaintenanceSeparate = pricingData.isMaintenanceSeparate!!,
-                maintenanceCharges = pricingData.maintenanceCharges.toIntOrNull(),
-                securityDepositAmount = pricingData.securityDepositAmount.toInt(),
+                price = basicData.price.toInt(),
+                isMaintenanceSeparate = basicData.isMaintenanceSeparate!!,
+                maintenanceCharges = basicData.maintenanceCharges.toIntOrNull(),
+                securityDepositAmount = basicData.securityDepositAmount.toInt(),
                 address = address,
                 images = _images.value!!,
                 createdAt = System.currentTimeMillis()
@@ -424,42 +638,22 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         }
     }
 
-    private fun buildAmenities(): List<AmenityDomain> {
-        val amenities = mutableListOf<AmenityDomain>()
-
-        // Add Countable Internal Amenities
-        icAmenityMap.value!!.forEach { (icAmenity, count) ->
-            amenities.add(AmenityDomain(
-                id = null,
-                name = icAmenity,
-                type = AmenityType.INTERNAL_COUNTABLE,
-                count = count
-            ))
-        }
-
-        // Add Internal Amenities
-        internalAmenitySet.value!!.forEach { intAmenity ->
-            amenities.add(AmenityDomain(
-                id = null,
-                name = intAmenity,
-                type = AmenityType.INTERNAL,
-            ))
-        }
-
-        // Add Internal Amenities
-        socialAmenitySet.value!!.forEach { socialAmenity ->
-            amenities.add(AmenityDomain(
-                id = null,
-                name = socialAmenity,
-                type = AmenityType.SOCIAL,
-            ))
-        }
-
-        return amenities
+    private fun buildAmenities(): List<AmenityDomain> = mutableListOf<AmenityDomain>().apply {
+        _icAmenityMap.value?.let {  addAll(it.values) }
+        _internalAmenityMap.value?.let { addAll(it.values) }
+        _socialAmenityMap.value?.let { addAll(it.values) }
     }
 
     fun clearValidationError() {
         _validationError.value = null
+    }
+
+    fun isFormDirty(): Boolean {
+        return _propertyDataUI.value != InitialData.basic ||
+        _images.value != InitialData.images ||
+        _icAmenityMap.value != InitialData.icAmenity ||
+        _internalAmenityMap.value != InitialData.internalAmenity ||
+        _socialAmenityMap.value != InitialData.socialAmenity
     }
 }
 

@@ -10,7 +10,7 @@ import org.json.JSONArray
 
 object PropertyImageMapper {
     fun toDomain(entity: PropertyImageEntity): PropertyImage {
-        if(entity.id == null)
+        if(entity.id == 0L)
             throw IllegalArgumentException("Property Image id is missing")
 
         return PropertyImage(

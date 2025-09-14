@@ -16,6 +16,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
@@ -25,9 +26,9 @@ import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
-
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
 import com.example.houserentalapp.domain.model.ImageSource
+import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
@@ -37,6 +38,7 @@ import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.ui.common.CounterView
+import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
@@ -60,10 +62,12 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.collections.component1
 import kotlin.collections.component2
+import kotlin.getValue
 
 class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private lateinit var binding: FragmentCreatePropertyBinding
     private lateinit var mainActivity: MainActivity
+    private lateinit var currentUser: User
 
     private val amenitiesBottomSheet by lazy { AmenitiesBottomSheet() }
     private val imagesBottomSheet by lazy { PropertyImagesBottomSheet() }
@@ -71,10 +75,12 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private val viewModel: CreatePropertyViewModel by activityViewModels {
         createPropertyViewModelFactory()
     }
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     private val formTextInputFieldInfoList = mutableListOf<TextInputFieldInfo>()
     private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
     private val formSingleSelectChipGroupsInfo = mutableListOf<SingleSelectableChipGroupInfo>()
+    private var propertyIdToEdit: Long? = null
 
     private val imagesPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -126,9 +132,21 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         mainActivity = context as MainActivity
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        propertyIdToEdit = arguments?.getLong(PROPERTY_ID_KEY)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreatePropertyBinding.bind(view)
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUser ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
+        propertyIdToEdit?.let { viewModel.loadPropertyToEdit(it) } // If Edit Mode
 
         // Set up UI
         setupUI()
@@ -138,6 +156,36 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
         // Observe View Model
         observeViewModel()
+
+        // Handle Back Press
+        addBackPressCallBack()
+    }
+
+    private fun addBackPressCallBack() {
+        mainActivity.onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object: OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    handleOnBackNavigation()
+                }
+            })
+    }
+
+    private fun handleOnBackNavigation() {
+        if (viewModel.isFormDirty())
+            AlertDialog.Builder(mainActivity)
+                .setTitle("Discard Changes")
+                .setMessage("Are you sure you want to discard the form?")
+                .setPositiveButton("Discard") { _, _ ->
+                    viewModel.resetForm()
+                    parentFragmentManager.popBackStack()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        else {
+            viewModel.resetForm()
+            parentFragmentManager.popBackStack()
+        }
     }
 
     private fun setupUI() {
@@ -150,10 +198,16 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         setRequiredFieldIndicator()
 
         with(binding) {
-            toolbar.title = getString(R.string.create_property)
-            toolbar.setNavigationOnClickListener {
-                parentFragmentManager.popBackStack()
+            var titleText = R.string.create_property
+            var submitButtonText = R.string.post_property
+            if (propertyIdToEdit != null) {
+                titleText = R.string.edit_property
+                submitButtonText = R.string.save_changes
             }
+
+            toolbar.title = getString(titleText)
+            btnSubmit.text = getString(submitButtonText)
+            toolbar.setNavigationOnClickListener { handleOnBackNavigation() }
 
             @SuppressLint("ClickableViewAccessibility")
             etPropertyDes.setOnTouchListener { v, event ->
@@ -297,7 +351,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private val chipIdToTenantType = mapOf(
         R.id.chipFamily to TenantType.FAMILY,
-        R.id.chipBachelor to TenantType.BACHELORS
+        R.id.chipBachelors to TenantType.BACHELORS
     )
     private val tenantTypeToChipId = chipIdToTenantType.entries.associate { (k, v) -> v to k }
 
@@ -338,69 +392,60 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         }
     }
 
-    private fun updateTextInputIfNeeds(editText: TextInputEditText, value: String) {
+    private fun updateTextInput(editText: TextInputEditText, value: String) {
         if (value != editText.text.toString())
             editText.setText(value)
     }
 
-    private fun updateCountIfNeeds(counterView: CounterView, value: String) {
+    private fun updateCount(counterView: CounterView, value: String) {
         val count = value.toIntOrNull()
         if (count != null && count != counterView.count)
             counterView.count = value.toIntOrNull() ?: 0
     }
 
-    private fun observePropertyBasic() {
+    private fun observePropertyData() {
         with(binding) {
-            viewModel.propertyBasicUI.observe(viewLifecycleOwner) { data ->
-                updateTextInputIfNeeds(etPropertyName, data.name)
-                updateTextInputIfNeeds(etPropertyDes, data.description)
-                updateTextInputIfNeeds(etBuiltUpArea, data.builtUpArea)
-                updateCountIfNeeds(bathRoomCounter, data.bathRoomCount)
-                if (data.type != null)
-                    chipGroupPropertyType.check(propertyTypeToChipId.getValue(data.type))
-                if (data.bhk != null)
-                    chipGroupBHK.check(bhkToChipId.getValue(data.bhk))
-            }
-        }
-    }
+            viewModel.propertyDataUI.observe(viewLifecycleOwner) {
+                updateTextInput(etPropertyName, it.name)
+                updateTextInput(etPropertyDes, it.description)
+                updateTextInput(etBuiltUpArea, it.builtUpArea)
+                updateTextInput(etPrice, it.price)
+                updateTextInput(etMaintenanceCharge, it.maintenanceCharges)
+                updateTextInput(etSecurityDeposit, it.securityDepositAmount)
+                updateTextInput(etAvailableFrom, it.availableFrom)
+                updateTextInput(etStreet, it.street)
+                updateTextInput(etLocality, it.locality)
+                updateTextInput(etCity, it.city)
 
-    private fun observePropertyPreferences() {
-        with(binding) {
-            viewModel.propertyPreferencesUI.observe(viewLifecycleOwner) {
-                updateCountIfNeeds(coveredParkingCounter, it.countOfCoveredParking)
-                updateCountIfNeeds(openParkingCounter, it.countOfOpenParking)
-                updateTextInputIfNeeds(etAvailableFrom, it.availableFrom)
+                updateCount(bathRoomCounter, it.bathRoomCount)
+                updateCount(coveredParkingCounter, it.countOfCoveredParking)
+                updateCount(openParkingCounter, it.countOfOpenParking)
+
+                if (it.type != null)
+                    chipGroupPropertyType.check(propertyTypeToChipId.getValue(it.type))
+                if (it.bhk != null)
+                    chipGroupBHK.check(bhkToChipId.getValue(it.bhk))
                 if (it.furnishingType != null)
                     chipGroupFurnishing.check(furnishingTypeToChipId.getValue(it.furnishingType))
                 if (it.preferredBachelorType != null)
                     chipGroupBachelorPreference.check(bachelorTypeToChipId.getValue(it.preferredBachelorType))
-                if (it.isPetAllowed != null)
-                    chipPetFriendlyYes.isChecked = it.isPetAllowed
+
+                if (it.isMaintenanceSeparate != null) {
+                    if (it.isMaintenanceSeparate)
+                        chipSeparate.isChecked = true
+                    else
+                        chipIncludeInRent.isChecked = true
+                }
+                if (it.isPetAllowed != null) {
+                    if (it.isPetAllowed)
+                        chipPetFriendlyYes.isChecked = true
+                    else
+                        chipPetFriendlyNo.isChecked = true
+                }
+
                 it.preferredTenantTypes?.forEach { tenant ->
                     chipGroupTenantType.check(tenantTypeToChipId.getValue(tenant))
                 }
-            }
-        }
-    }
-
-    private fun observePropertyPricing() {
-        with(binding) {
-            viewModel.propertyPricingUI.observe(viewLifecycleOwner) {
-                updateTextInputIfNeeds(etPrice, it.price)
-                updateTextInputIfNeeds(etMaintenanceCharge, it.maintenanceCharges)
-                updateTextInputIfNeeds(etSecurityDeposit, it.securityDepositAmount)
-                if (it.isMaintenanceSeparate != null)
-                    chipSeparate.isChecked = it.isMaintenanceSeparate
-            }
-        }
-    }
-
-    private fun observePropertyAddress() {
-        with(binding) {
-            viewModel.propertyAddressUI.observe(viewLifecycleOwner) {
-                updateTextInputIfNeeds(etStreet, it.street)
-                updateTextInputIfNeeds(etLocality, it.locality)
-                updateTextInputIfNeeds(etCity, it.city)
             }
         }
     }
@@ -495,34 +540,39 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun observeViewModel() {
         observeErrors()
-        observePropertyBasic()
-        observePropertyPreferences()
-        observePropertyPricing()
-        observePropertyAddress()
+        observePropertyData()
         observeImageUri()
 
         with(viewModel) {
             // Creation Result
-            createPropertyResult.observe(viewLifecycleOwner) { result ->
+            submitPropertyResult.observe(viewLifecycleOwner) { result ->
                 if (result == null) return@observe
 
                 when(result) {
-                    is ResultUI.Success<Long> -> {
+                    is ResultUI.Success<*> -> {
                         hideProgressBar()
                         hideError()
-
-                        requireActivity().showToast("Property posted successfully")
                         resetForm()
+
+                        val message = if (propertyIdToEdit == null)
+                            "Property posted successfully"
+                        else
+                            "Property updated successfully"
+                        mainActivity.showToast(message)
                         parentFragmentManager.popBackStack()
                     }
                     is ResultUI.Error -> {
                         hideProgressBar()
                         showError("Unexpected Error occurred, try later.")
-                        requireActivity().showToast("Failed ❌")
+                        mainActivity.showToast("Unexpected Error❌ occurred, please try later.")
                     }
                     ResultUI.Loading -> {
                         hideError()
                         showProgressBar()
+                        if (propertyIdToEdit == null)
+                            binding.btnSubmit.text = getString(R.string.posting)
+                        else
+                            binding.btnSubmit.text = getString(R.string.saving)
                     }
                 }
             }
@@ -664,17 +714,26 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             btnTakeImages.setOnClickListener { checkCameraPermissionAndOpenCamera() }
 
             // Save Button
-            btnPostProperty.setOnClickListener {
-                viewModel.createProperty()
+            btnSubmit.setOnClickListener {
+                if (propertyIdToEdit == null)
+                    viewModel.createProperty(currentUser.id)
+                else {
+                    if (!viewModel.isFormDirty()) {
+                        mainActivity.showToast("No changes are made to perform update.")
+                        return@setOnClickListener
+                    }
+
+                    viewModel.updateProperty(currentUser.id)
+                }
             }
         }
     }
 
     private fun setCounterViewsListeners() {
         fun getCurrentValue(filed: PropertyFormField) = when (filed) {
-            PropertyFormField.COVERED_PARKING_COUNT -> viewModel.propertyPreferencesUI.value?.countOfCoveredParking
-            PropertyFormField.OPEN_PARKING_COUNT -> viewModel.propertyPreferencesUI.value?.countOfOpenParking
-            PropertyFormField.BATH_ROOM_COUNT -> viewModel.propertyBasicUI.value?.bathRoomCount
+            PropertyFormField.COVERED_PARKING_COUNT -> viewModel.propertyDataUI.value?.countOfCoveredParking
+            PropertyFormField.OPEN_PARKING_COUNT -> viewModel.propertyDataUI.value?.countOfOpenParking
+            PropertyFormField.BATH_ROOM_COUNT -> viewModel.propertyDataUI.value?.bathRoomCount
             else -> null
         }
 
@@ -750,13 +809,17 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun onBachelorsSelectChange(isSelected: Boolean) {
-        if (isSelected) {
-            binding.hScrollOfPreferredBachelors.visibility = View.VISIBLE
-            binding.chipOpenForBoth.isChecked = true // Note: It won't invoke onclick of btnOpenForBoth
-        } else {
-            binding.hScrollOfPreferredBachelors.visibility = View.GONE
-            // Remove selected bachelors
-            viewModel.updateFormValue(PropertyFormField.PREFERRED_BACHELOR_TYPE, null)
+        with(binding) {
+            if (isSelected) {
+                hScrollOfPreferredBachelors.visibility = View.VISIBLE
+
+                if (chipGroupBachelorPreference.checkedChipId == View.NO_ID) // If nothing is selected then only select Open For Both
+                    chipOpenForBoth.isChecked = true
+            } else {
+                hScrollOfPreferredBachelors.visibility = View.GONE
+                // Remove selected bachelors
+                viewModel.updateFormValue(PropertyFormField.PREFERRED_BACHELOR_TYPE, null)
+            }
         }
     }
 
@@ -780,4 +843,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         val label: TextView,
         val chipGroup: ChipGroup,
     )
+
+    companion object {
+        const val PROPERTY_ID_KEY = "propertyId"
+    }
 }

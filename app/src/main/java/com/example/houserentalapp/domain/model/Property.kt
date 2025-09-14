@@ -9,8 +9,8 @@ import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyTransactionType
 import com.example.houserentalapp.domain.model.enums.PropertyType
 
-data class  Property (
-    val id: Long?,
+data class Property (
+    val id: Long,
     val landlordId: Long,
     val name: String,
     val description: String?,

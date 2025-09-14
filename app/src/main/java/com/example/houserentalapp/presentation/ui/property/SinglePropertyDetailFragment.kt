@@ -21,6 +21,7 @@ import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.AmenityType
+import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
@@ -185,17 +186,18 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     private fun bindBasicCardDetails(property: Property) {
         with(binding) {
-            tvPropertyName.text = "${property.name} for ${property.lookingTo.readable}"
+            tvPropertyName.text =
+                getString(R.string.pre_for_suff, property.name, property.lookingTo.readable)
             tvAddress.text = property.address.let { "${it.street}, ${it.locality}, ${it.city}" }
             tvFurnishingType.text = property.furnishingType.readable
-            tvBuiltArea.text = "${property.builtUpArea} sq.ft."
+            tvBuiltArea.text = getString(R.string.area_with_sq_ft, property.builtUpArea)
             tvPreferredTenant.text = property.preferredTenantType.joinToString(",") { it.readable }
-            tvRent.text = "₹ ${property.price}"
+            tvRent.text = getString(R.string.property_price, property.price)
             tvMaintenance.text = if (property.isMaintenanceSeparate)
-                "₹ ${property.maintenanceCharges}"
+                getString(R.string.property_price, property.maintenanceCharges)
             else
                 "included"
-            tvSecurityDeposit.text = "₹ ${property.securityDepositAmount}"
+            tvSecurityDeposit.text = getString(R.string.property_price, property.securityDepositAmount)
         }
     }
 
@@ -209,6 +211,14 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             tvAvailableFrom.text = property.availableFrom.fromEpoch()
             tvOpenParking.text = property.countOfOpenParking.toString()
             tvCoveredParking.text = property.countOfCoveredParking.toString()
+
+            var tenants = property.preferredTenantType.joinToString(", ") { it.readable }
+            tenants += if (TenantType.BACHELORS in property.preferredTenantType &&
+                property.preferredBachelorType != null)
+                "(${property.preferredBachelorType.readable.lowercase()})"
+            else ""
+            tvPreferredTenant.text = tenants
+
             if (property.description != null && property.description.isNotBlank())
                 tvDescription.text = property.description
             else

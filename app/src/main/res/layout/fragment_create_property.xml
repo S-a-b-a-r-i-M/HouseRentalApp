@@ -915,7 +915,7 @@
         android:background="@drawable/error_text_bg" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_post_property"
+        android:id="@+id/btn_submit"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

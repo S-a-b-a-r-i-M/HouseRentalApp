@@ -8,18 +8,19 @@ import com.example.houserentalapp.domain.model.enums.PropertyKind
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
 
-data class PropertyBasicUI(
+data class PropertyDataUI(
     val name: String = "",
-    val description: String? = null,
+    val description: String = "",
     val lookingTo: LookingTo = LookingTo.RENT,
     val kind: PropertyKind? = PropertyKind.RESIDENTIAL,
     val type: PropertyType? = null,
     val bhk: BHK? = null,
     val builtUpArea: String = "",
     val bathRoomCount: String = "0",
-)
-
-data class PropertyPreferencesUI(
+    val price: String = "",
+    val isMaintenanceSeparate: Boolean? = null,
+    val maintenanceCharges: String = "",
+    val securityDepositAmount: String = "",
     val furnishingType: FurnishingType? = null,
     val preferredTenantTypes: List<TenantType>? = null,
     val preferredBachelorType: BachelorType? = null,
@@ -27,16 +28,6 @@ data class PropertyPreferencesUI(
     val countOfCoveredParking: String = "0",
     val countOfOpenParking: String = "0",
     val availableFrom: String = "",
-)
-
-data class PropertyPricingUI(
-    val price: String = "",
-    val isMaintenanceSeparate: Boolean? = null,
-    val maintenanceCharges: String? = null,
-    val securityDepositAmount: String = ""
-)
-
-data class PropertyAddressUI(
     val street: String = "",
     val locality: String = "",
     val city: String = "",

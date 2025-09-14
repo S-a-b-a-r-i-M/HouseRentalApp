@@ -84,7 +84,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
                 labelColor = resources.getColor(R.color.black)
                 labelStyle = Typeface.DEFAULT
                 setPadding(30)
-                setIconDimensions(30, 30)
+                setIconDimensions(30f, 30f)
                 setLayoutParams(matchParentWrapContentParams)
             }
             binding.amenitiesContainer.addView(counterView)
@@ -154,24 +154,24 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         // Internal Countable Amenities
         viewModel.icAmenityMap.observe(viewLifecycleOwner) { map ->
             logInfo("<------- Observing CountableInternalAmenity, $map ----->")
-            map.forEach { (amenity, count) ->
+            map.forEach { (amenity, amenityDomain) ->
                 val counterView = countableIntAmenitiesViewMap.getValue(amenity)
-                if (counterView.count != count) counterView.count = count
+                if (counterView.count != amenityDomain.count) counterView.count = amenityDomain.count ?: 0
             }
         }
 
         // Internal Amenities
-        viewModel.internalAmenitySet.observe(viewLifecycleOwner) { set ->
-            logInfo("<------- Observing InternalAmenity, $set ----->")
-            set.forEach { amenity ->
+        viewModel.internalAmenityMap.observe(viewLifecycleOwner) { map ->
+            logInfo("<------- Observing InternalAmenity, $map ----->")
+            map.keys.forEach { amenity ->
                 internalAmenitiesViewMap.getValue(amenity).isChecked = true
             }
         }
 
         // Social Amenities
-        viewModel.socialAmenitySet.observe(viewLifecycleOwner) { set ->
-            logInfo("<------- Observing SocialAmenity, $set ----->")
-            set.forEach { amenity->
+        viewModel.socialAmenityMap.observe(viewLifecycleOwner) { map ->
+            logInfo("<------- Observing SocialAmenity, $map ----->")
+            map.keys.forEach { amenity ->
                 socialAmenitiesViewMap.getValue(amenity).isChecked = true
             }
         }

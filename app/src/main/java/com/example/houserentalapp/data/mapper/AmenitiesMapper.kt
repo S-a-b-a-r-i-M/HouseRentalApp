@@ -1,6 +1,6 @@
 package com.example.houserentalapp.data.mapper
 
-import com.example.houserentalapp.data.local.db.entity.PropertyAmenityEntity
+import com.example.houserentalapp.data.local.db.entity.AmenityEntity
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.enums.AmenityBaseEnum
 import com.example.houserentalapp.domain.model.enums.AmenityType
@@ -10,9 +10,9 @@ import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.presentation.utils.extensions.logError
 
 object AmenitiesMapper {
-    fun fromDomain(amenities: List<AmenityDomain>): List<PropertyAmenityEntity> {
+    fun fromDomain(amenities: List<AmenityDomain>): List<AmenityEntity> {
         return amenities.map {
-            PropertyAmenityEntity(
+            AmenityEntity(
                 name = it.name.readable,
                 type = it.type.readable,
                 count = it.count
@@ -20,10 +20,10 @@ object AmenitiesMapper {
         }
     }
 
-    fun toDomain(entity: List<PropertyAmenityEntity>): List<AmenityDomain> {
+    fun toDomain(entity: List<AmenityEntity>): List<AmenityDomain> {
         return entity.mapNotNull {
             try {
-                if(it.id == null)
+                if(it.id == 0L)
                     throw IllegalArgumentException("Amenity id is required for domain model.")
 
                 val amenityType = AmenityType.fromString(it.type)

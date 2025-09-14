@@ -6,7 +6,7 @@ import android.database.DatabaseUtils
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.database.getIntOrNull
 import com.example.houserentalapp.data.local.db.DatabaseHelper
-import com.example.houserentalapp.data.local.db.entity.PropertyAmenityEntity
+import com.example.houserentalapp.data.local.db.entity.AmenityEntity
 import com.example.houserentalapp.data.local.db.entity.PropertyEntity
 import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
 import com.example.houserentalapp.data.local.db.tables.PropertyAmenitiesTable
@@ -18,10 +18,14 @@ import com.example.houserentalapp.data.local.db.entity.PropertySummaryEntity
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.mapper.PropertyImageMapper
 import com.example.houserentalapp.data.mapper.PropertyMapper
+import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.PropertyFilters
+import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -35,7 +39,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
     // -------------- CREATE --------------
 
     @Throws(SQLException::class)
-    suspend fun insertProperty(entity: PropertyEntity): Long {
+    fun insertProperty(entity: PropertyEntity): Long {
         writableDB.use { db ->
             db.beginTransaction()
             try {
@@ -92,30 +96,28 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         return propertyId
     }
 
-    private fun insertPropertyImages(
-        db: SQLiteDatabase,
+    fun insertPropertyImages(
+        db: SQLiteDatabase = writableDB,
         propertyId: Long,
         images: List<PropertyImageEntity>
-    ): List<PropertyImageEntity> {
-        images.forEach {
+    ): List<Long> {
+        return images.map {
             val values = ContentValues().apply {
                 put(PropertyImagesTable.COLUMN_PROPERTY_ID, propertyId)
                 put(PropertyImagesTable.COLUMN_IMAGE_ADDRESS, it.imageAddress)
                 put(PropertyImagesTable.COLUMN_IS_PRIMARY, if (it.isPrimary) 1 else 0)
             }
 
-            it.id = db.insert(PropertyImagesTable.TABLE_NAME, null, values)
+            db.insert(PropertyImagesTable.TABLE_NAME, null, values)
         }
-
-        return images // Return Images with id
     }
 
-    private fun insertAmenities(
-        db: SQLiteDatabase,
+    fun insertAmenities(
+        db: SQLiteDatabase = writableDB,
         propertyId: Long,
-        amenities: List<PropertyAmenityEntity>
-    ): List<PropertyAmenityEntity> {
-        amenities.forEach {
+        amenities: List<AmenityEntity>
+    ): List<Long> {
+        return amenities.map {
             val values = ContentValues().apply {
                 put(PropertyAmenitiesTable.COLUMN_PROPERTY_ID, propertyId)
                 put(PropertyAmenitiesTable.COLUMN_AMENITY, it.name)
@@ -123,10 +125,25 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 put(PropertyAmenitiesTable.COLUMN_COUNT, it.count)
             }
 
-            it.id = db.insert("t_property_amenities", null, values)
+            db.insert("t_property_amenities", null, values)
         }
+    }
 
-        return amenities // Return the amenities with id
+    fun createAmenities(
+        db: SQLiteDatabase = writableDB,
+        propertyId: Long,
+        amenities: List<AmenityDomain>
+    ): List<Long> {
+        return amenities.map {
+            val values = ContentValues().apply {
+                put(PropertyAmenitiesTable.COLUMN_PROPERTY_ID, propertyId)
+                put(PropertyAmenitiesTable.COLUMN_AMENITY, it.name.readable)
+                put(PropertyAmenitiesTable.COLUMN_AMENITY_TYPE, it.type.readable)
+                put(PropertyAmenitiesTable.COLUMN_COUNT, it.count)
+            }
+
+            db.insert("t_property_amenities", null, values)
+        }
     }
 
     // -------------- READ --------------
@@ -227,7 +244,9 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    private fun getPropertiesCount(db: SQLiteDatabase, whereClause: String, whereArgs: Array<String>): Int {
+    private fun getPropertiesCount(
+        db: SQLiteDatabase, whereClause: String, whereArgs: Array<String>
+    ): Int {
 //        readableDB.query(
 //            PropertyTable.TABLE_NAME,
 //            arrayOf("COUNT(*)"),
@@ -249,7 +268,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         ).toInt()
     }
 
-    private fun getPropertyImages(db: SQLiteDatabase, propertyId: Long): List<PropertyImageEntity> {
+    fun getPropertyImages(db: SQLiteDatabase = writableDB, propertyId: Long): List<PropertyImageEntity> {
         val whereClause = "${PropertyImagesTable.COLUMN_PROPERTY_ID} = ?"
         val whereValue = arrayOf(propertyId.toString())
 
@@ -270,7 +289,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
-    private fun getPropertyAmenities(db: SQLiteDatabase, propertyId: Long): List<PropertyAmenityEntity> {
+    fun getPropertyAmenities(db: SQLiteDatabase = writableDB, propertyId: Long): List<AmenityEntity> {
         val whereClause = "${PropertyAmenitiesTable.COLUMN_PROPERTY_ID} = ?"
         val whereValue = arrayOf(propertyId.toString())
 
@@ -283,11 +302,11 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             null,
             null
         ).use { cursor ->
-            val amenities = mutableListOf<PropertyAmenityEntity>()
+            val amenities = mutableListOf<AmenityEntity>()
             with(cursor) {
                 while (moveToNext()) {
                     amenities.add(
-                        PropertyAmenityEntity(
+                        AmenityEntity(
                             id = getLong(
                                 getColumnIndexOrThrow(
                                     PropertyAmenitiesTable.COLUMN_ID
@@ -379,28 +398,43 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- UPDATE --------------
-    fun updateProperty(propertyId: Long, updateFields: Map<String, Any>): Int {
-        return writableDB.use { db ->
-            val values = ContentValues()
-
-            updateFields.forEach { (key, value) ->
-                when (key) {
-                    "name" -> values.put(PropertyTable.COLUMN_NAME, value as String)
-                    "description" -> values.put(PropertyTable.COLUMN_DESCRIPTION, value as String?)
-                    "price" -> values.put(PropertyTable.COLUMN_PRICE, value as Int)
-                    "isAvailable" -> values.put(PropertyTable.COLUMN_IS_AVAILABLE, if (value as Boolean) 1 else 0)
-                    "viewCount" -> values.put(PropertyTable.COLUMN_VIEW_COUNT, value as Int)
-                }
+    fun updateProperty(property: Property, updatedFields: List<PropertyFields>): Int {
+        val values = ContentValues()
+        updatedFields.forEach { field ->
+            when (field) {
+                PropertyFields.NAME -> values.put(PropertyTable.COLUMN_NAME, property.name)
+                PropertyFields.DESCRIPTION -> values.put(PropertyTable.COLUMN_DESCRIPTION, property.description)
+                PropertyFields.KIND -> values.put(PropertyTable.COLUMN_KIND, property.kind.readable)
+                PropertyFields.TYPE -> values.put(PropertyTable.COLUMN_TYPE, property.type.readable)
+                PropertyFields.FURNISHING_TYPE -> values.put(PropertyTable.COLUMN_FURNISHING_TYPE, property.furnishingType.readable)
+                PropertyFields.PREFERRED_TENANT_TYPE -> values.put(PropertyTable.COLUMN_PREFERRED_TENANTS, property.preferredTenantType.joinToString(","))
+                PropertyFields.PREFERRED_BACHELOR_TYPE -> values.put(PropertyTable.COLUMN_PREFERRED_BACHELOR_TYPE, property.preferredBachelorType?.readable)
+                PropertyFields.BATH_ROOM_COUNT -> values.put(PropertyTable.COLUMN_BATHROOM_COUNT, property.bathRoomCount)
+                PropertyFields.COVERED_PARKING_COUNT -> values.put(PropertyTable.COLUMN_COVERED_PARKING, property.countOfCoveredParking)
+                PropertyFields.OPEN_PARKING_COUNT -> values.put(PropertyTable.COLUMN_OPEN_PARKING, property.countOfOpenParking)
+                PropertyFields.AVAILABLE_FROM -> values.put(PropertyTable.COLUMN_AVAILABLE_FROM, property.availableFrom)
+                PropertyFields.BHK -> values.put(PropertyTable.COLUMN_BHK, property.bhk.readable)
+                PropertyFields.BUILT_UP_AREA -> values.put(PropertyTable.COLUMN_BUILT_UP_AREA, property.builtUpArea)
+                PropertyFields.IS_PET_FRIENDLY -> values.put(PropertyTable.COLUMN_IS_PET_ALLOWED, if (property.isPetAllowed) 1 else 0)
+                PropertyFields.PRICE -> values.put(PropertyTable.COLUMN_PRICE, property.price)
+                PropertyFields.IS_MAINTENANCE_SEPARATE -> values.put(PropertyTable.COLUMN_IS_MAINTENANCE_SEPARATE, property.isMaintenanceSeparate)
+                PropertyFields.MAINTENANCE_CHARGES -> values.put(PropertyTable.COLUMN_MAINTENANCE_CHARGES, property.maintenanceCharges)
+                PropertyFields.SECURITY_DEPOSIT -> values.put(PropertyTable.COLUMN_SECURITY_DEPOSIT, property.securityDepositAmount)
+                PropertyFields.CITY -> values.put(PropertyTable.COLUMN_CITY, property.address.city)
+                PropertyFields.STREET -> values.put(PropertyTable.COLUMN_STREET_NAME, property.address.street)
+                PropertyFields.LOCALITY -> values.put(PropertyTable.COLUMN_LOCALITY, property.address.locality)
+                PropertyFields.AMENITIES -> { }
+                PropertyFields.IMAGES -> { }
             }
-
-            values.put(PropertyTable.COLUMN_MODIFIED_AT, System.currentTimeMillis() / 1000)
-            db.update(
-                PropertyTable.TABLE_NAME,
-                values,
-                "${PropertyTable.COLUMN_ID} = ?",
-                arrayOf(propertyId.toString())
-            )
         }
+
+        values.put(PropertyTable.COLUMN_MODIFIED_AT, System.currentTimeMillis() / 1000)
+        return writableDB.update(
+            PropertyTable.TABLE_NAME,
+            values,
+            "${PropertyTable.COLUMN_ID} = ?",
+            arrayOf(property.id.toString())
+        )
     }
 
     fun updatePropertyAvailability(propertyId: Long, isAvailable: Boolean): Int {
@@ -415,6 +449,19 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             "${PropertyTable.COLUMN_ID} = ?",
             arrayOf(propertyId.toString())
         )
+    }
+
+    fun updateAmenities(amenities: List<AmenityDomain>): Int {
+        var updatedRows = 0
+        amenities.forEach {
+            updatedRows += writableDB.update(
+                PropertyAmenitiesTable.TABLE_NAME,
+                ContentValues().apply { put(PropertyAmenitiesTable.COLUMN_COUNT, it.count) },
+                "${PropertyAmenitiesTable.COLUMN_ID} = ?",
+                arrayOf(it.id.toString())
+            )
+        }
+        return updatedRows
     }
 
     fun incrementViewCount(propertyId: Long): Int {
@@ -437,6 +484,24 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             PropertyTable.TABLE_NAME,
             "${PropertyTable.COLUMN_ID} = ? AND ${PropertyTable.COLUMN_LANDLORD_ID} = ?",
             arrayOf(propertyId.toString(), landlordId.toString())
+        )
+    }
+
+    fun deleteAmenities(propertyId: Long, amenityIds: List<Long>): Int {
+        val placeHolder = amenityIds.joinToString(",") { "?" }
+        return writableDB.delete(
+            PropertyAmenitiesTable.TABLE_NAME,
+            "${PropertyAmenitiesTable.COLUMN_ID} IN ($placeHolder)",
+            arrayOf<String>() + amenityIds.map { it.toString() }
+        )
+    }
+
+    fun deletePropertyImages(imageIds: List<Long>): Int {
+        val placeHolder = imageIds.joinToString(",") { "?" }
+        return writableDB.delete(
+            PropertyImagesTable.TABLE_NAME,
+            "${PropertyImagesTable.COLUMN_ID} IN ($placeHolder)",
+            arrayOf<String>() + imageIds.map { it.toString() }
         )
     }
 
