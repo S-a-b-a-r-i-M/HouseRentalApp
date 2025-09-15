@@ -12,6 +12,7 @@
         <item name="fontFamily">@font/poppins</item>
 
         <item name="android:scrollbarThumbHorizontal">@null</item>
+        <item name="android:scrollbarThumbVertical">@null</item>
 
         <item name="popupMenuBackground">@drawable/popup_bg</item>
     </style>
@@ -47,6 +48,12 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">12dp</item>
     </style>
+    
+    <style name="TopRoundedCard">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">48dp</item>
+        <item name="cornerSizeTopRight">48dp</item>
+    </style>
 
     <style name="CircleImage">
         <item name="cornerFamily">rounded</item>
@@ -54,15 +61,31 @@
     </style>
     
     <style name="Widget.App.TextInputLayout.OutlinedBox" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
         <item name="hintTextColor">@color/gray_dark</item>
         <item name="android:textColorHint">@color/gray_medium</item>
         <item name="counterEnabled">true</item>
         <item name="errorEnabled">true</item>
     </style>
 
+    <style name="RoundedInputField">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">12dp</item>
+        <item name="cornerSizeTopRight">12dp</item>
+        <item name="cornerSizeBottomLeft">12dp</item>
+        <item name="cornerSizeBottomRight">12dp</item>
+    </style>
+
+    <style name="Widget.App.TextInputLayout.OutlinedBox.Designed" parent="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxBackgroundColor">@color/white_blue</item>
+        <item name="hintTextColor">?attr/colorPrimary</item>
+        <item name="android:textColorHint">@color/gray_medium</item>
+        <item name="errorEnabled">true</item>
+        <item name="shapeAppearanceOverlay">@style/RoundedInputField</item>
+    </style>
+
     <style name="Widget.App.TextInputLayout.FilledBox" parent="@style/Widget.Material3.TextInputLayout.FilledBox">
-        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
         <item name="hintTextColor">@color/gray_dark</item>
         <item name="android:textColorHint">@color/gray_medium</item>
         <item name="counterEnabled">true</item>
@@ -72,7 +95,7 @@
     <style
         name="Widget.App.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         parent="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-        <item name="boxStrokeColor">@color/stroke_color</item>
+        <item name="boxStrokeColor">?attr/colorPrimary</item>
         <item name="hintTextColor">@color/gray_dark</item>
         <item name="android:textColorHint">@color/gray_medium</item>
         <item name="errorEnabled">true</item>

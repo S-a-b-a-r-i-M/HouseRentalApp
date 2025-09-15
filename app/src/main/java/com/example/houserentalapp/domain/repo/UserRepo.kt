@@ -7,19 +7,16 @@ import com.example.houserentalapp.domain.utils.Result
 
 interface UserRepo {
     // CREATE
-    suspend fun createUser(
-        name: String,
-        phoneNumber: String,
-        email: String,
-        hashedPassWord: String
-    ): Result<Long>
+    suspend fun createUser(newUser: User): Result<Long>
 
     suspend fun createUserSession(userId: Long): Result<Boolean> // On Login
 
     suspend fun createUserPreferences(userId: Long, preferences: UserPreferences): Result<Long>
 
     // READ
-    suspend fun getUserById(userId: Long): Result<User?>
+    suspend fun getUserById(userId: Long): Result<User>
+
+    suspend fun getUserIdFromSession(): Result<Long?>
 
     suspend fun getUserByPhone(phone: String): Result<User?>
 

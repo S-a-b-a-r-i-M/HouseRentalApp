@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.profile
+package com.example.houserentalapp.presentation.ui.profile.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.LiveData
@@ -17,8 +17,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import kotlinx.coroutines.launch
 
 class ProfileEditViewModel(
-    private val currentUser: User,
-    private val userUC: UserUseCase
+    private val currentUser: User, private val userUC: UserUseCase
 ) : ViewModel() {
     private var editableUser = currentUser
     private val _profileImageSource = MutableLiveData(currentUser.profileImageSource)
@@ -31,11 +30,11 @@ class ProfileEditViewModel(
         _isFormDirty.value = editableUser != currentUser
     }
 
-    fun updateChanges(field: UserField, value: Any) {
+    fun updateChanges(field: UserField, value: Any?) {
         when (field) {
             UserField.NAME -> updateUserData { it.copy(name = value as String) }
             UserField.PHONE -> updateUserData { it.copy(phone = value as String) }
-            UserField.EMAIL -> updateUserData { it.copy(email = value as String) }
+            UserField.EMAIL -> updateUserData { it.copy(email = value as? String) }
             UserField.PROFILE_IMAGE -> {
                 _profileImageSource.value = ImageSource.Uri(value as Uri)
                 _isFormDirty.value = true

@@ -6,6 +6,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.UserRepoImpl
@@ -16,11 +17,12 @@ import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
 // TODO: HANDLE AUTH PORTION
 class AuthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthBinding
-    private lateinit var authViewModel: AuthViewModel
+    lateinit var authViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,8 +33,7 @@ class AuthActivity : AppCompatActivity() {
 
         setupViewModel()
         setupObservers()
-
-        authViewModel.signIn("9878089777")
+        authViewModel.loadUserIfAlreadyAuthenticated()
     }
 
     private fun setWindowInsets() {
@@ -46,23 +47,22 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        val userUC = UserUseCase(UserRepoImpl(this))
-        val factory = AuthViewModelFactory(userUC)
+        val repo = UserRepoImpl(this)
+        val factory = AuthViewModelFactory(UserUseCase(repo))
         authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class]
     }
 
     private fun setupObservers() {
-        authViewModel.currentUser.observe(this) { user ->
-            when(user) {
+        authViewModel.currentUser.observe(this) {
+            when(it) {
                 is ResultUI.Success<User?> -> {
-                    if (user.data == null) {
-                        // show Error
-                    }
+                    if (it.data != null)
+                        navigateToMain(it.data)
                     else
-                        navigateToMain(user.data)
+                        loadFragment(SignInFragment())
                 }
                 is ResultUI.Error -> {
-
+                    loadFragment(SignInFragment())
                 }
                 ResultUI.Loading -> {
 
@@ -71,10 +71,22 @@ class AuthActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToMain(currentUser: User) {
+    fun navigateToMain(currentUser: User) {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra(MainActivity.Companion.CURRENT_USER_KEY, currentUser)
         startActivity(intent)
         finish()
+    }
+
+    fun loadFragment(
+        fragment: Fragment,
+        pushToBackStack: Boolean = false,
+        containerId: Int = binding.fragmentContainer.id
+    ) {
+        supportFragmentManager.beginTransaction().apply {
+            replace(containerId, fragment)
+            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+            commit()
+        }
     }
 }

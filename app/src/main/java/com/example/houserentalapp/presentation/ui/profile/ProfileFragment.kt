@@ -7,12 +7,19 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.core.net.toUri
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentProfileBinding
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.auth.AuthActivity
+import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModel
+import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import kotlin.getValue
 
@@ -20,6 +27,8 @@ import kotlin.getValue
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private lateinit var binding: FragmentProfileBinding
     private lateinit var mainActivity: MainActivity
+    private lateinit var currentUser: User
+    private lateinit var viewModel: ProfileViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
@@ -30,13 +39,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
+        // Take Current User
+        // TODO: Why not get this data from mainactivity
+        currentUser = sharedDataViewModel.currentUserData ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
 
         setupUI()
+        setupViewModel()
         setupListeners()
         setupObservers()
     }
 
-    fun setupUI() {
+    private fun setupUI() {
         // Show Bottom Nav
         mainActivity.showBottomNav()
 
@@ -46,11 +63,27 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
-    fun setupListeners() {
+    private fun setupViewModel() {
+        val repo = UserRepoImpl(mainActivity)
+        val factory = ProfileViewModelFactory(UserUseCase(repo))
+        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class]
+    }
+
+    private fun onLogoutUserClicked() {
+        viewModel.logOutCurrentUser(currentUser.id) {
+            val intent = Intent(mainActivity, AuthActivity::class.java)
+            startActivity(intent)
+            mainActivity.finish()
+            mainActivity.showToast("Logged out successfully.")
+        }
+    }
+
+    private fun setupListeners() {
         with(binding) {
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.tbar_logout) {
                     logInfo("Logout User")
+                    onLogoutUserClicked()
                     return@setOnMenuItemClickListener true
                 }
 
@@ -84,13 +117,13 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun bindUserData(user: User) {
         with(binding) {
             tvWelcome.text = System.currentTimeMillis().getTimePeriod() + " ${user.name}"
-            tvUserEmail.text = user.email
+            tvUserEmail.text = user.email ?: "No Email"
             tvUserPhone.text = user.phone
         }
     }
 
-    fun setupObservers() {
-        sharedDataViewModel.currentUser.observe(viewLifecycleOwner) {
+    private fun setupObservers() {
+        sharedDataViewModel.currentUser.observe(mainActivity) {
             if (it != null) bindUserData(it)
         }
     }

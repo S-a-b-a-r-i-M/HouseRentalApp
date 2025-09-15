@@ -24,6 +24,8 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserField
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModel
+import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast

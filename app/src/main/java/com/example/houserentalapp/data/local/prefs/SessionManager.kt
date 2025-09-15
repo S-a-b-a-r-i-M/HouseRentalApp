@@ -7,13 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.core.content.edit
 
-class SessionManager(private val context: Context) {
-    companion object {
-        private const val PREF_NAME = "user_session"
-        private const val KEY_USER_ID = "user_id"
-        private const val KEY_IS_LOGGED_IN = "is_logged_in"
-    }
-
+class SessionManager(context: Context) {
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
@@ -43,11 +37,13 @@ class SessionManager(private val context: Context) {
         }
     }
 
-    fun getCurrentUserId(): Long {
+    fun getLoggedInUserId(): Long {
         return sharedPreferences.getLong(KEY_USER_ID, -1)
     }
 
-    fun isLoggedIn(): Boolean {
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false)
+    companion object {
+        private const val PREF_NAME = "user_session"
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_IS_LOGGED_IN = "is_logged_in"
     }
 }

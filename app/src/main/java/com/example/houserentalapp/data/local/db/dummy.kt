@@ -87,7 +87,6 @@ fun insertUsers(db: SQLiteDatabase): List<Long> {
 
     val values1 = ContentValues().apply {
         put(UserTable.COLUMN_NAME, "User1")
-        put(UserTable.COLUMN_EMAIL, "user@gmail.com")
         put(UserTable.COLUMN_PHONE, "9878089777")
         put(UserTable.COLUMN_HASHED_PASSWORD, "8hiuasf7y")
     }
@@ -101,7 +100,6 @@ fun insertUsers(db: SQLiteDatabase): List<Long> {
 
     val values3 = ContentValues().apply {
         put(UserTable.COLUMN_NAME, "User3")
-        put(UserTable.COLUMN_EMAIL, "user3@gmail.com")
         put(UserTable.COLUMN_PHONE, "9877389777")
         put(UserTable.COLUMN_HASHED_PASSWORD, "8hiuaa37y")
     }

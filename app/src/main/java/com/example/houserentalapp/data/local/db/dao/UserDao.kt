@@ -3,8 +3,8 @@ package com.example.houserentalapp.data.local.db.dao
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import androidx.core.database.getStringOrNull
 import com.example.houserentalapp.data.local.db.DatabaseHelper
-import com.example.houserentalapp.data.local.db.entity.UserEntity
 import com.example.houserentalapp.data.local.db.entity.UserPreferenceEntity
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
@@ -22,13 +22,13 @@ class UserDao(private val dbHelper: DatabaseHelper) {
         get() = dbHelper.readableDatabase
 
     // -------------- CREATE --------------
-    suspend fun insertUser(userEntity: UserEntity, hashedPassed: String): Long = withContext(Dispatchers.IO) {
+    suspend fun insertUser(newUser: User): Long = withContext(Dispatchers.IO) {
         val values = ContentValues().apply {
-            put(UserTable.COLUMN_NAME, userEntity.name)
-            put(UserTable.COLUMN_EMAIL, userEntity.email)
-            put(UserTable.COLUMN_PHONE, userEntity.phone)
-            put(UserTable.COLUMN_HASHED_PASSWORD, hashedPassed)
-            put(UserTable.COLUMN_CREATED_AT, userEntity.createdAt)
+            put(UserTable.COLUMN_NAME, newUser.name)
+            put(UserTable.COLUMN_EMAIL, newUser.email)
+            put(UserTable.COLUMN_PHONE, newUser.phone)
+            put(UserTable.COLUMN_HASHED_PASSWORD, newUser.password)
+            put(UserTable.COLUMN_CREATED_AT, newUser.createdAt)
         }
 
         writableDB.insertOrThrow(UserTable.TABLE_NAME, null, values)
@@ -49,7 +49,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- READ --------------
-    suspend fun getUserById(userId: Long): UserEntity = withContext(Dispatchers.IO) {
+    suspend fun getUserById(userId: Long): User = withContext(Dispatchers.IO) {
         val cursor = readableDB.query(
             UserTable.TABLE_NAME,
             null,
@@ -60,13 +60,13 @@ class UserDao(private val dbHelper: DatabaseHelper) {
 
         cursor.use {
              if (it.moveToFirst())
-                return@withContext mapCursorToUserEntity(it)
+                return@withContext mapCursorToUser(it)
         }
 
         throw IllegalArgumentException("User Not found at the given id: $userId")
     }
 
-    suspend fun getUserByPhone(phone: String): UserEntity? =
+    suspend fun getUserByPhone(phone: String): User? =
         withContext(Dispatchers.IO) {
             val db = dbHelper.readableDatabase
             val cursor = db.query(
@@ -79,7 +79,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
 
             cursor.use {
                 return@withContext if (it.moveToFirst()) {
-                    mapCursorToUserEntity(it)
+                    mapCursorToUser(it)
                 } else null
             }
         }
@@ -138,8 +138,8 @@ class UserDao(private val dbHelper: DatabaseHelper) {
         updatedFields.forEach { field ->
             when (field) {
                 UserField.NAME -> values.put(UserTable.COLUMN_NAME, modifiedUser.name)
-                UserField.PHONE -> values.put(UserTable.COLUMN_EMAIL, modifiedUser.email)
-                UserField.EMAIL -> values.put(UserTable.COLUMN_PHONE, modifiedUser.phone)
+                UserField.PHONE -> values.put(UserTable.COLUMN_PHONE, modifiedUser.phone)
+                UserField.EMAIL -> values.put(UserTable.COLUMN_EMAIL, modifiedUser.email)
                 UserField.PROFILE_IMAGE -> { }
             }
         }
@@ -153,12 +153,12 @@ class UserDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- HELPER METHODS --------------
-    private fun mapCursorToUserEntity(cursor: Cursor): UserEntity {
+    private fun mapCursorToUser(cursor: Cursor): User {
         with(cursor) {
-            return UserEntity(
+            return User(
                 id = getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_ID)),
                 name = getString(getColumnIndexOrThrow(UserTable.COLUMN_NAME)),
-                email = getString(getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
+                email = getStringOrNull(getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
                 phone = getString(getColumnIndexOrThrow(UserTable.COLUMN_PHONE)),
                 password = getString(getColumnIndexOrThrow(UserTable.COLUMN_HASHED_PASSWORD)),
                 createdAt = getLong(getColumnIndexOrThrow(UserTable.COLUMN_CREATED_AT))

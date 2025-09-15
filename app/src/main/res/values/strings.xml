@@ -154,4 +154,13 @@
     <string name="_9988776655">9988776655</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="customer_support">Customer Support</string>
+    <string name="welcome_nback">Welcome \nBack</string>
+    <string name="password">Password</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="sign_in">Sign In</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="signing_in">Signing In...</string>
+    <string name="create_naccount">Create \nAccount</string>
+    <string name="user_name">User Name</string>
 </resources>

@@ -33,7 +33,6 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private fun setupUI() {
         // Always show bottom nav on HomeFragment
         mainActivity.showBottomNav()
-
         with(binding) {
 
         }

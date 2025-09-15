@@ -3,9 +3,7 @@ package com.example.houserentalapp.data.repo
 import android.content.Context
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.UserDao
-import com.example.houserentalapp.data.local.db.entity.UserEntity
 import com.example.houserentalapp.data.local.prefs.SessionManager
-import com.example.houserentalapp.data.mapper.UserMapper
 import com.example.houserentalapp.data.mapper.UserPreferencesMapper
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPreferences
@@ -15,31 +13,21 @@ import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class UserRepoImpl(context: Context) : UserRepo {
     private val userDao = UserDao(DatabaseHelper.getInstance(context))
     private val sessionManager = SessionManager(context)
 
     // -------------- CREATE --------------
-    override suspend fun createUser(
-        name: String,
-        phoneNumber: String,
-        email: String,
-        hashedPassWord: String
-    ): Result<Long> {
+    override suspend fun createUser(newUser: User): Result<Long> {
         return try {
-            val userEntity = UserEntity(
-                id = 0,
-                name = name,
-                email = email,
-                phone = phoneNumber,
-                password = hashedPassWord,
-                createdAt = System.currentTimeMillis()
-            )
-
-            val userId = userDao.insertUser(userEntity, hashedPassWord)
-            logInfo("User($userId) created successfully")
-            Result.Success(userId)
+            withContext(Dispatchers.IO) {
+                val userId = userDao.insertUser(newUser)
+                logInfo("User($userId) created successfully")
+                Result.Success(userId)
+            }
         } catch (e: Exception) {
             logError("Error creating user", e)
             Result.Error(e.message.toString())
@@ -48,8 +36,11 @@ class UserRepoImpl(context: Context) : UserRepo {
 
     override suspend fun createUserSession(userId: Long): Result<Boolean> {
         return try {
-            val success = sessionManager.createSession(userId)
-            Result.Success(success)
+            withContext(Dispatchers.IO) {
+                val success = sessionManager.createSession(userId)
+                logInfo("User($userId) session created")
+                Result.Success(success)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -57,9 +48,11 @@ class UserRepoImpl(context: Context) : UserRepo {
 
     override suspend fun createUserPreferences(userId: Long, preferences: UserPreferences): Result<Long> {
         return try {
-            val entity = UserPreferencesMapper.domainToEntity(userId, preferences)
-            val id = userDao.insertUserPreferences(entity)
-            Result.Success(id)
+            withContext(Dispatchers.IO) {
+                val entity = UserPreferencesMapper.domainToEntity(userId, preferences)
+                val id = userDao.insertUserPreferences(entity)
+                Result.Success(id)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -68,8 +61,23 @@ class UserRepoImpl(context: Context) : UserRepo {
     // -------------- READ --------------
     override suspend fun getUserById(userId: Long): Result<User> {
         return try {
-            val entity = userDao.getUserById(userId)
-            Result.Success(UserMapper.entityToDomain(entity))
+            withContext(Dispatchers.IO) {
+                val user = userDao.getUserById(userId)
+                logDebug("User for id: $user")
+                Result.Success(user)
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message.toString())
+        }
+    }
+
+    override suspend fun getUserIdFromSession(): Result<Long?> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val userId = sessionManager.getLoggedInUserId()
+                logInfo("Currently log in user id is $userId")
+                Result.Success(if (userId == -1L) null else userId)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -77,8 +85,10 @@ class UserRepoImpl(context: Context) : UserRepo {
 
     override suspend fun getUserPreferences(userId: Long): Result<UserPreferences?> {
         return try {
-            val entity = userDao.getUserPreferences(userId) ?: return Result.Success(null)
-            Result.Success(UserPreferencesMapper.entityToDomain(entity))
+            withContext(Dispatchers.IO) {
+                val entity = userDao.getUserPreferences(userId) ?: return@withContext Result.Success(null)
+                Result.Success(UserPreferencesMapper.entityToDomain(entity))
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -86,8 +96,11 @@ class UserRepoImpl(context: Context) : UserRepo {
 
     override suspend fun getUserByPhone(phone: String): Result<User?> {
         return try {
-            val entity = userDao.getUserByPhone(phone) ?: return Result.Success(null)
-            return Result.Success(UserMapper.entityToDomain(entity))
+            withContext(Dispatchers.IO) {
+                val user = userDao.getUserByPhone(phone) ?: return@withContext Result.Success(null)
+                logDebug("User for phone($phone): $user")
+                Result.Success(user)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -98,9 +111,11 @@ class UserRepoImpl(context: Context) : UserRepo {
         userId: Long, preferences: UserPreferences
     ): Result<Boolean> {
         return try {
-            val entity = UserPreferencesMapper.domainToEntity(userId, preferences)
-            val rowsAffected = userDao.updateUserPreferences(entity)
-            Result.Success(rowsAffected > 0)
+            withContext(Dispatchers.IO) {
+                val entity = UserPreferencesMapper.domainToEntity(userId, preferences)
+                val rowsAffected = userDao.updateUserPreferences(entity)
+                Result.Success(rowsAffected > 0)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -110,13 +125,15 @@ class UserRepoImpl(context: Context) : UserRepo {
         modifiedUser: User, updatedFields: List<UserField>
     ): Result<User> {
         return try {
-            if (UserField.PROFILE_IMAGE in updatedFields) {
-                // delete existing profile image
-                // store new profile image
+            withContext(Dispatchers.IO) {
+                if (UserField.PROFILE_IMAGE in updatedFields) {
+                    // delete existing profile image
+                    // store new profile image
+                }
+                val rowsAffected = userDao.updateUser(modifiedUser, updatedFields)
+                logDebug("Update user details row count: $rowsAffected")
+                getUserById(modifiedUser.id)
             }
-            val rowsAffected = userDao.updateUser(modifiedUser, updatedFields)
-            logDebug("Update user details row count: $rowsAffected")
-            return getUserById(modifiedUser.id)
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -125,8 +142,11 @@ class UserRepoImpl(context: Context) : UserRepo {
     // -------------- DELETE --------------
     override suspend fun removeUserSession(userId: Long): Result<Boolean> {
         return try {
-            val success = sessionManager.clearSession()
-            Result.Success(success)
+            withContext(Dispatchers.IO) {
+                val success = sessionManager.clearSession()
+                logDebug("User(${userId}) session cleared")
+                Result.Success(success)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
@@ -135,8 +155,10 @@ class UserRepoImpl(context: Context) : UserRepo {
     // -------------- EXISTS --------------
     override suspend fun isPhoneNumberExists(phoneNumber: String): Result<Boolean> {
         return try {
-            val exists = userDao.isPhoneNumberExists(phoneNumber)
-            Result.Success(exists)
+            withContext(Dispatchers.IO) {
+                val exists = userDao.isPhoneNumberExists(phoneNumber)
+                Result.Success(exists)
+            }
         } catch (e: Exception) {
             Result.Error(e.message.toString())
         }
