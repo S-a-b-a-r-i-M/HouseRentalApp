@@ -1,35 +1,27 @@
 package com.example.houserentalapp.presentation.ui.auth.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.domain.utils.Result
-import com.example.houserentalapp.presentation.model.NewUserUI
-import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
-import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val userUC: UserUseCase) : ViewModel() {
-    private val _currentUser = MutableLiveData<ResultUI<User?>>(null)
-    val currentUser: LiveData<ResultUI<User?>> = _currentUser
-
-    fun loadUserIfAlreadyAuthenticated() {
-        _currentUser.value = ResultUI.Loading
+    fun loadUserIfAlreadyAuthenticated(onSuccess: (User) -> Unit, onFailure: () -> Unit) {
         viewModelScope.launch {
             when(val res = userUC.getUserFromSession()) {
                 is Result.Success<User?> -> {
-                    _currentUser.value = ResultUI.Success(res.data)
+                    if (res.data != null)
+                        onSuccess(res.data)
+                    else
+                        onFailure()
                 }
                 is Result.Error -> {
                     logError("Error at fetchUserByPhone. Error: ")
-                    _currentUser.value = ResultUI.Error(
-                        "Fetching user details failed, Try again later."
-                    )
+                    onFailure()
                 }
             }
         }

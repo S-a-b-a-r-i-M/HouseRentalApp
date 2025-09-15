@@ -19,7 +19,6 @@ import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModelFa
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
-// TODO: HANDLE AUTH PORTION
 class AuthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthBinding
     lateinit var authViewModel: AuthViewModel
@@ -32,8 +31,10 @@ class AuthActivity : AppCompatActivity() {
         setWindowInsets()
 
         setupViewModel()
-        setupObservers()
-        authViewModel.loadUserIfAlreadyAuthenticated()
+        if (savedInstanceState == null)
+            authViewModel.loadUserIfAlreadyAuthenticated(::navigateToMain) {
+                loadFragment(SignInFragment())
+            }
     }
 
     private fun setWindowInsets() {
@@ -50,25 +51,6 @@ class AuthActivity : AppCompatActivity() {
         val repo = UserRepoImpl(this)
         val factory = AuthViewModelFactory(UserUseCase(repo))
         authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class]
-    }
-
-    private fun setupObservers() {
-        authViewModel.currentUser.observe(this) {
-            when(it) {
-                is ResultUI.Success<User?> -> {
-                    if (it.data != null)
-                        navigateToMain(it.data)
-                    else
-                        loadFragment(SignInFragment())
-                }
-                is ResultUI.Error -> {
-                    loadFragment(SignInFragment())
-                }
-                ResultUI.Loading -> {
-
-                }
-            }
-        }
     }
 
     fun navigateToMain(currentUser: User) {

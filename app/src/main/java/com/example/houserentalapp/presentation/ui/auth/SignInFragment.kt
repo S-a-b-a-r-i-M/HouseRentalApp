@@ -10,6 +10,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentSignInBinding
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import android.view.animation.AnimationUtils
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.domain.model.User
@@ -20,6 +21,8 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.validatePasswordStrength
 import com.example.houserentalapp.presentation.utils.helpers.validatePhoneFormat
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private lateinit var binding: FragmentSignInBinding
@@ -82,6 +85,10 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         )
     }
 
+    private fun setTextChangedListener(et: TextInputEditText, til: TextInputLayout) {
+        et.addTextChangedListener { if(til.error != null) til.error = null }
+    }
+
     private fun setupListener() {
         with(binding) {
             ViewCompat.setOnApplyWindowInsetsListener(root) { _, insets ->
@@ -99,6 +106,9 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
                 }
                 insets
             }
+
+            setTextChangedListener(etPhone, tilPhone)
+            setTextChangedListener(etPassword, tilPassword)
 
             tvSignUp.setOnClickListener {
                 authActivity.loadFragment(SignUpFragment(), true)
