@@ -2,9 +2,11 @@ package com.example.houserentalapp.data.repo
 
 import android.content.Context
 import com.example.houserentalapp.data.local.db.DatabaseHelper
+import com.example.houserentalapp.data.local.db.dao.ImageStorageDao
 import com.example.houserentalapp.data.local.db.dao.UserDao
 import com.example.houserentalapp.data.local.prefs.SessionManager
 import com.example.houserentalapp.data.mapper.UserPreferencesMapper
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPreferences
 import com.example.houserentalapp.domain.model.enums.UserField
@@ -19,6 +21,7 @@ import kotlinx.coroutines.withContext
 class UserRepoImpl(context: Context) : UserRepo {
     private val userDao = UserDao(DatabaseHelper.getInstance(context))
     private val sessionManager = SessionManager(context)
+    private val imageStorageDao = ImageStorageDao(context)
 
     // -------------- CREATE --------------
     override suspend fun createUser(newUser: User): Result<Long> {
@@ -126,11 +129,21 @@ class UserRepoImpl(context: Context) : UserRepo {
     ): Result<User> {
         return try {
             withContext(Dispatchers.IO) {
-                if (UserField.PROFILE_IMAGE in updatedFields) {
-                    // delete existing profile image
-                    // store new profile image
+                var _modifiedUser = modifiedUser
+                if (UserField.PROFILE_IMAGE in updatedFields && modifiedUser.profileImageSource is ImageSource.Uri) {
+                    val existingProfilePath = userDao.getUserProfileImageAddress(modifiedUser.id)
+                    if (existingProfilePath != null) // Delete if exits
+                        imageStorageDao.deleteImageByPath(existingProfilePath)
+                    // Create
+                    imageStorageDao.saveUserImage(
+                        modifiedUser.id, modifiedUser.profileImageSource.uri
+                    )?.let {
+                        _modifiedUser = modifiedUser.copy(profileImageSource = ImageSource.LocalFile(it))
+                    }
+                    logDebug("User profile image updated")
                 }
-                val rowsAffected = userDao.updateUser(modifiedUser, updatedFields)
+
+                val rowsAffected = userDao.updateUser(_modifiedUser, updatedFields)
                 logDebug("Update user details row count: $rowsAffected")
                 getUserById(modifiedUser.id)
             }

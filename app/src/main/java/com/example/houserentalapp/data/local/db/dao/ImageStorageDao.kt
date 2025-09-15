@@ -1,4 +1,4 @@
-package com.example.houserentalapp.data.util
+package com.example.houserentalapp.data.local.db.dao
 
 import android.content.Context
 import android.net.Uri
@@ -7,10 +7,10 @@ import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import java.io.File
 
-class PropertyImageStorage(private val context: Context) {
+class ImageStorageDao(private val context: Context) {
     // SAVE INTO INTERNAL STORAGE
-    fun saveImage(propertyId: Long, imageUri: Uri): String? {
-        val imagesDir = File(context.filesDir, IMAGES_DIR)
+    fun savePropertyImage(propertyId: Long, imageUri: Uri): String? {
+        val imagesDir = File(context.filesDir, PROPERTY_IMAGES_DIR)
         if (!imagesDir.exists() && !imagesDir.mkdir()) {
             logError("Failed to create images directory")
             return null
@@ -22,6 +22,20 @@ class PropertyImageStorage(private val context: Context) {
             return null
         }
 
+        return saveToInternalStorage(imageUri, propertyImagesDir)
+    }
+
+    fun saveUserImage(userId: Long, imageUri: Uri): String? {
+        val imagesDir = File(context.filesDir, PROPERTY_IMAGES_DIR)
+        if (!imagesDir.exists() && !imagesDir.mkdir()) {
+            logError("Failed to create $PROPERTY_IMAGES_DIR")
+            return null
+        }
+
+        return saveToInternalStorage(imageUri, imagesDir)
+    }
+
+    private fun saveToInternalStorage(imageUri: Uri, imagesDir: File): String? {
         // Construct File Name
         val fileName = context.contentResolver.query(
             imageUri, null, null, null
@@ -31,14 +45,16 @@ class PropertyImageStorage(private val context: Context) {
             "${System.currentTimeMillis()}_${it.getString(nameIndex)}"
         } ?: "${System.currentTimeMillis()}"
 
+        // Write to destination file from imageUri
         val inputStream = context.contentResolver.openInputStream(imageUri)
-        val destinationFile = File(propertyImagesDir, fileName)
+        val destinationFile = File(imagesDir, fileName)
         inputStream?.use { input ->
             destinationFile.outputStream().use { output ->
                 input.copyTo(output)
             }
         } ?: return null
 
+        logDebug("Image saved to internal storage. path: ${destinationFile.absolutePath}")
         return destinationFile.absolutePath // Return full path
     }
 
@@ -80,7 +96,7 @@ class PropertyImageStorage(private val context: Context) {
     // DELETE WHOLE DIRECTORY OF A PROPERTY
     fun deleteAllImagesByProperty(propertyId: Long): Boolean {
         return try {
-            val propertyImagesDir = File(context.filesDir, "$IMAGES_DIR/$propertyId")
+            val propertyImagesDir = File(context.filesDir, "$PROPERTY_IMAGES_DIR/$propertyId")
             if (propertyImagesDir.exists() && propertyImagesDir.isDirectory) {
                 propertyImagesDir.deleteRecursively().also { success ->
                     if (success)
@@ -99,6 +115,7 @@ class PropertyImageStorage(private val context: Context) {
     }
 
     companion object {
-        const val IMAGES_DIR = "property_images"
+        const val PROPERTY_IMAGES_DIR = "property_images"
+        const val USER_IMAGER_DIR = "user_images"
     }
 }

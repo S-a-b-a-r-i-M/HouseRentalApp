@@ -8,6 +8,7 @@ import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.entity.UserPreferenceEntity
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserField
 import kotlinx.coroutines.Dispatchers
@@ -61,6 +62,25 @@ class UserDao(private val dbHelper: DatabaseHelper) {
         cursor.use {
              if (it.moveToFirst())
                 return@withContext mapCursorToUser(it)
+        }
+
+        throw IllegalArgumentException("User Not found at the given id: $userId")
+    }
+
+    suspend fun getUserProfileImageAddress(userId: Long) = withContext(Dispatchers.IO) {
+        val cursor = readableDB.query(
+            UserTable.TABLE_NAME,
+            arrayOf(UserTable.COLUMN_PROFILE_IMAGE_ADDRESS),
+            "${UserTable.COLUMN_ID} = ?",
+            arrayOf(userId.toString()),
+            null, null, null
+        )
+
+        cursor.use {
+            if (it.moveToFirst())
+                return@withContext it.getStringOrNull(
+                    it.getColumnIndexOrThrow(UserTable.COLUMN_PROFILE_IMAGE_ADDRESS)
+                )
         }
 
         throw IllegalArgumentException("User Not found at the given id: $userId")
@@ -140,7 +160,13 @@ class UserDao(private val dbHelper: DatabaseHelper) {
                 UserField.NAME -> values.put(UserTable.COLUMN_NAME, modifiedUser.name)
                 UserField.PHONE -> values.put(UserTable.COLUMN_PHONE, modifiedUser.phone)
                 UserField.EMAIL -> values.put(UserTable.COLUMN_EMAIL, modifiedUser.email)
-                UserField.PROFILE_IMAGE -> { }
+                UserField.PROFILE_IMAGE -> {
+                    if (modifiedUser.profileImageSource is ImageSource.LocalFile)
+                        values.put(
+                            UserTable.COLUMN_PROFILE_IMAGE_ADDRESS,
+                            modifiedUser.profileImageSource.filePath
+                        )
+                }
             }
         }
 
@@ -155,12 +181,19 @@ class UserDao(private val dbHelper: DatabaseHelper) {
     // -------------- HELPER METHODS --------------
     private fun mapCursorToUser(cursor: Cursor): User {
         with(cursor) {
+            val imageSource = getStringOrNull(
+                getColumnIndexOrThrow(UserTable.COLUMN_PROFILE_IMAGE_ADDRESS)
+            )?.let {
+                ImageSource.LocalFile(it)
+            }
+
             return User(
                 id = getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_ID)),
                 name = getString(getColumnIndexOrThrow(UserTable.COLUMN_NAME)),
                 email = getStringOrNull(getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
                 phone = getString(getColumnIndexOrThrow(UserTable.COLUMN_PHONE)),
                 password = getString(getColumnIndexOrThrow(UserTable.COLUMN_HASHED_PASSWORD)),
+                profileImageSource = imageSource,
                 createdAt = getLong(getColumnIndexOrThrow(UserTable.COLUMN_CREATED_AT))
             )
         }

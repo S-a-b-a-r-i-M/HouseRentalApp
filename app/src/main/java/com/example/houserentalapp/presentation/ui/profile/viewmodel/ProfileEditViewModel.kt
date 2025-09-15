@@ -46,7 +46,7 @@ class ProfileEditViewModel(
         if (editableUser.name != currentUser.name) add(UserField.NAME)
         if (editableUser.email != currentUser.email) add(UserField.EMAIL)
         if (editableUser.phone != currentUser.phone) add(UserField.PHONE)
-        if (_profileImageSource.value != currentUser.profileImageSource) add(UserField.PHONE)
+        if (_profileImageSource.value != currentUser.profileImageSource) add(UserField.PROFILE_IMAGE)
     }
 
     fun saveUserChanges(onSuccess: (User) -> Unit, onFailure: (String) -> Unit) {

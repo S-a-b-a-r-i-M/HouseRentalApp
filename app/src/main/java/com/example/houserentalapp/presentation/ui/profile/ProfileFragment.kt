@@ -21,6 +21,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import kotlin.getValue
 
 
@@ -119,6 +120,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             tvWelcome.text = System.currentTimeMillis().getTimePeriod() + " ${user.name}"
             tvUserEmail.text = user.email ?: "No Email"
             tvUserPhone.text = user.phone
+            if (user.profileImageSource != null)
+                loadImageSourceToImageView(user.profileImageSource, imgUserProfile)
+            else
+                imgUserProfile.setImageDrawable(
+                    mainActivity.getDrawable(R.drawable.bottom_nav_profile_icon)
+                )
         }
     }
 

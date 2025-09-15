@@ -6,7 +6,7 @@ import com.example.houserentalapp.data.local.db.dao.PropertyDao
 import com.example.houserentalapp.data.local.db.entity.PropertyImageEntity
 import com.example.houserentalapp.data.mapper.PropertyImageMapper
 import com.example.houserentalapp.data.mapper.PropertyMapper
-import com.example.houserentalapp.data.util.PropertyImageStorage
+import com.example.houserentalapp.data.local.db.dao.ImageStorageDao
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Pagination
@@ -20,14 +20,13 @@ import com.example.houserentalapp.domain.repo.PropertyRepo
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
-import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 class PropertyRepoImpl(private val context: Context) : PropertyRepo {
     private val propertyDao = PropertyDao(DatabaseHelper.getInstance(context))
-    private val imageStorage : PropertyImageStorage by lazy { PropertyImageStorage(context) }
+    private val imageStorage : ImageStorageDao by lazy { ImageStorageDao(context) }
 
     // -------------- CREATE --------------
     override suspend fun createProperty(property: Property): Result<Long> {
@@ -36,7 +35,7 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
                 val imageEntityList = mutableListOf<PropertyImageEntity>()
                 property.images.forEachIndexed { idx, it ->
                     if (it.imageSource is ImageSource.Uri) {
-                        val fileName = imageStorage.saveImage(property.id, it.imageSource.uri)
+                        val fileName = imageStorage.savePropertyImage(property.id, it.imageSource.uri)
                         if (fileName != null)
                             imageEntityList.add(
                                 PropertyImageEntity(0, fileName, idx == 0)
@@ -68,7 +67,7 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
                 val imageEntityList = mutableListOf<PropertyImageEntity>()
                 propertyImages.forEachIndexed { idx, it ->
                     if (it.imageSource is ImageSource.Uri) {
-                        val fileName = imageStorage.saveImage(propertyId, it.imageSource.uri)
+                        val fileName = imageStorage.savePropertyImage(propertyId, it.imageSource.uri)
                         if (fileName != null)
                             imageEntityList.add(
                                 PropertyImageEntity(0, fileName, idx == 0)
