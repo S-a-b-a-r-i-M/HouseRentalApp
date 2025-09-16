@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -23,19 +22,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
-import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
+import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
+import com.example.houserentalapp.presentation.model.PropertyDataUI
 import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
@@ -146,7 +147,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             mainActivity.finish()
             return
         }
-        propertyIdToEdit?.let { viewModel.loadPropertyToEdit(it) } // If Edit Mode
 
         // Set up UI
         setupUI()
@@ -159,6 +159,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
         // Handle Back Press
         addBackPressCallBack()
+
+        if (savedInstanceState == null)
+            propertyIdToEdit?.let { // If Edit Mode
+                viewModel.loadPropertyToEdit(it, ::onEditPropertyLoaded)
+            }
     }
 
     private fun addBackPressCallBack() {
@@ -403,49 +408,44 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             counterView.count = value.toIntOrNull() ?: 0
     }
 
-    private fun observePropertyData() {
+    private fun onEditPropertyLoaded(dataUI: PropertyDataUI) {
         with(binding) {
-            viewModel.propertyDataUI.observe(viewLifecycleOwner) {
-                updateTextInput(etPropertyName, it.name)
-                updateTextInput(etPropertyDes, it.description)
-                updateTextInput(etBuiltUpArea, it.builtUpArea)
-                updateTextInput(etPrice, it.price)
-                updateTextInput(etMaintenanceCharge, it.maintenanceCharges)
-                updateTextInput(etSecurityDeposit, it.securityDepositAmount)
-                updateTextInput(etAvailableFrom, it.availableFrom)
-                updateTextInput(etStreet, it.street)
-                updateTextInput(etLocality, it.locality)
-                updateTextInput(etCity, it.city)
+            updateTextInput(etPropertyName, dataUI.name)
+            updateTextInput(etPropertyDes, dataUI.description)
+            updateTextInput(etBuiltUpArea, dataUI.builtUpArea)
+            updateTextInput(etPrice, dataUI.price)
+            updateTextInput(etMaintenanceCharge, dataUI.maintenanceCharges)
+            updateTextInput(etSecurityDeposit, dataUI.securityDepositAmount)
+            updateTextInput(etAvailableFrom, dataUI.availableFrom)
+            updateTextInput(etStreet, dataUI.street)
+            updateTextInput(etLocality, dataUI.locality)
+            updateTextInput(etCity, dataUI.city)
 
-                updateCount(bathRoomCounter, it.bathRoomCount)
-                updateCount(coveredParkingCounter, it.countOfCoveredParking)
-                updateCount(openParkingCounter, it.countOfOpenParking)
+            updateCount(bathRoomCounter, dataUI.bathRoomCount)
+            updateCount(coveredParkingCounter, dataUI.countOfCoveredParking)
+            updateCount(openParkingCounter, dataUI.countOfOpenParking)
 
-                if (it.type != null)
-                    chipGroupPropertyType.check(propertyTypeToChipId.getValue(it.type))
-                if (it.bhk != null)
-                    chipGroupBHK.check(bhkToChipId.getValue(it.bhk))
-                if (it.furnishingType != null)
-                    chipGroupFurnishing.check(furnishingTypeToChipId.getValue(it.furnishingType))
-                if (it.preferredBachelorType != null)
-                    chipGroupBachelorPreference.check(bachelorTypeToChipId.getValue(it.preferredBachelorType))
+            dataUI.type?.let {
+                chipGroupPropertyType.check(propertyTypeToChipId.getValue(it))
+            }
+            dataUI.bhk?.let { chipGroupBHK.check(bhkToChipId.getValue(it)) }
+            dataUI.furnishingType?.let {
+                chipGroupFurnishing.check(furnishingTypeToChipId.getValue(it))
+            }
+            dataUI.preferredBachelorType?.let {
+                chipGroupBachelorPreference.check(bachelorTypeToChipId.getValue(it))
+            }
 
-                if (it.isMaintenanceSeparate != null) {
-                    if (it.isMaintenanceSeparate)
-                        chipSeparate.isChecked = true
-                    else
-                        chipIncludeInRent.isChecked = true
-                }
-                if (it.isPetAllowed != null) {
-                    if (it.isPetAllowed)
-                        chipPetFriendlyYes.isChecked = true
-                    else
-                        chipPetFriendlyNo.isChecked = true
-                }
+            dataUI.isMaintenanceSeparate?.let {
+                if (it) chipSeparate.isChecked = true else chipIncludeInRent.isChecked = true
+            }
 
-                it.preferredTenantTypes?.forEach { tenant ->
-                    chipGroupTenantType.check(tenantTypeToChipId.getValue(tenant))
-                }
+            dataUI.isPetAllowed?.let {
+                if (it) chipPetFriendlyYes.isChecked = true else chipPetFriendlyNo.isChecked = true
+            }
+
+            dataUI.preferredTenantTypes?.forEach { tenant ->
+                chipGroupTenantType.check(tenantTypeToChipId.getValue(tenant))
             }
         }
     }
@@ -528,7 +528,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun observeViewModel() {
         observeErrors()
-        observePropertyData()
         observeImageUri()
 
         with(viewModel) {
@@ -568,8 +567,40 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             validationError.observe(viewLifecycleOwner) {
                 if (it != null) {
                     showError(getString(R.string.please_resolve_all_the_errors_msg))
+                    requestFocus()
                     clearValidationError()
                 }
+            }
+        }
+    }
+
+    // NOTE: ORDERED BY VISIBILITY
+    private val fieldWithViewMap by lazy { linkedMapOf(
+        PropertyFormField.CITY to binding.tilCity,
+        PropertyFormField.LOCALITY to binding.tilLocality,
+        PropertyFormField.STREET to binding.tilStreet,
+        PropertyFormField.TYPE to binding.tvPropertyType,
+        PropertyFormField.BHK to binding.tvBHK,
+        PropertyFormField.NAME to binding.tilPropertyName,
+        PropertyFormField.FURNISHING_TYPE to binding.tvFurnishing,
+        PropertyFormField.IS_PET_FRIENDLY to binding.tvPetFriendly,
+        PropertyFormField.PREFERRED_TENANT_TYPE to binding.tvTenantType,
+        PropertyFormField.PREFERRED_BACHELOR_TYPE to binding.tvPreferredBachelor,
+        PropertyFormField.BUILT_UP_AREA to binding.tilBuiltUpArea,
+        PropertyFormField.AVAILABLE_FROM to binding.tilAvailableFrom,
+        PropertyFormField.PRICE to binding.tilPrice,
+        PropertyFormField.IS_MAINTENANCE_SEPARATE to binding.tvMaintenanceSeparate,
+        PropertyFormField.MAINTENANCE_CHARGES to binding.tilMaintenanceCharge,
+        PropertyFormField.SECURITY_DEPOSIT to binding.tilSecurityDeposit,
+        PropertyFormField.IMAGES to binding.tvPropertyImages,
+    ) }
+
+    private fun requestFocus() {
+        for((field, view) in fieldWithViewMap.entries) {
+            if (viewModel.getFormErrorMap(field).value != null) {
+                view.requestFocus()
+                binding.formScrollView.smoothScrollTo(0, view.top)
+                break
             }
         }
     }
@@ -608,15 +639,17 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun setEditTextListeners() {
         formTextInputFieldInfoList.forEach{ textInputFieldInfo ->
             textInputFieldInfo.editText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) return@OnFocusChangeListener
-
-                val text = textInputFieldInfo.editText.text.toString()
-                if (text.isNotEmpty())
+                if (!hasFocus)
                     viewModel.updateFormValue(
                         textInputFieldInfo.field,
                         textInputFieldInfo.editText.text.toString()
                     )
             }
+
+            if (textInputFieldInfo.field.isRequired)
+                textInputFieldInfo.editText.addTextChangedListener {
+                    viewModel.clearFormFieldError(textInputFieldInfo.field)
+                }
         }
     }
 
@@ -694,6 +727,10 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                 if (hasFocus) myDatePicker.show(parentFragmentManager, "DATE_PICKER")
             }
 
+            etAvailableFrom.addTextChangedListener {
+                viewModel.updateFormValue(PropertyFormField.AVAILABLE_FROM, etAvailableFrom.text.toString())
+            }
+
             // Open Amenities Sheet
             btnAddAmenities.setOnClickListener {
                 amenitiesBottomSheet.show(parentFragmentManager, "AmenitiesBottomSheet")
@@ -723,23 +760,16 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun setCounterViewsListeners() {
-        fun getCurrentValue(filed: PropertyFormField) = when (filed) {
-            PropertyFormField.COVERED_PARKING_COUNT -> viewModel.propertyDataUI.value?.countOfCoveredParking
-            PropertyFormField.OPEN_PARKING_COUNT -> viewModel.propertyDataUI.value?.countOfOpenParking
-            PropertyFormField.BATH_ROOM_COUNT -> viewModel.propertyDataUI.value?.bathRoomCount
-            else -> null
-        }
-
         with(binding) {
             // Parking, BathRoom
             formCounterViewList.forEach { (field, counterView) ->
                 counterView.apply {
                     onCountIncrementListener = {
-                        val newValue = (getCurrentValue(field)?.toIntOrNull() ?: 0) + 1
+                        val newValue = counterView.count + 1
                         viewModel.updateFormValue(field , newValue.toString())
                     }
                     onCountDecrementListener = {
-                        val newValue = (getCurrentValue(field)?.toIntOrNull() ?: 0) - 1
+                        val newValue = counterView.count - 1
                         viewModel.updateFormValue(field , newValue.toString())
                     }
                 }

@@ -58,13 +58,6 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
 
     private val _submitPropertyResult = MutableLiveData<ResultUI<Boolean>?>()
     val submitPropertyResult: LiveData<ResultUI<Boolean>?> = _submitPropertyResult
-    private val _propertyToEditResult = MutableLiveData<ResultUI<Property?>?>(null)
-    val propertyToEditResult: LiveData<ResultUI<Property?>?> = _propertyToEditResult
-    private var propertyToEdit: Property? = null
-
-    // Property Data
-    private val _propertyDataUI = MutableLiveData(InitialData.basic)
-    val propertyDataUI: LiveData<PropertyDataUI> = _propertyDataUI
 
     // Images
     private val _images = MutableLiveData(InitialData.images)
@@ -78,87 +71,96 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
     private val _socialAmenityMap = MutableLiveData(InitialData.socialAmenity)
     val socialAmenityMap: LiveData<Map<SocialAmenity, AmenityDomain>> = _socialAmenityMap
 
+    // Errors
     private val _validationError = MutableLiveData<String?>()
     val validationError: LiveData<String?> = _validationError
+
     private val formErrorMap = PropertyFormField.entries.filter { it.isRequired }.associateWith {
         MutableLiveData<String?>(null)
     }
 
+    // Property Data
+    private var propertyDataUI = PropertyDataUI()
+    private var propertyDomainToEdit: Property? = null
+
     fun getFormErrorMap(field: PropertyFormField) : LiveData<String?> = formErrorMap.getValue(field)
 
-    private fun updateFormFieldError(field: PropertyFormField) {
-        val formFieldErr = formErrorMap.getValue(field)
+    fun clearFormFieldError(field: PropertyFormField) {
+        val formFieldErr = formErrorMap[field] ?: run {
+            logWarning("updateFormFieldError $field is not available in map")
+            return
+        }
         if (formFieldErr.value != null) formFieldErr.value = null
-    }
-
-    private fun updatePropertyData(field: PropertyFormField, update: (PropertyDataUI) -> PropertyDataUI) {
-        val currentValue = _propertyDataUI.value!!
-        _propertyDataUI.value = update(currentValue)
-        if (field.isRequired)
-            updateFormFieldError(field)
     }
 
     fun updateFormValue(field: PropertyFormField, value: String) {
         when (field) {
-            PropertyFormField.NAME -> updatePropertyData(field) { it.copy(name = value) }
-            PropertyFormField.DESCRIPTION -> updatePropertyData(field) { it.copy(description = value) }
-            PropertyFormField.STREET -> updatePropertyData(field) { it.copy(street = value)}
-            PropertyFormField.LOCALITY -> updatePropertyData(field) { it.copy(locality = value)}
-            PropertyFormField.CITY -> updatePropertyData(field) { it.copy(city = value)}
-            PropertyFormField.PRICE -> updatePropertyData(field) { it.copy(price = value) }
-            PropertyFormField.MAINTENANCE_CHARGES -> updatePropertyData(field) { it.copy(maintenanceCharges = value) }
-            PropertyFormField.BUILT_UP_AREA -> updatePropertyData(field) { it.copy(builtUpArea = value) }
-            PropertyFormField.SECURITY_DEPOSIT -> updatePropertyData(field) { it.copy(securityDepositAmount = value) }
-            PropertyFormField.BATH_ROOM_COUNT -> updatePropertyData(field) { it.copy(bathRoomCount = value) }
-            PropertyFormField.COVERED_PARKING_COUNT -> updatePropertyData(field) { it.copy(countOfCoveredParking = value) }
-            PropertyFormField.OPEN_PARKING_COUNT -> updatePropertyData(field) { it.copy(countOfOpenParking = value) }
-            PropertyFormField.AVAILABLE_FROM -> updatePropertyData(field) { it.copy(availableFrom = value) }
+            PropertyFormField.NAME -> propertyDataUI.name = value
+            PropertyFormField.DESCRIPTION -> propertyDataUI.description = value
+            PropertyFormField.STREET -> propertyDataUI.street = value
+            PropertyFormField.LOCALITY -> propertyDataUI.locality = value
+            PropertyFormField.CITY -> propertyDataUI.city = value
+            PropertyFormField.PRICE -> propertyDataUI.price = value
+            PropertyFormField.MAINTENANCE_CHARGES -> propertyDataUI.maintenanceCharges = value
+            PropertyFormField.BUILT_UP_AREA -> propertyDataUI.builtUpArea = value
+            PropertyFormField.SECURITY_DEPOSIT -> propertyDataUI.securityDepositAmount = value
+            PropertyFormField.BATH_ROOM_COUNT -> propertyDataUI.bathRoomCount = value
+            PropertyFormField.COVERED_PARKING_COUNT -> propertyDataUI.countOfCoveredParking = value
+            PropertyFormField.OPEN_PARKING_COUNT -> propertyDataUI.countOfOpenParking = value
+            PropertyFormField.AVAILABLE_FROM -> propertyDataUI.availableFrom = value
             else -> logWarning("Invalid field for updateFormValue String: $field")
         }
     }
 
     fun updateFormValue(field: PropertyFormField, value: Boolean) {
         when (field) {
-            PropertyFormField.IS_PET_FRIENDLY -> updatePropertyData(field) { it.copy(isPetAllowed = value) }
-            PropertyFormField.IS_MAINTENANCE_SEPARATE -> updatePropertyData(field) { it.copy(isMaintenanceSeparate = value) }
-            else -> logWarning("Invalid field for updateFormValue Boolean: $field")
+            PropertyFormField.IS_PET_FRIENDLY -> propertyDataUI.isPetAllowed = value
+            PropertyFormField.IS_MAINTENANCE_SEPARATE -> propertyDataUI.isMaintenanceSeparate = value
+            else -> {
+                logWarning("Invalid field for updateFormValue Boolean: $field")
+                return
+            }
         }
+        clearFormFieldError(field)
     }
 
     fun updateFormValue(field: PropertyFormField, value: ReadableEnum?) {
         when (field) {
             PropertyFormField.TYPE -> {
-                if (value is PropertyType) updatePropertyData(field) {
-                    it.copy(type = value)
-                } else
+                if (value is PropertyType)
+                    propertyDataUI.type = value
+                else
                     logWarning("Invalid value for property type $value")
             }
             PropertyFormField.BHK -> {
-                if (value is BHK) updatePropertyData(field) {
-                    it.copy(bhk = value)
-                } else
+                if (value is BHK)
+                    propertyDataUI.bhk = value
+                else
                     logWarning("Invalid value for property BHK $value")
             }
             PropertyFormField.FURNISHING_TYPE -> {
-                if (value is FurnishingType) updatePropertyData(field) {
-                    it.copy(furnishingType = value)
-                } else
+                if (value is FurnishingType)
+                    propertyDataUI.furnishingType = value
+                else
                     logWarning("Invalid value for furnishing type $value")
             }
             PropertyFormField.PREFERRED_BACHELOR_TYPE -> {
-                if (value == null || value is BachelorType) updatePropertyData(field) {
-                    it.copy(preferredBachelorType = value)
-                } else
+                if (value == null || value is BachelorType)
+                    propertyDataUI.preferredBachelorType = value
+                else
                     logWarning("Invalid value for property type $value")
             }
-            else -> logWarning("Invalid field for updateForValue mEnum: $field")
+            else -> {
+                logWarning("Invalid field for updateForValue mEnum: $field")
+                return
+            }
         }
+        clearFormFieldError(field)
     }
 
-    fun updatePreferredTenants(value: List<TenantType>) = updatePropertyData(
-        PropertyFormField.PREFERRED_TENANT_TYPE
-    ) {
-        it.copy(preferredTenantTypes = value)
+    fun updatePreferredTenants(value: List<TenantType>) {
+        propertyDataUI.preferredTenantTypes = value
+        clearFormFieldError(PropertyFormField.PREFERRED_TENANT_TYPE)
     }
 
     fun updateInternalCountableAmenity(amenity: CountableInternalAmenity, updateValue: Int) {
@@ -211,6 +213,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             PropertyImage(0, ImageSource.Uri(newUri), isPrimary = currentUris.isEmpty())
         )
         _images.value = currentUris
+        clearFormFieldError(PropertyFormField.IMAGES)
     }
 
     fun addPropertyImages(newUris: List<Uri>) {
@@ -219,6 +222,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             PropertyImage(0, ImageSource.Uri(it), isPrimary = false)
         })
         _images.value = currentImages
+        clearFormFieldError(PropertyFormField.IMAGES)
     }
 
     fun removePropertyImage(propertyImage: PropertyImage) {
@@ -359,7 +363,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         }
         logDebug("Validation success")
 
-        val oldProperty = propertyToEdit
+        val oldProperty = propertyDomainToEdit
         if (oldProperty == null) {
             logError("propertyToEdit Should not be null for update property")
             return
@@ -389,34 +393,40 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         }
     }
 
-    fun loadPropertyToEdit(propertyId: Long) {
-        _propertyToEditResult.value = ResultUI.Loading
+    private val _resultState = MutableLiveData<ResultUI<Boolean>>()
+    fun loadPropertyToEdit(propertyId: Long, onSuccess: (PropertyDataUI) -> Unit) {
+        _resultState.value = ResultUI.Loading
         viewModelScope.launch {
             try {
                 when (val res = propertyUseCase.getProperty(propertyId)) {
                     is Result.Success<Property> -> {
                         logInfo("successfully loaded property(id: $propertyId)")
-                        _propertyToEditResult.value = ResultUI.Success(res.data)
-                        propertyToEdit = res.data
-                        bindPropertyUIData(res.data)
+
+                        propertyDomainToEdit = res.data
+                        val propertyUI = parsePropertyDataUI(res.data)
+                        bindAmenitiesUI(res.data.amenities)
+                        bindImages(res.data.images)
+
+                        _resultState.value = ResultUI.Success(true)
+                        onSuccess(propertyUI)
                     }
                     is Result.Error -> {
-                        _propertyToEditResult.value = ResultUI.Error(res.message)
+                        _resultState.value = ResultUI.Error(res.message)
                         logError("Error on loadProperty : ${res.message}")
                     }
                 }
             } catch (exp: Exception) {
-                _propertyToEditResult.value = ResultUI.Error("Unexpected Error")
+                _resultState.value = ResultUI.Error("Unexpected Error")
                 logError("Error on loadProperty : ${exp.message}")
             }
         }
     }
 
-    private fun bindPropertyDataUI(property: Property) {
-        val basicUI = PropertyDataUI(
+    private fun parsePropertyDataUI(property: Property): PropertyDataUI {
+        val dataUI = PropertyDataUI(
             name = property.name,
             description = property.description ?: "",
-            lookingTo= property.lookingTo,
+            lookingTo = property.lookingTo,
             kind = property.kind,
             type = property.type,
             bhk = property.bhk,
@@ -437,8 +447,9 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             locality = property.address.locality,
             city = property.address.city,
         )
-        InitialData.basic = basicUI
-        _propertyDataUI.value = basicUI
+        InitialData.basic = dataUI
+        propertyDataUI = dataUI.copy() // store another instance
+        return dataUI
     }
 
     private fun bindAmenitiesUI(amenities: List<AmenityDomain>) {
@@ -474,24 +485,20 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         InitialData.socialAmenity = societyAmenities
     }
 
-    private fun bindPropertyUIData(property: Property) {
-        bindPropertyDataUI(property)
-        bindAmenitiesUI(property.amenities)
-
-        _images.value = property.images
-        InitialData.images = property.images
+    private fun bindImages(images: List<PropertyImage>) {
+        _images.value = images
+        InitialData.images = images
     }
 
     fun resetForm() {
         // Reset Main Result
         _submitPropertyResult.value = null
-        _propertyToEditResult.value = null
 
         // Reset Initial data
         InitialData.reset()
 
         // Reset Form Data
-        _propertyDataUI.value = InitialData.basic
+        propertyDataUI = InitialData.basic
         _images.value = InitialData.images
         // Reset Amenities
         _icAmenityMap.value = InitialData.icAmenity
@@ -504,7 +511,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
     }
 
     private fun checkValidation(): Boolean {
-        val propertyData = _propertyDataUI.value!!
+        val propertyData = propertyDataUI
         var isValidationSuccess = true
 
         // Helper function to reduce repetition
@@ -579,22 +586,25 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
 
         // String Input Validations
         listOf(
-            PropertyFormField.AVAILABLE_FROM,
-            PropertyFormField.STREET,
-            PropertyFormField.LOCALITY,
             PropertyFormField.CITY,
+            PropertyFormField.LOCALITY,
+            PropertyFormField.STREET,
+            PropertyFormField.AVAILABLE_FROM,
         ).forEach {
             val value = getDataByField(it) as? String
             if (value.isNullOrEmpty())
                 updateError(it, "enter valid input")
         }
 
+        if (_images.value!!.isEmpty())
+            updateError(PropertyFormField.IMAGES, "Upload at least one image")
+
         return isValidationSuccess
     }
 
     private fun builtPropertyDomain(currentUserId: Long, propertyId: Long = 0L) : Property? {
         try {
-            val basicData = _propertyDataUI.value!!
+            val basicData = propertyDataUI
             val amenities = buildAmenities()
             val address = PropertyAddress(
                 street = basicData.street,
@@ -649,7 +659,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
     }
 
     fun isFormDirty(): Boolean {
-        return _propertyDataUI.value != InitialData.basic ||
+        return propertyDataUI != InitialData.basic ||
         _images.value != InitialData.images ||
         _icAmenityMap.value != InitialData.icAmenity ||
         _internalAmenityMap.value != InitialData.internalAmenity ||
