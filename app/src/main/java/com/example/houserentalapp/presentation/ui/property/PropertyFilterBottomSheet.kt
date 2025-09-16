@@ -66,13 +66,11 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
 
     private fun setupUI() {
         with(binding) {
-            val min = 1000f
-            val max = 2_00_000f
-            tvMinBudget.text = formatAmount(min)
-            tvMaxBudget.text = formatAmount(max)
+            tvMinBudget.text = formatAmount(MIN_PRICE)
+            tvMaxBudget.text = formatAmount(MAX_PRICE)
             rSliderBudget.apply {
-                valueFrom = min
-                valueTo = max
+                valueFrom = MIN_PRICE
+                valueTo = MAX_PRICE
                 setValues(valueFrom, valueTo)
             }
         }
@@ -97,48 +95,37 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
 
                 override fun onStopTrackingTouch(slider: RangeSlider) {
                     filtersViewModel.setBudget(
-                        Pair(slider.values[0].toInt(), slider.values[1].toInt())
+                        Pair(slider.values[0], slider.values[1])
                     )
                 }
             })
         }
     }
 
-    private fun setupChipGroupsListeners() {
+    private fun applyChipGroupSelections() {
         with(binding) {
-            chipGroupBHK.setOnCheckedStateChangeListener { group, checkedIds ->
-                logDebug("Checked chipGroupBHK Ids: $checkedIds")
-                filtersViewModel.setBHKTypes(
-                    checkedIds.map { chipIdToBHK.getValue(it) }
-                )
+            val selectedBHKList = chipGroupBHK.checkedChipIds.map { chipIdToBHK.getValue(it) }
+            val selectedProperties = chipGroupProperties.checkedChipIds.map {
+                chipIdToPropertyType.getValue(it)
+            }
+            val selectedFurnishings = chipGroupFurnishings.checkedChipIds.map {
+                chipIdToFurnishingType.getValue(it)
+            }
+            val selectedTenants = chipGroupTenants.checkedChipIds.map {
+                chipIdToTenantType.getValue(it)
             }
 
-            chipGroupProperties.setOnCheckedStateChangeListener { group, checkedIds ->
-                logDebug("Checked chipGroupProperties Ids: $checkedIds")
-                filtersViewModel.setPropertyTypes(
-                    checkedIds.map { chipIdToPropertyType.getValue(it) }
-                )
-            }
-
-            chipGroupFurnishings.setOnCheckedStateChangeListener { group, checkedIds ->
-                logDebug("Checked chipGroupFurnishings Ids: $checkedIds")
-                filtersViewModel.setFurnishingTypes(
-                    checkedIds.map { chipIdToFurnishingType.getValue(it) }
-                )
-            }
-
-            chipGroupTenants.setOnCheckedStateChangeListener { group, checkedIds ->
-                logDebug("Checked chipGroupTenants Ids: $checkedIds")
-                filtersViewModel.setTenantTypes(
-                    checkedIds.map { chipIdToTenantType.getValue(it) }
-                )
-            }
+            filtersViewModel.setPropertyFilters(filtersViewModel.filters.value!!.copy(
+                bhkTypes = selectedBHKList,
+                propertyTypes = selectedProperties,
+                furnishingTypes = selectedFurnishings,
+                tenantTypes = selectedTenants,
+            ))
         }
     }
 
     private fun setupListeners() {
         setupBudgetSliderListeners()
-        setupChipGroupsListeners()
 
         with(binding) {
             btnClose.setOnClickListener {
@@ -146,6 +133,7 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
             }
 
             btnApplyFilters.setOnClickListener {
+                applyChipGroupSelections()
                 filtersViewModel.triggerApplyFilters()
                 dismiss()
             }
@@ -157,7 +145,7 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
 
         return when {
             amount >= 1_00_000 ->  "%.2f L".format(amount / 1_00_000.0)
-            amount >= 1000 -> "%.2f K".format(amount / 1000.0)
+            amount >= 1000 -> "%.1f K".format(amount / 1000.0)
             else -> "$amount"
         }
 
@@ -193,8 +181,17 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
             }
 
             propertyFilters.budget?.let { (min , max) ->
-                binding.rSliderBudget.setValues(min.toFloat(), max.toFloat(),)
+                binding.rSliderBudget.apply {
+                    binding.tvMinBudget.text = formatAmount(min)
+                    binding.tvMaxBudget.text = formatAmount(max)
+                    setValues(min, max)
+                }
             }
         }
+    }
+
+    companion object {
+        private const val MIN_PRICE = 1000f
+        private const val MAX_PRICE = 2_00_000f
     }
 }

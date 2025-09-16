@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
@@ -213,12 +214,27 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         }
     }
 
+    fun onDataObserved(propertySummaryUI : List<PropertySummaryUI>) {
+        myPropertiesAdapter.setDataList(propertySummaryUI)
+        // PlaceHolder
+        val noDataPlaceHolderView = binding.noDataPlaceHolderView.root
+        if (myPropertiesAdapter.itemCount == 0) {
+            noDataPlaceHolderView.visibility = View.VISIBLE
+            noDataPlaceHolderView.findViewById<TextView>(R.id.tvNoDataMsg)?.let { textView ->
+                textView.text = getString(R.string.post_your_properties_to_see_the_magic)
+            }
+        }
+        else {
+            noDataPlaceHolderView.visibility = View.GONE
+        }
+    }
+
     fun setupObservers() {
         myPropertiesViewModel.propertySummariesResult.observe(viewLifecycleOwner) { result ->
             when(result) {
                 is ResultUI.Success<List<PropertySummaryUI>> -> {
                     logInfo("success")
-                    myPropertiesAdapter.setDataList(result.data)
+                    onDataObserved(result.data)
                     hideProgressBar()
                 }
                 is ResultUI.Error -> {

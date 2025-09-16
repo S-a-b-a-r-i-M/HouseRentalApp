@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,6 +17,7 @@ import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.domain.model.getAddedFiltersCount
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
@@ -149,8 +151,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
             toolBarLayout.visibility = if (hideToolBar) View.GONE else View.VISIBLE
 
-            fabShortlists.visibility = if (hideFabButton) View.GONE else View.VISIBLE
-
             // If text view is not completely visible then scroll that
             searchBar.textView.apply {
                 isSingleLine = true
@@ -188,18 +188,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             btnFilters.setOnClickListener {
                 filterBottomSheet.show(parentFragmentManager, "FilterBottomSheet")
             }
-
-            fabShortlists.setOnClickListener {
-                with(sharedDataViewModel) {
-                    resetPropertiesListStore()
-                    addToPropertiesListStore(ONLY_SHORTLISTED_KEY, true)
-                    addToPropertiesListStore(HIDE_TOOLBAR_KEY, true)
-                    addToPropertiesListStore(HIDE_FAB_BUTTON_KEY, true)
-                }
-
-                mainActivity.loadFragment(PropertiesListFragment(), true)
-//                mainActivity.selectBottomNavOption(NavigationOptions.SHORTLISTS)
-            }
         }
     }
 
@@ -230,12 +218,44 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         )
     }
 
+    private fun updateFiltersBadgeCount() {
+        val filters = filtersViewModel.filters.value ?: run {
+            logWarning("filtersViewModel filters value is null, hence can't count badge")
+            return
+        }
+
+        val count = filters.getAddedFiltersCount() - 1 // Minus Search Query
+        if (count == 0)
+            binding.btnFiltersBadge.visibility = View.GONE
+        else {
+            binding.btnFiltersBadge.visibility = View.VISIBLE
+            binding.btnFiltersBadge.text = count.toString()
+        }
+    }
+
+    private fun onDataObserved(propertySummaryUI: List<PropertySummaryUI>) {
+        propertiesAdapter.setDataList(propertySummaryUI)
+
+        // Placeholder
+        val noDataPlaceHolderView = binding.noDataPlaceHolderView.root
+        if (propertiesAdapter.itemCount == 0) {
+            noDataPlaceHolderView.visibility = View.VISIBLE
+            noDataPlaceHolderView.findViewById<TextView>(R.id.tvNoDataMsg)?.let { textView ->
+                textView.text = getString(R.string.no_properties_found)
+            }
+        }
+        else {
+            noDataPlaceHolderView.visibility = View.GONE
+        }
+    }
+
     private fun setupObservers() {
         propertiesViewModel.propertySummariesResult.observe(viewLifecycleOwner) { result ->
             when(result) {
                 is ResultUI.Success<List<PropertySummaryUI>> -> {
                     logInfo("success")
-                    propertiesAdapter.setDataList(result.data)
+                    onDataObserved(result.data)
+                    updateFiltersBadgeCount()
                     hideProgressBar()
                 }
                 is ResultUI.Error -> {

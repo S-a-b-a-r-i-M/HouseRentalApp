@@ -18,6 +18,7 @@
 
     <color name="red_error">#AF2B1E</color>
     <color name="red_error_very_light">#F5E6E8</color>
+    <color name="red_halo">#f44336</color>
     <color name="green_success">#5CD85A</color>
     <color name="green_success_light">#C8E6C9</color>
 </resources>

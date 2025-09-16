@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui.common
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -95,12 +96,12 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         if (enable == button.isEnabled) return
 
         if (enable)
-            binding.btnSubmit.apply {
+            button.apply {
                 isEnabled = true
                 alpha = 1f
             }
         else
-            binding.btnSubmit.apply {
+            button.apply {
                 isEnabled = false
                 alpha = 0.7f
             }
@@ -109,8 +110,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     private fun setupViewModel() {
         val uc = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
         val factory = SearchHistoryViewModelFactory(uc)
-        searchHistoryViewModel = ViewModelProvider(this, factory)
-            .get(SearchHistoryViewModel::class.java)
+        searchHistoryViewModel=ViewModelProvider(this, factory)[SearchHistoryViewModel::class]
     }
 
     private fun onHistoryClick(filters: PropertyFilters) {
@@ -156,6 +156,17 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
                 // search locations
             }
 
+            // Listens Search Icon Click in Keyboard
+            searchView.editText.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    if (btnSubmit.isEnabled)
+                        navigateToPropertiesListFragment()
+                    true
+                }
+                else
+                    false
+            }
+
             btnSubmit.setOnClickListener { navigateToPropertiesListFragment() }
         }
     }
@@ -172,12 +183,17 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             when(it) {
                 is ResultUI.Success<List<PropertyFilters>> -> {
                     searchHistoryAdapter.setDateList(it.data)
+                     // If no data then show place holder
+                    binding.tvNoRecentSearchPlaceHolder.visibility = if (it.data.isEmpty())
+                        View.VISIBLE
+                    else
+                        View.GONE
                 }
                 ResultUI.Loading -> {
 
                 }
                 is ResultUI.Error -> {
-
+                    binding.tvNoRecentSearchPlaceHolder.visibility = View.VISIBLE
                 }
             }
         }

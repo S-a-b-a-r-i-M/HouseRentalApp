@@ -37,7 +37,7 @@ class FiltersViewModel : ViewModel() {
 
     fun setBHKTypes(newData: List<BHK>) = updateFilter { it.copy(bhkTypes = newData) }
 
-    fun setBudget(newData: Pair<Int, Int>) = updateFilter { it.copy(budget = newData) }
+    fun setBudget(newData: Pair<Float, Float>?) = updateFilter { it.copy(budget = newData) }
 
     fun setTenantTypes(newData: List<TenantType>) = updateFilter { it.copy(tenantTypes = newData) }
 

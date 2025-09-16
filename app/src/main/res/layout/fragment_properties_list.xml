@@ -65,16 +65,35 @@
                     app:strokeColor="?attr/colorPrimary"
                     app:strokeWidth="2dp" />
 
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnFilters"
                     android:minWidth="60dp"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:layout_marginTop="1dp"
                     android:backgroundTint="?attr/colorPrimary"
                     android:layout_marginHorizontal="4dp"
                     android:padding="0dp"
                     app:cornerRadius="4dp"
                     android:text="@string/filters" />
+
+                    <TextView
+                        android:id="@+id/btn_filters_badge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:layout_gravity="top|end"
+                        android:background="@drawable/badge_bg"
+                        android:gravity="center"
+                        android:paddingHorizontal="7dp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold" />
+
+                </FrameLayout>
 
                 <ImageButton
                     android:id="@+id/ibtnSort"
@@ -93,18 +112,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabShortlists"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="25dp"
-        android:layout_marginBottom="25dp"
-        app:tint="?attr/colorPrimary"
-        android:backgroundTint="@color/primary_blue_very_light"
-        android:src="@drawable/baseline_favorite_filled"
-        android:contentDescription="@string/open_shortlists"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvProperty"
@@ -115,6 +122,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolBarLayout" />
 
+    <include
+        android:id="@+id/noDataPlaceHolderView"
+        layout="@layout/no_data_found"
+        android:visibility="gone" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -124,5 +136,20 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+<!--    <com.google.android.material.button.MaterialButton-->
+<!--        style="?attr/materialIconButtonStyle"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_margin="2dp"-->
+<!--        android:backgroundTint="@color/primary_blue_very_light"-->
+<!--        android:checkable="true"-->
+<!--        android:contentDescription="@string/open_shortlists"-->
+<!--        app:checkedIcon="@drawable/baseline_favorite_filled"-->
+<!--        app:icon="@drawable/outline_favorite"-->
+<!--        app:iconGravity="textTop"-->
+<!--        app:iconTint="@color/primary_blue"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

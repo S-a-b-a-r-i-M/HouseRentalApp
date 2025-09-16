@@ -29,6 +29,7 @@
 
     <style name="Widget.App.Chip.Input.Elevated" parent="Widget.Material3.Chip.Input.Elevated">
         <item name="closeIconVisible">false</item>
+        <item name="android:saveEnabled">false</item>
         <item name="chipBackgroundColor">@color/chip_input_color</item>
     </style>
 
