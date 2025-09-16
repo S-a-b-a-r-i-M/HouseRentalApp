@@ -163,4 +163,6 @@
     <string name="signing_in">Signing In...</string>
     <string name="create_naccount">Create \nAccount</string>
     <string name="user_name">User Name</string>
+    <string name="continue_where_you_left">continue where you left</string>
+    <string name="no_recent_searches_found">No Recent Searches Found</string>
 </resources>

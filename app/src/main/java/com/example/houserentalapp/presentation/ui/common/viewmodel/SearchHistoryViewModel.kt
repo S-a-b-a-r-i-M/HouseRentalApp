@@ -13,10 +13,8 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import kotlinx.coroutines.launch
 
-class SearchHistoryViewModel(
-    private val searchHistoryUC: SearchHistoryUseCase
-) : ViewModel() {
-    private val _searchHistoriesResult = MutableLiveData<ResultUI<List<PropertyFilters>>>()
+class SearchHistoryViewModel(private val searchHistoryUC: SearchHistoryUseCase) : ViewModel() {
+    private val _searchHistoriesResult = MutableLiveData<ResultUI<List<PropertyFilters>>>(null)
     val searchHistoriesResult: LiveData<ResultUI<List<PropertyFilters>>> = _searchHistoriesResult
 
     fun loadSearchHistories(userId: Long) {
@@ -33,6 +31,10 @@ class SearchHistoryViewModel(
                 }
             }
         }
+    }
+
+    fun clearSearchHistoryResult() {
+
     }
 }
 
