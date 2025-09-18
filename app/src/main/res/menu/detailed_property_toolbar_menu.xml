@@ -5,12 +5,16 @@
     <item
         android:id="@+id/tbar_shortlist"
         android:title="@string/shortlist"
+        android:visible="false"
+        android:enabled="false"
         android:icon="@drawable/outline_favorite"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/tbar_edit"
         android:title="@string/edit"
+        android:visible="false"
+        android:enabled="false"
         android:icon="@drawable/baseline_edit_24"
         app:showAsAction="always" />
 

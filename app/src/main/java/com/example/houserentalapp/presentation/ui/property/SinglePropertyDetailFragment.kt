@@ -20,8 +20,10 @@ import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBindin
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.model.enums.TenantType
+import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
@@ -32,11 +34,13 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.DrawablePosition
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.setDrawable
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
@@ -119,14 +123,45 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             }
 
             // Render Toolbar icons
-            toolbar.menu.findItem(R.id.tbar_edit).apply {
-                isVisible = !isTenantView
-                isEnabled = !isTenantView
-            }
+            if (isTenantView) {
+                toolbar.menu.findItem(R.id.tbar_shortlist).apply {
+                    isVisible = true
+                    isEnabled = true
+                }
 
-            toolbar.menu.findItem(R.id.tbar_shortlist).apply {
-                isVisible = isTenantView
-                isEnabled = isTenantView
+                val drawablePadding = 4.dpToPx(mainActivity)
+                tvLabelName.apply {
+                    setDrawable(
+                        R.drawable.baseline_person_24,
+                        16,
+                        16,
+                        DrawablePosition.LEFT
+                    )
+                    compoundDrawablePadding = drawablePadding
+                }
+                tvLabelPhone.apply {
+                    setDrawable(
+                        R.drawable.baseline_call_24,
+                        16,
+                        16,
+                        DrawablePosition.LEFT
+                    )
+                    compoundDrawablePadding = drawablePadding
+                }
+                tvLabelEmail.apply {
+                    setDrawable(
+                        R.drawable.baseline_email_24,
+                        16,
+                        16,
+                        DrawablePosition.LEFT
+                    )
+                    compoundDrawablePadding = drawablePadding
+                }
+            } else {
+                toolbar.menu.findItem(R.id.tbar_edit).apply {
+                    isVisible = true
+                    isEnabled = true
+                }
             }
         }
     }
@@ -311,6 +346,22 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
     }
 
+    private fun bindContactCardDetails(userActions : List<UserActionData>?) {
+        val viewedAction = userActions?.find { it.action == UserActionEnum.VIEW }
+        with(binding) {
+            if (viewedAction == null) {
+
+            } else {
+                tvValueName.text = currentUser.name
+                tvValuePhone.text = currentUser.phone
+                tvValueEmail.text = if (currentUser.email != null)
+                    currentUser.email
+                else
+                    getString(R.string.not_available)
+            }
+        }
+    }
+
     private fun bindPropertyDetails(propertyUI: PropertyWithActionsUI) {
         // Load Images
         adapter.setPropertyImages(propertyUI.property.images)
@@ -320,6 +371,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         bindBasicCardDetails(propertyUI.property)
         bindOverviewCardDetails(propertyUI.property)
         bindAmenitiesCardDetails(propertyUI.property.amenities)
+        bindContactCardDetails(propertyUI.userActionDataList)
     }
 
     fun setObservers() {

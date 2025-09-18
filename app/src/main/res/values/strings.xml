@@ -168,4 +168,8 @@
     <string name="no_data_found">No Data Found</string>
     <string name="post_your_properties_to_see_the_magic">Post Your Properties To See The Magic</string>
     <string name="no_properties_found">No Properties Found</string>
+    <string name="view_owner_details">View Owner Details</string>
+    <string name="contact_details"><u>Contact Details</u></string>
+    <string name="not_available">Not Available</string>
+    <string name="view_contact_details">View Contact Details</string>
 </resources>

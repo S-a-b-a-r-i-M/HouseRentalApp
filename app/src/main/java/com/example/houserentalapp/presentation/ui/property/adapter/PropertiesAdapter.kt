@@ -53,9 +53,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
             else // Add Place Holder Image
                 repeat(2) {
                 val shapableImageView = itemView.context.getShapableImageView(imageWidth)
-                shapableImageView.setImageResource(
-                    listOf(R.drawable.interior, R.drawable.room_1).random()
-                )
+                shapableImageView.setImageResource(R.drawable.room_1)
                 imageContainer.addView(shapableImageView)
             }
 
