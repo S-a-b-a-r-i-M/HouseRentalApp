@@ -80,15 +80,15 @@ fun getDummyPropertyEntity(index: Int, userId: Long) =
             city = listOf("trichy", "karur", "erode", "salem", "namakkal", "chennai", "madurai").random()
         ),
         images = emptyList(),
-        createdAt = System.currentTimeMillis()
+        createdAt = listOf(1694523895123, 1608237456789, 1708237456789, 1711123416780, 1733323416780, 1687654321987).random()
     )
 
 fun insertUsers(db: SQLiteDatabase): List<Long> {
 
     val values1 = ContentValues().apply {
         put(UserTable.COLUMN_NAME, "User1")
-        put(UserTable.COLUMN_PHONE, "9878089777")
-        put(UserTable.COLUMN_HASHED_PASSWORD, "8hiuasf7y")
+        put(UserTable.COLUMN_PHONE, "9876543210")
+        put(UserTable.COLUMN_HASHED_PASSWORD, "Password1234")
     }
 
     val values2 = ContentValues().apply {

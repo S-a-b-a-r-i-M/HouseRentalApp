@@ -447,8 +447,8 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             locality = property.address.locality,
             city = property.address.city,
         )
-        InitialData.basic = dataUI
-        propertyDataUI = dataUI.copy() // store another instance
+        InitialData.basic = dataUI.copy()
+        propertyDataUI = dataUI
         return dataUI
     }
 
@@ -498,7 +498,7 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
         InitialData.reset()
 
         // Reset Form Data
-        propertyDataUI = InitialData.basic
+        propertyDataUI = InitialData.basic.copy()
         _images.value = InitialData.images
         // Reset Amenities
         _icAmenityMap.value = InitialData.icAmenity
