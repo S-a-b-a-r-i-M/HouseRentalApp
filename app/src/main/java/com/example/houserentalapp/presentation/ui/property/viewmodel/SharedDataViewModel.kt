@@ -10,8 +10,8 @@ class SharedDataViewModel : ViewModel() {
     var currentUserData: User? = null
         private set
 
-    private val _currentUser = MutableLiveData<User>()
-    val currentUser: LiveData<User> = _currentUser
+    private val _currentUserLD = MutableLiveData<User>()
+    val currentUserLD: LiveData<User> = _currentUserLD
 
     private val _fPropertiesListStore = mutableMapOf<String, Any>()
     val propertiesListStore: Map<String, Any> = _fPropertiesListStore
@@ -40,6 +40,6 @@ class SharedDataViewModel : ViewModel() {
     fun setCurrentUser(user: User) {
         logDebug("CurrentUser is set: $user")
         currentUserData = user
-        _currentUser.value = user
+        _currentUserLD.value = user
     }
 }

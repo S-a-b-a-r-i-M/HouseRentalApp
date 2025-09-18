@@ -36,6 +36,7 @@ import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
@@ -60,6 +61,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         mainActivity = context as MainActivity
     }
 
+    // onCreate() for reading arguments.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         propertyId = arguments?.getLong(PROPERTY_ID_KEY) ?: run {
@@ -69,17 +71,6 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
         isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
         hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV_KEY) ?: false
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding = FragmentSinglePropertyDetailBinding.bind(view)
-        // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
 
         logDebug("Received arguments \n" +
                 "PROPERTY_ID_KEY: $propertyId" +
@@ -87,13 +78,26 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                 "HIDE_AND_SHOW_BOTTOM_NAV_KEY: $hideAndShowBottomNav"
         )
 
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
+    }
+
+    // onViewCreated() for applying arguments to UI
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentSinglePropertyDetailBinding.bind(view)
+
         setupUI()
         setupViewModel()
         setListeners()
         setObservers()
 
         // Initial Fetch
-        if (viewModel.propertyResult.value !is ResultUI.Success)
+        if (savedInstanceState == null)
             viewModel.loadProperty(propertyId, isTenantView)
     }
 
@@ -113,6 +117,17 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                 fakeDragBy(-2.0f)
                 endFakeDrag()
             }
+
+            // Render Toolbar icons
+            toolbar.menu.findItem(R.id.tbar_edit).apply {
+                isVisible = !isTenantView
+                isEnabled = !isTenantView
+            }
+
+            toolbar.menu.findItem(R.id.tbar_shortlist).apply {
+                isVisible = isTenantView
+                isEnabled = isTenantView
+            }
         }
     }
 
@@ -128,6 +143,15 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
     }
 
+    fun onEditIconClick() {
+        val destinationFragment = CreatePropertyFragment()
+        destinationFragment.arguments = Bundle().apply {
+            putLong(CreatePropertyFragment.PROPERTY_ID_KEY, propertyId)
+            putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, false)
+        }
+        mainActivity.loadFragment(destinationFragment, true)
+    }
+
     fun setListeners() {
         with(binding) {
           // ToolBar Listeners
@@ -136,8 +160,16 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             }
 
             toolbar.setOnMenuItemClickListener { item ->
-                if(item.itemId == R.id.tbar_shortlist)
-                    viewModel.toggleFavourite(propertyId)
+                when (item.itemId) {
+                    R.id.tbar_shortlist -> viewModel.toggleFavourite(propertyId)
+                    R.id.tbar_edit -> {
+                        if (isTenantView)
+                            logWarning("A Tenant should not edit an property")
+                        else
+                            onEditIconClick()
+                    }
+                }
+
                 true
             }
         }
@@ -193,10 +225,10 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
             tvBuiltArea.text = getString(R.string.area_with_sq_ft, property.builtUpArea)
             tvPreferredTenant.text = property.preferredTenantType.joinToString(",") { it.readable }
             tvRent.text = getString(R.string.property_price, property.price)
-            tvMaintenance.text = if (property.isMaintenanceSeparate)
-                getString(R.string.property_price, property.maintenanceCharges)
-            else
-                "included"
+            tvMaintenance.text = getString(
+                R.string.property_price,
+                if (property.isMaintenanceSeparate) property.maintenanceCharges else 0
+            )
             tvSecurityDeposit.text = getString(R.string.property_price, property.securityDepositAmount)
         }
     }

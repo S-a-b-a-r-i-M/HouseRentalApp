@@ -52,7 +52,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMyPropertyBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
+        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
             mainActivity.showToast("Login again...")
             mainActivity.finish()
             return
@@ -64,14 +64,11 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         setupObservers()
 
         // Initial Load
-        if (myPropertiesViewModel.propertySummariesResult.value !is ResultUI.Success)
+        if (savedInstanceState == null)
             loadProperties()
     }
 
     fun setupUI() {
-        // Always show bottom nav
-        mainActivity.showBottomNav()
-
         with(binding) {
             // RecyclerView
             myPropertiesAdapter = MyPropertiesAdapter(
@@ -128,6 +125,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
                 val destinationFragment = CreatePropertyFragment()
                 destinationFragment.arguments = Bundle().apply {
                     putLong(CreatePropertyFragment.PROPERTY_ID_KEY, summary.id)
+                    putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
                 mainActivity.addFragment(destinationFragment, true)
             }
@@ -210,7 +208,11 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
 
     fun setupListeners() {
         binding.fabAddProperty.setOnClickListener {
-            mainActivity.loadFragment(CreatePropertyFragment(), true)
+            val destinationFragment = CreatePropertyFragment()
+            destinationFragment.arguments = Bundle().apply {
+                putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
+            }
+            mainActivity.loadFragment(destinationFragment, true)
         }
     }
 

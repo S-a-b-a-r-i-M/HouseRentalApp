@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.profile
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -130,7 +131,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setupObservers() {
-        sharedDataViewModel.currentUser.observe(mainActivity) {
+        sharedDataViewModel.currentUserLD.observe(mainActivity) {
             if (it != null) bindUserData(it)
         }
     }

@@ -78,13 +78,6 @@
                         android:orientation="vertical"
                         app:layout_constraintGuide_percent="0.65" />
 
-                    <androidx.constraintlayout.widget.Guideline
-                        android:id="@+id/hGuideline"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layout_constraintGuide_percent="0.60" />
-
                     <TextView
                         android:id="@+id/tvPropertyName"
                         style="@style/TextAppearance.App.Body1"
@@ -161,6 +154,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/rent"
                         android:textAlignment="center"
+                        app:layout_constraintBottom_toTopOf="@+id/tvRent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -170,33 +164,12 @@
                         style="@style/TextAppearance.App.Body2"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:paddingBottom="4dp"
+                        android:paddingBottom="2dp"
                         android:text="10,000"
                         android:textAlignment="center"
-                        app:layout_constraintBottom_toTopOf="@id/card1HSeparator1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toBottomOf="@+id/tvTitleRent" />
-
-                    <View
-                        android:id="@+id/card1HSeparator1"
-                        android:layout_width="0dp"
-                        android:layout_height="0.25dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:background="@color/separator_color"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toBottomOf="@id/tvRent" />
-
-                    <View
-                        android:id="@+id/card1HSeparator2"
-                        android:layout_width="0dp"
-                        android:layout_height="0.25dp"
-                        android:layout_marginHorizontal="10dp"
-                        android:background="@color/separator_color"
-                        app:layout_constraintBottom_toTopOf="@+id/hGuideline"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/guideline" />
 
                     <View
                         android:id="@+id/card1VSeparater1"
@@ -207,32 +180,63 @@
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toTopOf="parent" />
 
+                    <View
+                        android:id="@+id/card1HSeparator1"
+                        android:layout_width="0dp"
+                        android:layout_height="0.25dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/separator_color"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/tvTitleMaintenance"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@id/tvRent" />
+
+                    <TextView
+                        android:id="@+id/tvTitleMaintenance"
+                        style="@style/TextAppearance.App.LabelMedium"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="Maintenance"
+                        android:textAlignment="center"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@+id/tvRent" />
+
                     <TextView
                         android:id="@+id/tvMaintenance"
                         style="@style/TextAppearance.App.Body2"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:drawablePadding="4dp"
-                        android:paddingHorizontal="10dp"
-                        android:paddingVertical="4dp"
                         android:text="@string/included"
+                        android:textAlignment="center"
                         android:textColor="@color/gray_dark"
-                        app:drawableStartCompat="@drawable/outline_build_circle_24"
-                        app:layout_constraintBottom_toTopOf="@id/hGuideline"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toBottomOf="@+id/card1HSeparator1" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvTitleMaintenance" />
+
+                    <View
+                        android:id="@+id/card1HSeparator2"
+                        android:layout_width="0dp"
+                        android:layout_height="0.25dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/separator_color"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@+id/tvTitleSecurityDeposit"
+                        app:layout_constraintStart_toStartOf="@+id/guideline"
+                        app:layout_constraintTop_toBottomOf="@+id/tvMaintenance" />
 
                     <TextView
                         android:id="@+id/tvTitleSecurityDeposit"
                         style="@style/TextAppearance.App.LabelMedium"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
                         android:text="Deposit"
                         android:textAlignment="center"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
-                        app:layout_constraintTop_toTopOf="@+id/hGuideline" />
+                        app:layout_constraintTop_toBottomOf="@+id/card1HSeparator2" />
 
                     <TextView
                         android:id="@+id/tvSecurityDeposit"
@@ -241,7 +245,6 @@
                         android:layout_height="wrap_content"
                         android:text="1,50,000"
                         android:textAlignment="center"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/guideline"
                         app:layout_constraintTop_toBottomOf="@+id/tvTitleSecurityDeposit" />

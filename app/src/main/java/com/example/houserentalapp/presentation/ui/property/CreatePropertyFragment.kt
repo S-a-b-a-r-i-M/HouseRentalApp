@@ -82,6 +82,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
     private val formSingleSelectChipGroupsInfo = mutableListOf<SingleSelectableChipGroupInfo>()
     private var propertyIdToEdit: Long? = null
+    private var hideAndShowBottomNav: Boolean = false
 
     private val imagesPickerLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -136,17 +137,20 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         propertyIdToEdit = arguments?.getLong(PROPERTY_ID_KEY)
+        if (propertyIdToEdit == 0L)  propertyIdToEdit = null
+        hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV)
+            ?: hideAndShowBottomNav
+        // Take Current User
+        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
+            mainActivity.showToast("Login again...")
+            mainActivity.finish()
+            return
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentCreatePropertyBinding.bind(view)
-        // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
 
         // Set up UI
         setupUI()
@@ -195,7 +199,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun setupUI() {
         // Always hide bottom nav
-        mainActivity.hideBottomNav()
+        if (hideAndShowBottomNav)
+            mainActivity.hideBottomNav()
+
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
 
@@ -852,7 +858,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     override fun onDetach() {
         super.onDetach()
-        mainActivity.showBottomNav()
+        if (hideAndShowBottomNav)
+            mainActivity.showBottomNav()
     }
 
     private data class TextInputFieldInfo (
@@ -869,5 +876,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     companion object {
         const val PROPERTY_ID_KEY = "propertyId"
+        const val HIDE_AND_SHOW_BOTTOM_NAV = "hideAndShow"
     }
 }

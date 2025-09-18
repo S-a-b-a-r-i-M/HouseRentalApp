@@ -111,10 +111,12 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             }
 
             btnPostProperty.setOnClickListener {
-                mainActivity.loadFragment(
-                    CreatePropertyFragment(),
-                    true
-                )
+                val destinationFragment = CreatePropertyFragment()
+                destinationFragment.arguments = Bundle().apply {
+                    putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                }
+
+                mainActivity.loadFragment(destinationFragment, true)
             }
         }
     }

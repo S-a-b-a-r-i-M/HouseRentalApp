@@ -8,4 +8,10 @@
         android:icon="@drawable/outline_favorite"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/tbar_edit"
+        android:title="@string/edit"
+        android:icon="@drawable/baseline_edit_24"
+        app:showAsAction="always" />
+
 </menu>
