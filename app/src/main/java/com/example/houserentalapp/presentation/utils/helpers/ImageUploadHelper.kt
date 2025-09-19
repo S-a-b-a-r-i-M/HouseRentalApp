@@ -12,6 +12,9 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import com.example.houserentalapp.presentation.utils.extensions.deleteFile
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
+import com.example.houserentalapp.presentation.utils.extensions.logError
 import java.io.File
 
 class ImageUploadHelper {
@@ -51,6 +54,11 @@ class ImageUploadHelper {
         ) { success ->
             if (success)
                 onImageFromCamera(photoUri)
+            else { // Delete the image file from cache_dir
+                logDebug("Image Upload via camera is cancelled.")
+                val path = photoUri.path ?: return@registerForActivityResult
+                path.deleteFile()
+            }
         }
 
         // PermissionLauncher
@@ -66,7 +74,7 @@ class ImageUploadHelper {
     }
 
     private fun openCamera(context: Context) {
-        val photoFile = File.createTempFile("IMG_", ".jpg", context.cacheDir)
+        val photoFile = File.createTempFile("IMG_TEMP_", ".jpg", context.cacheDir)
         photoUri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.provider",
@@ -106,4 +114,6 @@ class ImageUploadHelper {
             }
             .show()
     }
+
+    fun getCameraPhotoUri() = if(::photoUri.isInitialized) photoUri else null
 }

@@ -1,18 +1,12 @@
 package com.example.houserentalapp.presentation.ui.profile
 
-import android.Manifest
-import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -180,9 +174,9 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
                 }
         }
 
-        profileEditViewModel.profileImageSource.observe(viewLifecycleOwner) {
-            if(it != null)
-                loadImageSourceToImageView(it, binding.imgUserProfile)
+        profileEditViewModel.editableUser.observe(viewLifecycleOwner) {
+            if(it.profileImageSource != null)
+                loadImageSourceToImageView(it.profileImageSource, binding.imgUserProfile)
         }
     }
 

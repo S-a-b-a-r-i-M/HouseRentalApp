@@ -26,9 +26,9 @@ class ImageStorageDao(private val context: Context) {
     }
 
     fun saveUserImage(userId: Long, imageUri: Uri): String? {
-        val imagesDir = File(context.filesDir, PROPERTY_IMAGES_DIR)
+        val imagesDir = File(context.filesDir, USER_IMAGER_DIR)
         if (!imagesDir.exists() && !imagesDir.mkdir()) {
-            logError("Failed to create $PROPERTY_IMAGES_DIR")
+            logError("Failed to create $USER_IMAGER_DIR")
             return null
         }
 

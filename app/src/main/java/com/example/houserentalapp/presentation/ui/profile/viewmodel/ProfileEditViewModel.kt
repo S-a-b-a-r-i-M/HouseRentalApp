@@ -19,15 +19,15 @@ import kotlinx.coroutines.launch
 class ProfileEditViewModel(
     private val currentUser: User, private val userUC: UserUseCase
 ) : ViewModel() {
-    private var editableUser = currentUser
-    private val _profileImageSource = MutableLiveData(currentUser.profileImageSource)
-    val profileImageSource: LiveData<ImageSource?> = _profileImageSource
+    private var _editableUser = MutableLiveData(currentUser.copy())
+    val editableUser: LiveData<User> = _editableUser
+
     private val _isFormDirty = MutableLiveData(false)
     val isFormDirty: LiveData<Boolean> = _isFormDirty
 
     private inline fun updateUserData(update: (User) -> User) {
-        editableUser = update(editableUser)
-        _isFormDirty.value = editableUser != currentUser
+        _editableUser.value = update(_editableUser.value!!)
+        _isFormDirty.value = _editableUser.value != currentUser
     }
 
     fun updateChanges(field: UserField, value: Any?) {
@@ -35,18 +35,17 @@ class ProfileEditViewModel(
             UserField.NAME -> updateUserData { it.copy(name = value as String) }
             UserField.PHONE -> updateUserData { it.copy(phone = value as String) }
             UserField.EMAIL -> updateUserData { it.copy(email = value as? String) }
-            UserField.PROFILE_IMAGE -> {
-                _profileImageSource.value = ImageSource.Uri(value as Uri)
-                _isFormDirty.value = true
-            }
+            UserField.PROFILE_IMAGE ->
+                updateUserData { it.copy(profileImageSource = ImageSource.Uri(value as Uri)) }
         }
     }
 
     private fun getModifiedFields(): List<UserField> = mutableListOf<UserField>().apply {
-        if (editableUser.name != currentUser.name) add(UserField.NAME)
-        if (editableUser.email != currentUser.email) add(UserField.EMAIL)
-        if (editableUser.phone != currentUser.phone) add(UserField.PHONE)
-        if (_profileImageSource.value != currentUser.profileImageSource) add(UserField.PROFILE_IMAGE)
+        val modifiedUser = _editableUser.value!!
+        if (modifiedUser.name != currentUser.name) add(UserField.NAME)
+        if (modifiedUser.email != currentUser.email) add(UserField.EMAIL)
+        if (modifiedUser.phone != currentUser.phone) add(UserField.PHONE)
+        if (modifiedUser.profileImageSource != currentUser.profileImageSource) add(UserField.PROFILE_IMAGE)
     }
 
     fun saveUserChanges(onSuccess: (User) -> Unit, onFailure: (String) -> Unit) {
@@ -62,10 +61,7 @@ class ProfileEditViewModel(
                 return@launch
             }
 
-            when(val res = userUC.updateUser(
-                editableUser.copy(profileImageSource = _profileImageSource.value), // Add Profile Image
-                updatedFields
-            )) {
+            when(val res = userUC.updateUser(_editableUser.value!!, updatedFields)) {
                 is Result.Success<User> -> {
                     logInfo("User updated successfully. ${res.data}")
                     onSuccess(res.data)
