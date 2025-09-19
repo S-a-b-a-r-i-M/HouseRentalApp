@@ -10,86 +10,102 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
-import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
+import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
-import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
+import com.example.houserentalapp.presentation.model.PropertyUI
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import kotlinx.coroutines.launch
 
 class SinglePropertyDetailViewModel(
-    private val getPropertyUC: PropertyUseCase,
-    private val propertyUserActionUC: TenantRelatedPropertyUseCase,
+    private val propertyUC: PropertyUseCase,
+    private val userPropertyUC: UserPropertyUseCase,
     private val currentUser: User
 ) : ViewModel() {
-    private val _propertyResult = MutableLiveData<ResultUI<PropertyWithActionsUI>>()
-    val propertyResult: LiveData<ResultUI<PropertyWithActionsUI>> = _propertyResult
+    private val _onlyPropertyDetailsRes = MutableLiveData<ResultUI<Property>>()
+    val onlyPropertyDetailsRes: LiveData<ResultUI<Property>> = _onlyPropertyDetailsRes
 
-    private var _isShortlisted = MutableLiveData<Boolean>(false)
-    var isShortlisted: LiveData<Boolean> = _isShortlisted
+    private val _propertyUIResult = MutableLiveData<ResultUI<PropertyUI>>()
+    val propertyUIResult: LiveData<ResultUI<PropertyUI>> = _propertyUIResult
 
-    fun loadProperty(propertyId: Long, withTenantActions: Boolean = false) {
-        _propertyResult.value = ResultUI.Loading
+    private var property: Property? = null
+    private lateinit var propertyUI: PropertyUI
+
+    fun clearChangeFlags() {
+        val res = propertyUIResult.value
+        if (res is ResultUI.Success<PropertyUI>) res.data.resetFlags()
+    }
+
+    fun loadProperty(propertyId: Long) {
+        _onlyPropertyDetailsRes.value = ResultUI.Loading
         viewModelScope.launch {
             try {
-                when (val result = getPropertyUC.getProperty(propertyId)) {
+                when (val result = propertyUC.getProperty(propertyId)) {
                     is Result.Success<Property> -> {
                         logInfo("successfully loaded property(id: $propertyId)")
-                        val property = result.data
-                        if (withTenantActions)
-                            loadPropertyActions(currentUser.id, property)
-                        else
-                            _propertyResult.value = ResultUI.Success(PropertyWithActionsUI(property))
+                        property = result.data
+                        _onlyPropertyDetailsRes.value = ResultUI.Success(result.data)
                     }
                     is Result.Error -> {
-                        _propertyResult.value = ResultUI.Error(result.message)
+                        _onlyPropertyDetailsRes.value = ResultUI.Error(result.message)
                         logError("Error on loadProperty : ${result.message}")
                     }
                 }
             } catch (exp: Exception) {
-                _propertyResult.value = ResultUI.Error("Unexpected Error")
+                _onlyPropertyDetailsRes.value = ResultUI.Error("Unexpected Error")
                 logError("Error on loadProperty : ${exp.message}")
             }
         }
     }
 
-    private fun loadPropertyActions(userId: Long, property: Property) {
-        if (property.id == null) {
-            logWarning("loadPropertyActions -> Property Id not found")
-            return
-        }
-
+    fun loadPropertyWithActions(propertyId: Long) {
         viewModelScope.launch {
-            when (val res = propertyUserActionUC.getPropertyUserActions(userId, property.id)) {
-                is Result.Success<List<UserActionData>> -> {
+            when (val res = userPropertyUC.getPropertyWithActions(
+                currentUser.id, propertyId
+            )) {
+                is Result.Success<Map<String, Any>> -> {
                     logInfo("successfully loaded user actions for property")
-                    _propertyResult.value = ResultUI.Success(
-                        PropertyWithActionsUI(property, res.data)
+                    val property = res.data.getValue("property") as Property
+                    val actions = res.data.getValue("actions") as? List<UserActionData>
+                    val landlordUser = res.data.getValue("landlordUser") as User
+
+                    var isShortlisted = false
+                    var isInterested = false
+                    actions?.forEach {
+                        if (it.action == UserActionEnum.SHORTLISTED)
+                            isShortlisted = true
+                        else if (it.action == UserActionEnum.INTERESTED)
+                            isInterested = true
+                    }
+                    propertyUI = PropertyUI(
+                        property,
+                        isShortlisted,
+                        isInterested,
+                        landlordUser,
+                        propertyInfoChanged = true,
+                        shortlistStateChanged = true,
+                        interestedStateChanged = true,
+                        landlordUserInfoChanged = true,
                     )
-                    updateIsShortlisted(res.data)
+                    _propertyUIResult.value = ResultUI.Success(propertyUI)
                 }
                 is Result.Error -> {
-                    _propertyResult.value = ResultUI.Success(PropertyWithActionsUI(property))
-                    logError("Error on loading user($userId) actions ${res.message}")
+                    logError("Error: loading user(${currentUser.id}) actions ${res.message}")
                 }
             }
         }
     }
 
-    private fun updateIsShortlisted(actionDataList: List<UserActionData>) {
-        _isShortlisted.value = actionDataList.any { it.action == UserActionEnum.SHORTLISTED }
-    }
-
     private fun removeFromShortlists(propertyId: Long) {
         viewModelScope.launch {
-            when(propertyUserActionUC.deleteUserAction(
+            when(userPropertyUC.deleteUserAction(
                 currentUser.id, propertyId, UserActionEnum.SHORTLISTED
             )) {
                 is Result.Success<Boolean> -> {
                     logInfo("property removed from shortlisted")
-                    _isShortlisted.value = false
+                    propertyUI = propertyUI.copy(isShortlisted = false, shortlistStateChanged = true)
+                    _propertyUIResult.value = ResultUI.Success(propertyUI)
                 }
                 is Result.Error -> {
                     logError("Error while removing property from shortlisted")
@@ -100,12 +116,13 @@ class SinglePropertyDetailViewModel(
 
     private fun addToShortlists(propertyId: Long) {
         viewModelScope.launch {
-            when (propertyUserActionUC.storeUserAction(
+            when (userPropertyUC.storeTenantAction(
                 currentUser.id, propertyId, UserActionEnum.SHORTLISTED
             )) {
                 is Result.Success<*> -> {
                     logInfo("property added to shortlisted")
-                    _isShortlisted.value = true
+                    propertyUI = propertyUI.copy(isShortlisted = true, shortlistStateChanged = true)
+                    _propertyUIResult.value = ResultUI.Success(propertyUI)
                 }
                 is Result.Error -> {
                     logError("Error while adding property to shortlisted")
@@ -114,8 +131,25 @@ class SinglePropertyDetailViewModel(
         }
     }
 
+    fun storeUserInterest(propertyId: Long) {
+        viewModelScope.launch {
+            when (userPropertyUC.storeTenantAction(
+                currentUser.id, propertyId, UserActionEnum.INTERESTED
+            )) {
+                is Result.Success<*> -> {
+                    logInfo("property added to INTERESTED")
+                    propertyUI = propertyUI.copy(isInterested = true, interestedStateChanged = true)
+                    _propertyUIResult.value = ResultUI.Success(propertyUI)
+                }
+                is Result.Error -> {
+                    logError("Error while adding property to INTERESTED")
+                }
+            }
+        }
+    }
+
     fun toggleFavourite(propertyId: Long) {
-        if (isShortlisted.value!!)
+        if (propertyUI.isShortlisted)
             removeFromShortlists(propertyId)
         else // Add to favourites
             addToShortlists(propertyId)
@@ -123,15 +157,15 @@ class SinglePropertyDetailViewModel(
 }
 
 class SinglePropertyDetailViewModelFactory(
-    private val getPropertyUseCase: PropertyUseCase,
-    private val propertyUserActionUseCase: TenantRelatedPropertyUseCase,
+    private val propertyUC: PropertyUseCase,
+    private val userPropertyUC: UserPropertyUseCase,
     private val currentUser: User
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SinglePropertyDetailViewModel::class.java))
             return SinglePropertyDetailViewModel(
-                getPropertyUseCase,
-                propertyUserActionUseCase,
+                propertyUC,
+                userPropertyUC,
                 currentUser
             ) as T
 

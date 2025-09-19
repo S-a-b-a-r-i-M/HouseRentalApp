@@ -15,12 +15,13 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.getAddedFiltersCount
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
-import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
+import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
@@ -163,7 +164,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     fun setupViewModel() {
         val propertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
-        val propertyUserActionUC = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(mainActivity))
+        val propertyUserActionUC = UserPropertyUseCase(UserPropertyRepoImpl(mainActivity))
         val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
         val factory = PropertiesListViewModelFactory(
             propertyUC,

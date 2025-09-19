@@ -1,15 +1,13 @@
 package com.example.houserentalapp.domain.usecase
 
-import com.example.houserentalapp.domain.model.Pagination
-import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.repo.UserPropertyRepo
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logError
 
-class TenantRelatedPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
-    suspend fun storeUserAction(
+class UserPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
+    suspend fun storeTenantAction(
         currentUserId: Long,
         propertyId: Long,
         action: UserActionEnum
@@ -33,15 +31,13 @@ class TenantRelatedPropertyUseCase(private val userPropertyRepo: UserPropertyRep
         }
     }
 
-    suspend fun getPropertySummariesByUserAction(
-        currentUserId: Long,
-        action: UserActionEnum,
-        pagination: Pagination
-    ): Result<List<PropertySummary>> {
+    suspend fun getPropertyWithActions(
+        currentUserId: Long, propertyId: Long
+    ): Result<Map<String, Any>> {
         return try {
-            return userPropertyRepo.getPropertySummariesByUserAction(currentUserId, pagination, action)
+            userPropertyRepo.getPropertyWithUserActions(currentUserId, propertyId)
         } catch (exp: Exception) {
-            logError("Error ${exp.message} while reading PropertySummaries By UserAction")
+            logError("${exp.message.toString()} while fetching property(id: $propertyId)")
             Result.Error(exp.message.toString())
         }
     }

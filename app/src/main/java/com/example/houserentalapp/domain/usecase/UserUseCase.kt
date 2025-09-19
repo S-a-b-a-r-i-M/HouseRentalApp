@@ -83,6 +83,15 @@ class UserUseCase(private val userRepo: UserRepo) {
         }
     }
 
+    suspend fun getUserById(userId: Long): Result<User> {
+        return try {
+            userRepo.getUserById(userId)
+        } catch (exp: Exception) {
+            logError("${exp.message.toString()} while fetching UserById")
+            Result.Error(exp.message.toString())
+        }
+    }
+
     suspend fun isPhoneNumberExists(phone: String): Result<Boolean> {
         return try {
             return userRepo.isPhoneNumberExists(phone)

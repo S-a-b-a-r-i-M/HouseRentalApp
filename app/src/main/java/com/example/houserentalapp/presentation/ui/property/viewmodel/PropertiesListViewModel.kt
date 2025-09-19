@@ -12,7 +12,7 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
-import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
+import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logWarning
 
 class PropertiesListViewModel(
     private val propertyUC: PropertyUseCase,
-    private val propertyUserActionUC: TenantRelatedPropertyUseCase,
+    private val propertyUserActionUC: UserPropertyUseCase,
     private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
 ) : ViewModel() {
@@ -98,7 +98,7 @@ class PropertiesListViewModel(
                     currentUser.id, propertyId, UserActionEnum.SHORTLISTED
                 )
             else
-                propertyUserActionUC.storeUserAction(
+                propertyUserActionUC.storeTenantAction(
                     currentUser.id, propertyId, UserActionEnum.SHORTLISTED
                 )
 
@@ -134,7 +134,7 @@ class PropertiesListViewModel(
 
 class PropertiesListViewModelFactory(
     private val propertyUC: PropertyUseCase,
-    private val propertyUserActionUC: TenantRelatedPropertyUseCase,
+    private val propertyUserActionUC: UserPropertyUseCase,
     private val searchHistoryUC: SearchHistoryUseCase,
     private val currentUser: User
 ) : ViewModelProvider.Factory {

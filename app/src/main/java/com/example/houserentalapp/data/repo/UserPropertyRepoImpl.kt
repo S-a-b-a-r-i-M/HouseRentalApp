@@ -2,12 +2,13 @@ package com.example.houserentalapp.data.repo
 
 import android.content.Context
 import com.example.houserentalapp.data.local.db.DatabaseHelper
+import com.example.houserentalapp.data.local.db.dao.PropertyDao
+import com.example.houserentalapp.data.local.db.dao.UserDao
 import com.example.houserentalapp.data.local.db.dao.UserPropertyDao
 import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.data.mapper.UserActionMapper
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertyLead
-import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.repo.UserPropertyRepo
@@ -20,8 +21,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 
-class UserPropertyRepoImpl(private val context: Context) : UserPropertyRepo {
-    private val userPropertyDao = UserPropertyDao(DatabaseHelper.getInstance(context))
+class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
+    private val dbHelper = DatabaseHelper.getInstance(context)
+    private val userDao = UserDao(dbHelper)
+    private val propertyDao = PropertyDao(dbHelper)
+    private val userPropertyDao = UserPropertyDao(dbHelper)
 
     // -------------- CREATE --------------
     override suspend fun storeUserAction(
@@ -48,23 +52,30 @@ class UserPropertyRepoImpl(private val context: Context) : UserPropertyRepo {
     }
 
     // -------------- READ --------------
-    override suspend fun getPropertySummariesByUserAction(
-        userId: Long, pagination: Pagination, action: UserActionEnum
-    ): Result<List<PropertySummary>> {
+    override suspend fun getPropertyWithUserActions(
+        userId: Long, propertyId: Long
+    ) : Result<Map<String, Any>> {
         return try {
             withContext(Dispatchers.IO) {
-                val summariesEntity = userPropertyDao.getPropertySummariesByUserAction(
-                    userId, pagination, action
+                // Get Property
+                val property = PropertyMapper.toDomain(
+                    propertyDao.getPropertyById(propertyId)
                 )
-                logDebug("PropertiesByUserAction: ${action.name} count ${summariesEntity.size}")
+                // Get Actions
+                val userActions = userPropertyDao.getUserActions(userId, propertyId).map {
+                    UserActionMapper.toDomain(it)
+                }
+                // Get Landlord Details
+                val userDomain = userDao.getUserById(property.landlordId)
 
-                // Convert to domain
-                val summariesDomain =
-                    summariesEntity.map { PropertyMapper.toPropertySummaryDomain(it) }
-                Result.Success(summariesDomain)
+                Result.Success(mapOf(
+                    "property" to property,
+                    "actions" to userActions,
+                    "landlordUser" to userDomain
+                ))
             }
         } catch (exp: Exception) {
-            logError("Error reading PropertyListByUserAction", exp)
+            logError("Error reading UserActions", exp)
             Result.Error(exp.message.toString())
         }
     }

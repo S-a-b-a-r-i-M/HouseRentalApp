@@ -25,7 +25,6 @@ import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.model.enums.ReadableEnum
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import kotlin.jvm.Throws
 
 // Property main table + images + internal amenities + social amenities + etc..
@@ -147,7 +146,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- READ --------------
-    fun getPropertyById(propertyId: Long): PropertyEntity? {
+    fun getPropertyById(propertyId: Long): PropertyEntity {
         val db = readableDB
         db.query(
             PropertyTable.TABLE_NAME,
@@ -158,7 +157,7 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             null,
             null
         ).use { cursor ->
-            return if (cursor.moveToFirst()) {
+            if (cursor.moveToFirst()) {
                 // Read Property
                 val property = mapCursorToPropertyEntity(cursor)
                 // Read Images
@@ -166,10 +165,11 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 // Read Amenities
                 val amenities = getPropertyAmenities(db, propertyId)
 
-                property.copy(images = images, amenities = amenities )
-            } else
-                null
+                return property.copy(images = images, amenities = amenities )
+            }
         }
+
+        throw IllegalArgumentException("property Not found at the given id: $propertyId")
     }
 
     fun getPropertySummariesWithFilter(

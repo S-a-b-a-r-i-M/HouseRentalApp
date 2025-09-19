@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
@@ -16,17 +17,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.model.enums.TenantType
-import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
-import com.example.houserentalapp.domain.usecase.TenantRelatedPropertyUseCase
-import com.example.houserentalapp.presentation.model.PropertyWithActionsUI
+import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
+import com.example.houserentalapp.domain.usecase.UserUseCase
+import com.example.houserentalapp.presentation.model.PropertyUI
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
@@ -101,8 +102,12 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         setObservers()
 
         // Initial Fetch
-        if (savedInstanceState == null)
-            viewModel.loadProperty(propertyId, isTenantView)
+        if (savedInstanceState == null) {
+            if (isTenantView)
+                viewModel.loadPropertyWithActions(propertyId)
+            else
+                viewModel.loadProperty(propertyId)
+        }
     }
 
     fun setupUI() {
@@ -168,11 +173,11 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     fun setupViewModel() {
         val context = requireActivity()
-        val getPropertyUseCase = PropertyUseCase(PropertyRepoImpl(context))
-        val propertyUserActionUseCase = TenantRelatedPropertyUseCase(UserPropertyRepoImpl(context))
+        val propertyUC = PropertyUseCase(PropertyRepoImpl(context))
+        val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
         val factory = SinglePropertyDetailViewModelFactory(
-            getPropertyUseCase,
-            propertyUserActionUseCase,
+            propertyUC,
+            userPropertyUC,
             currentUser
         )
         viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
@@ -206,6 +211,10 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                 }
 
                 true
+            }
+
+            btnViewContactDetails.setOnClickListener {
+                viewModel.storeUserInterest(propertyId)
             }
         }
     }
@@ -346,53 +355,67 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         }
     }
 
-    private fun bindContactCardDetails(userActions : List<UserActionData>?) {
-        val viewedAction = userActions?.find { it.action == UserActionEnum.VIEW }
+    private fun bindContactCardDetails(landlordUser: User?) {
         with(binding) {
-            if (viewedAction == null) {
-
-            } else {
-                tvValueName.text = currentUser.name
-                tvValuePhone.text = currentUser.phone
-                tvValueEmail.text = if (currentUser.email != null)
-                    currentUser.email
-                else
-                    getString(R.string.not_available)
+            if (landlordUser != null) {
+                flUnlockContactDetails.visibility = View.GONE
+                tvValueName.text = landlordUser.name
+                tvValuePhone.text = landlordUser.phone
+                tvValueEmail.text = landlordUser.email ?: getString(R.string.not_available)
             }
+            else
+                flUnlockContactDetails.visibility = View.VISIBLE
         }
     }
 
-    private fun bindPropertyDetails(propertyUI: PropertyWithActionsUI) {
+    private fun bindPropertyDetails(property: Property) {
         // Load Images
-        adapter.setPropertyImages(propertyUI.property.images)
+        adapter.setPropertyImages(property.images)
 
         // Load Details
-        binding.collapsingTBarLayout.title = propertyUI.property.name
-        bindBasicCardDetails(propertyUI.property)
-        bindOverviewCardDetails(propertyUI.property)
-        bindAmenitiesCardDetails(propertyUI.property.amenities)
-        bindContactCardDetails(propertyUI.userActionDataList)
+        binding.collapsingTBarLayout.title = property.name
+        bindBasicCardDetails(property)
+        bindOverviewCardDetails(property)
+        bindAmenitiesCardDetails(property.amenities)
     }
 
     fun setObservers() {
         with(binding) {
-            viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
-                when(result) {
-                    is ResultUI.Success<PropertyWithActionsUI> -> {
-                        bindPropertyDetails(result.data)
-                    }
-                    is ResultUI.Error -> {
-                        logInfo("error.... ${result.message}")
-                    }
-                    ResultUI.Loading -> {
-                        logInfo("loading....")
+            if (isTenantView)
+                viewModel.propertyUIResult.observe(viewLifecycleOwner) { result ->
+                    when(result) {
+                        is ResultUI.Success<PropertyUI> -> {
+                            if (result.data.propertyInfoChanged)
+                                bindPropertyDetails(result.data.property)
+                            if (result.data.shortlistStateChanged)
+                                updateShortlistIcon(result.data.isShortlisted)
+                            if (result.data.interestedStateChanged)
+                                bindContactCardDetails(result.data.landlordUser)
+
+                            viewModel.clearChangeFlags()
+                        }
+                        is ResultUI.Error -> {
+                            logInfo("error.... ${result.message}")
+                        }
+                        ResultUI.Loading -> {
+                            logInfo("loading....")
+                        }
                     }
                 }
-            }
-
-            viewModel.isShortlisted.observe(viewLifecycleOwner) {
-                updateShortlistIcon(it)
-            }
+            else
+                viewModel.onlyPropertyDetailsRes.observe(viewLifecycleOwner) { result ->
+                    when(result) {
+                        is ResultUI.Success<Property> -> {
+                            bindPropertyDetails(result.data)
+                        }
+                        is ResultUI.Error -> {
+                            logInfo("error.... ${result.message}")
+                        }
+                        ResultUI.Loading -> {
+                            logInfo("loading....")
+                        }
+                    }
+                }
         }
     }
 

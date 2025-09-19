@@ -31,6 +31,9 @@ import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
         3. Create an base fragment for adding system bars width(if needed)
         4. Handle proper validation in create form and in UI
         5. Create property images edit
+        6. Search icon click on keyboard
+        7. Fix Fonts in every place
+        8. Improve alert dialog design
         New:
         1. Favourites page -> move and remove properties
         3. My Properties Page -> edit details.
@@ -119,10 +122,6 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemReselectedListener { item ->
             logInfo("setOnItemReselectedListener")
         }
-    }
-
-    fun selectBottomNavOption(option: NavigationOptions) {
-        binding.bottomNavigation.selectedItemId = option.id
     }
 
     fun showBottomNav() {
