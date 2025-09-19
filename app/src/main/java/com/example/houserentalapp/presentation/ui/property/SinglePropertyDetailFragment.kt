@@ -389,7 +389,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                                 bindPropertyDetails(result.data.property)
                             if (result.data.shortlistStateChanged)
                                 updateShortlistIcon(result.data.isShortlisted)
-                            if (result.data.interestedStateChanged)
+                            if (result.data.interestedStateChanged && result.data.isInterested)
                                 bindContactCardDetails(result.data.landlordUser)
 
                             viewModel.clearChangeFlags()
