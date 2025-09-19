@@ -46,6 +46,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
 import com.example.houserentalapp.presentation.utils.helpers.getRequiredStyleLabel
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
@@ -69,6 +70,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private lateinit var binding: FragmentCreatePropertyBinding
     private lateinit var mainActivity: MainActivity
     private lateinit var currentUser: User
+    private lateinit var imageUploadHelper: ImageUploadHelper
 
     private val amenitiesBottomSheet by lazy { AmenitiesBottomSheet() }
     private val imagesBottomSheet by lazy { PropertyImagesBottomSheet() }
@@ -84,50 +86,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private var propertyIdToEdit: Long? = null
     private var hideAndShowBottomNav: Boolean = false
 
-    private val imagesPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { it ->
-        if (it.resultCode == RESULT_OK && it.data != null) {
-            val clipData = it.data?.clipData
-            val imageUris = mutableListOf<Uri>()
-
-            if (clipData != null)
-            // Multiple images selected
-                for (i in 0 until clipData.itemCount)
-                    imageUris.add(clipData.getItemAt(i).uri)
-            else
-            // Single image selected
-                it.data?.data?.let { uri ->  imageUris.add(uri) }
-
-            if (imageUris.isNotEmpty()) {
-                viewModel.addPropertyImages(imageUris)
-                requireActivity().showToast("${imageUris.size} selected successfully")
-            }
-        }
-    }
-
-    private lateinit var photoUri: Uri
-    private val openCameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { success ->
-        if (success){
-            logInfo("got image $photoUri")
-            viewModel.addPropertyImage(photoUri)
-            showAnotherPhotoDialog()
-        }
-    }
-
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            logInfo("User approved the camera permission")
-            openCamera()
-        } else {
-            logInfo("User denied the camera permission")
-            mainActivity.showToast("Please provide camera permission to take pictures")
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -164,10 +122,52 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         // Handle Back Press
         addBackPressCallBack()
 
+        // Image Helper
+        setImageUploadHelper()
+
         if (savedInstanceState == null)
             propertyIdToEdit?.let { // If Edit Mode
                 viewModel.loadPropertyToEdit(it, ::onEditPropertyLoaded)
             }
+    }
+
+    private fun setImageUploadHelper() {
+        imageUploadHelper = ImageUploadHelper().init(
+            this,
+            onImageFromCamera = ::handleCameraResult,
+            onImageFromPicker = ::handleImagePrickerResult,
+            onPermissionDenied = ::onCameraPermissionDenied,
+        )
+        imageUploadHelper.multipleImagesFromPicker = true // Allow to pick multiple images
+    }
+
+    private fun handleImagePrickerResult(intent: Intent) {
+        val clipData = intent.clipData
+        val imageUris = mutableListOf<Uri>()
+
+        if (clipData != null)
+        // Multiple images selected
+            for (i in 0 until clipData.itemCount)
+                imageUris.add(clipData.getItemAt(i).uri)
+        else
+        // Single image selected
+            intent.data?.let { uri ->  imageUris.add(uri) }
+
+        if (imageUris.isNotEmpty()) {
+            viewModel.addPropertyImages(imageUris)
+            requireActivity().showToast("${imageUris.size} selected successfully")
+        }
+    }
+
+    private fun handleCameraResult(uri: Uri) {
+        logInfo("got image $uri")
+        viewModel.addPropertyImage(uri)
+        showAnotherPhotoDialog()
+    }
+
+    private fun onCameraPermissionDenied() {
+        logInfo("User denied the camera permission")
+        mainActivity.showToast("Please provide camera permission to take pictures")
     }
 
     private fun addBackPressCallBack() {
@@ -682,41 +682,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         }
     }
 
-    private fun openImagePicker() {
-        // Without Permission also it's working
-        // action will tell what exactly we are intent to do.
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            type = "image/*"
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true) //
-        }
-        imagesPickerLauncher.launch(intent)
-    }
-
-    private fun checkCameraPermissionAndOpenCamera() {
-        // Camera Permission
-        if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        )
-            permissionLauncher.launch(Manifest.permission.CAMERA)
-        else
-            openCamera()
-    }
-
-    private fun openCamera() {
-        val photoFile = File.createTempFile("IMG_", ".jpg", mainActivity.cacheDir)
-        photoUri = FileProvider.getUriForFile(
-            mainActivity,
-            mainActivity.packageName + ".provider",
-            photoFile
-        )
-        openCameraLauncher.launch(photoUri)
-    }
-
     private fun showAnotherPhotoDialog() {
         AlertDialog.Builder(mainActivity)
             .setMessage("Take another photo ?")
-            .setPositiveButton("Yes") {_, _ -> checkCameraPermissionAndOpenCamera() }
-            .setNegativeButton("Done") {_, _ -> }
+            .setPositiveButton("Yes") {_, _ ->
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+            }
+            .setNegativeButton("Done", null)
             .show()
     }
 
@@ -743,10 +715,14 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             }
 
             // Images
-            imgUploadImages.setOnClickListener { openImagePicker() }
-            btnUploadImages.setOnClickListener { openImagePicker() }
-            imgTakeImages.setOnClickListener { checkCameraPermissionAndOpenCamera() }
-            btnTakeImages.setOnClickListener { checkCameraPermissionAndOpenCamera() }
+            imgUploadImages.setOnClickListener { imageUploadHelper.openImagePicker() }
+            btnUploadImages.setOnClickListener { imageUploadHelper.openImagePicker() }
+            imgTakeImages.setOnClickListener {
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+            }
+            btnTakeImages.setOnClickListener {
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+            }
 
             // Save Button
             btnSubmit.setOnClickListener {

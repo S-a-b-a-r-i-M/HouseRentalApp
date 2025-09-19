@@ -29,49 +29,17 @@ import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditV
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
-import java.io.File
 
 class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
     private lateinit var binding: FragmentProfileEditBinding
     private lateinit var mainActivity: MainActivity
     private lateinit var currentUser: User
+    private lateinit var imageHelper: ImageUploadHelper
 
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var profileEditViewModel: ProfileEditViewModel
-
-    private val imagesPickerLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == RESULT_OK && it.data != null) {
-                it.data?.data?.let { uri ->
-                    logInfo("Image Uploaded Successfully")
-                    profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, uri)
-                }
-        }
-    }
-
-    private lateinit var photoUri: Uri
-    private val openCameraLauncher = registerForActivityResult(
-        ActivityResultContracts.TakePicture()
-    ) { success ->
-        if (success) {
-            logInfo("got image $photoUri")
-            profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, photoUri)
-        }
-    }
-
-    private val permissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            logInfo("User approved the camera permission")
-            openCamera()
-        } else {
-            logInfo("User denied the camera permission")
-            mainActivity.showToast("Please provide camera permission to take pictures")
-        }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -93,6 +61,13 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
         setupListeners()
         setupObservers()
         addBackPressCallBack()
+
+        imageHelper = ImageUploadHelper().init(
+            this,
+            onImageFromCamera = ::handleCameraResult,
+            onImageFromPicker = ::handleImagePrickerResult,
+            onPermissionDenied = ::onCameraPermissionDenied
+        )
     }
 
     private fun addBackPressCallBack() {
@@ -103,6 +78,23 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
                     handleOnBackNavigation()
                 }
             })
+    }
+
+    private fun handleImagePrickerResult(intent: Intent) {
+        intent.data?.let { uri ->
+            logInfo("Image Uploaded Successfully")
+            profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, uri)
+        }
+    }
+
+    private fun handleCameraResult(uri: Uri) {
+        logInfo("got image $uri")
+        profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, uri)
+    }
+
+    private fun onCameraPermissionDenied() {
+        logInfo("User denied the camera permission")
+        mainActivity.showToast("Please provide camera permission to take pictures")
     }
 
     private fun handleOnBackNavigation() {
@@ -145,19 +137,6 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
         }
     }
 
-    private fun showAddImageOptions() {
-        val options = arrayOf("Camera", "Gallery")
-        AlertDialog.Builder(mainActivity)
-            .setTitle("Add Image")
-            .setItems(options) { _, which ->
-                when(which) {
-                    0 -> checkCameraPermissionAndOpenCamera()
-                    1 -> openImagePicker()
-                }
-            }
-            .show()
-    }
-
     private fun setupListeners() {
         with(binding) {
             listOf(
@@ -170,7 +149,7 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
                 }
             }
 
-            tvChangeImage.setOnClickListener { showAddImageOptions() }
+            tvChangeImage.setOnClickListener { imageHelper.showAddImageOptions(mainActivity) }
 
             btnSave.setOnClickListener {
                 profileEditViewModel.saveUserChanges(
@@ -205,30 +184,6 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
             if(it != null)
                 loadImageSourceToImageView(it, binding.imgUserProfile)
         }
-    }
-
-    private fun openImagePicker() {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
-        imagesPickerLauncher.launch(intent)
-    }
-
-    private fun checkCameraPermissionAndOpenCamera() {
-        if (ContextCompat.checkSelfPermission(mainActivity, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        )
-            permissionLauncher.launch(Manifest.permission.CAMERA)
-        else
-            openCamera()
-    }
-
-    private fun openCamera() {
-        val photoFile = File.createTempFile("IMG_", ".jpg", mainActivity.cacheDir)
-        photoUri = FileProvider.getUriForFile(
-            mainActivity,
-            mainActivity.packageName + ".provider",
-            photoFile
-        )
-        openCameraLauncher.launch(photoUri)
     }
 
     override fun onDetach() {
