@@ -65,11 +65,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
 
         // Decisions based on received values
         hideBottomNav = sharedDataViewModel.propertiesListStore[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false

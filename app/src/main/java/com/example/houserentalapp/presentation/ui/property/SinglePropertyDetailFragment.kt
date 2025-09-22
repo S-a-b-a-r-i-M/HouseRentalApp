@@ -84,11 +84,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         )
 
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
     }
 
     // onViewCreated() for applying arguments to UI
@@ -133,6 +129,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                     isVisible = true
                     isEnabled = true
                 }
+                contactDetailsCard.visibility = View.VISIBLE
 
                 val drawablePadding = 4.dpToPx(mainActivity)
                 tvLabelName.apply {
@@ -167,6 +164,8 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                     isVisible = true
                     isEnabled = true
                 }
+
+                contactDetailsCard.visibility = View.GONE
             }
         }
     }

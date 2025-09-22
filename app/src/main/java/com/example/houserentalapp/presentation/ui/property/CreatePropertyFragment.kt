@@ -1,11 +1,8 @@
 package com.example.houserentalapp.presentation.ui.property
 
-import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
@@ -16,10 +13,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.core.content.FileProvider
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
@@ -30,7 +24,6 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
-import com.example.houserentalapp.domain.model.enums.PropertyFields
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.MainActivity
@@ -59,7 +52,6 @@ import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.collections.component1
@@ -99,11 +91,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV)
             ?: hideAndShowBottomNav
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -181,6 +169,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun handleOnBackNavigation() {
+
         if (viewModel.isFormDirty())
             AlertDialog.Builder(mainActivity)
                 .setTitle("Discard Changes")
@@ -334,6 +323,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private val chipIdToBHK = mapOf(
+        R.id.chip1RK to BHK.ONE_RK,
         R.id.chip1BHK to BHK.ONE_BHK,
         R.id.chip2BHK to BHK.TWO_BHK,
         R.id.chip3BHK to BHK.THREE_BHK,
@@ -660,10 +650,18 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun setSingleSelectableChipGroupListeners() {
-        fun updateValueInViewModel(field: PropertyFormField, chipId: Int) = when(field) {
+        fun updateValue(field: PropertyFormField, chipId: Int) = when(field) {
             PropertyFormField.BHK -> viewModel.updateFormValue(field, chipIdToBHK.getValue(chipId))
             PropertyFormField.TYPE -> viewModel.updateFormValue(field, chipIdToPropertyType.getValue(chipId))
-            PropertyFormField.FURNISHING_TYPE -> viewModel.updateFormValue(field, chipIdToFurnishingType.getValue(chipId))
+            PropertyFormField.FURNISHING_TYPE -> {
+                val furnishingType = chipIdToFurnishingType.getValue(chipId)
+                viewModel.updateFormValue(field, furnishingType)
+                // DECIDE TO SHOW ADD AMENITIES BUTTON
+                binding.btnAddAmenities.visibility = if(furnishingType == FurnishingType.UN_FURNISHED)
+                    View.GONE
+                else
+                    View.VISIBLE
+            }
             PropertyFormField.IS_PET_FRIENDLY -> viewModel.updateFormValue(field, chipId == R.id.chipPetFriendlyYes)
             PropertyFormField.PREFERRED_BACHELOR_TYPE -> viewModel.updateFormValue(field, chipIdToBachelorType.getValue(chipId))
             PropertyFormField.IS_MAINTENANCE_SEPARATE -> viewModel.updateFormValue(field, chipId == R.id.chipSeparate)
@@ -673,7 +671,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         formSingleSelectChipGroupsInfo.forEach {
             it.chipGroup.setOnCheckedStateChangeListener { chipGroup, checkedIds ->
                 if (checkedIds.isEmpty()) return@setOnCheckedStateChangeListener
-                updateValueInViewModel(it.field, checkedIds[0])
+                updateValue(it.field, checkedIds[0])
             }
         }
 
@@ -692,6 +690,19 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             .show()
     }
 
+    private fun showAddImageOptions() {
+        val options = arrayOf("Camera", "Gallery")
+        AlertDialog.Builder(mainActivity)
+            .setTitle("Add Image")
+            .setItems(options) { _, which ->
+                when(which) {
+                    0 -> imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                    1 -> imageUploadHelper.openImagePicker()
+                }
+            }
+            .show()
+    }
+
     private fun setListeners() {
         setEditTextListeners()
         setSingleSelectableChipGroupListeners()
@@ -701,8 +712,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         // Other Listeners
         with(binding) {
             // Available From Date Picker
-            etAvailableFrom.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                if (hasFocus) myDatePicker.show(parentFragmentManager, "DATE_PICKER")
+            tilAvailableFrom.setEndIconOnClickListener {
+                myDatePicker.show(parentFragmentManager, "DATE_PICKER")
             }
 
             etAvailableFrom.addTextChangedListener {
@@ -722,6 +733,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             }
             btnTakeImages.setOnClickListener {
                 imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+            }
+            ibtnAddMoreImages.setOnClickListener {
+                showAddImageOptions()
             }
 
             // Save Button

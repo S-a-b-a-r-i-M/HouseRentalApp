@@ -22,6 +22,8 @@
         android:src="@drawable/baseline_home_filled"
         app:backgroundTint="@color/white"
         app:tint="?attr/colorPrimary"
+        android:enabled="false"
+        android:clickable="false"
         app:maxImageSize="36dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

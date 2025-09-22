@@ -244,6 +244,46 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         }
     }
 
+    fun getPropertySummariesById(propertyIds: List<Long>): List<PropertySummaryEntity> {
+        val query = """
+            SELECT 
+                p.*,
+                CASE
+                    WHEN COUNT(pi.${PropertyTable.COLUMN_ID}) > 0 THEN
+                        '[' || GROUP_CONCAT(
+                            json_object(
+                                '${PropertyImagesTable.COLUMN_ID}', pi.${PropertyImagesTable.COLUMN_ID},
+                                '${PropertyImagesTable.COLUMN_IMAGE_ADDRESS}', pi.${PropertyImagesTable.COLUMN_IMAGE_ADDRESS},
+                                '${PropertyImagesTable.COLUMN_IS_PRIMARY}', pi.${PropertyImagesTable.COLUMN_IS_PRIMARY},
+                                '${PropertyImagesTable.COLUMN_CREATED_AT}', pi.${PropertyImagesTable.COLUMN_CREATED_AT}
+                            )
+                        ) || ']'
+                    ELSE '[]'
+                END as images
+            FROM ${PropertyTable.TABLE_NAME} as p
+            LEFT JOIN ${PropertyImagesTable.TABLE_NAME} as pi ON pi.${PropertyImagesTable.COLUMN_PROPERTY_ID} = p.${PropertyTable.COLUMN_ID} 
+            WHERE p.${PropertyTable.COLUMN_ID} IN (${propertyIds.joinToString(",") { "?" }})
+            GROUP BY p.${PropertyTable.COLUMN_ID}
+        """.trimIndent()
+
+        /* close cursors after use because it's hold native resources that won't be garbage collected. */
+        readableDB.rawQuery(
+            query,
+            arrayOf<String>() + propertyIds.map { it.toString() }
+        ).use { cursor ->
+            val result = mutableListOf<PropertySummaryEntity>()
+            while (cursor.moveToNext()) {
+                val summaryEntity = PropertyMapper.toPropertySummaryEntity(cursor)
+                val imagesJsonString = cursor.getString(cursor.getColumnIndexOrThrow("images"))
+                val imagesEntity = PropertyImageMapper.toEntityFromJson(imagesJsonString)
+
+                result.add(summaryEntity.copy(images = imagesEntity))
+            }
+
+            return result
+        }
+    }
+
     private fun getPropertiesCount(
         db: SQLiteDatabase, whereClause: String, whereArgs: Array<String>
     ): Int {

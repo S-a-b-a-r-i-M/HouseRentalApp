@@ -5,11 +5,14 @@ import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.PropertyDao
 import com.example.houserentalapp.data.local.db.dao.UserDao
 import com.example.houserentalapp.data.local.db.dao.UserPropertyDao
+import com.example.houserentalapp.data.local.db.entity.NewLeadEntity
 import com.example.houserentalapp.data.mapper.PropertyMapper
 import com.example.houserentalapp.data.mapper.UserActionMapper
 import com.example.houserentalapp.domain.model.Pagination
-import com.example.houserentalapp.domain.model.PropertyLead
+import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.UserActionData
+import com.example.houserentalapp.domain.model.enums.LeadStatus
+import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.repo.UserPropertyRepo
 import com.example.houserentalapp.domain.utils.Result
@@ -35,7 +38,7 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
     ): Result<Long> {
         return try {
             withContext(Dispatchers.IO) {
-                val id = userPropertyDao.insertUserAction(userId, propertyId, action)
+                val id = userPropertyDao.storeUserAction(userId, propertyId, action)
                 logInfo("Property($propertyId) added to User's($userId) ${action.name} list")
                 Result.Success(id)
             }
@@ -45,10 +48,40 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
         }
     }
 
-    override suspend fun storeInterestedProperty(
-        userId: Long, propertyId: Long
-    ): Result<PropertyLead> {
-        TODO("Not yet implemented")
+    override suspend fun createLead(
+        tenantId: Long,
+        landlordId: Long,
+        propertyId: Long,
+        status: LeadStatus,
+    ): Result<Long> {
+        return try {
+            withContext(Dispatchers.IO) {
+                // Check is lead is already exists
+                var leadId = userPropertyDao.getLeadId(landlordId, tenantId)
+                logDebug("Retrieved lead id is : $leadId")
+                if (leadId == null) {
+                    // Create Lead
+                    leadId = userPropertyDao.storeLead(
+                        NewLeadEntity(
+                            tenantId = tenantId,
+                            landlordId = landlordId,
+                            propertyId = propertyId,
+                            status = status.readable,
+                        )
+                    )
+                    logDebug("Lead($leadId) created")
+                }
+
+                // Map Lead With Property
+                logInfo("Lead($leadId) Mapped to Property($propertyId)")
+                userPropertyDao.mapLeadToProperty(leadId, propertyId)
+
+                Result.Success(leadId)
+            }
+        } catch (exp: Exception) {
+            logError("Error inserting property User Action", exp)
+            Result.Error(exp.message.toString())
+        }
     }
 
     // -------------- READ --------------
@@ -98,17 +131,69 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
         }
     }
 
-    override suspend fun getLeads(
-        landlordId: Long, pagination: Pagination
-    ): Result<List<PropertyLead>> {
-        TODO("Not yet implemented")
+    override suspend fun getLeadsByLandlord(landlordId: Long, pagination: Pagination): Result<List<Lead>>  {
+        return try {
+            withContext(Dispatchers.IO) {
+                val leadEntityList = userPropertyDao.getLeads(landlordId, pagination)
+                logDebug("getUserActions: count ${leadEntityList.size}")
+
+                // Get Property Summaries
+                val leadDomainList = mutableListOf<Lead>()
+                if (leadEntityList.isNotEmpty()) {
+                    val uniquePropertyIds = mutableSetOf<Long>()
+                    leadEntityList.forEach {
+                        uniquePropertyIds.addAll(it.interestedPropertyIds)
+                    }
+                    val propertySummariesMap = propertyDao.getPropertySummariesById(
+                        uniquePropertyIds.toList()
+                    ).associateBy { it.id }
+
+                    // Add Interested Properties into each lead data
+                    leadEntityList.forEach {
+                        val interestedProperties = it.interestedPropertyIds.mapNotNull { propertyId ->
+                            propertySummariesMap[propertyId]
+                        }.map {
+                            PropertyMapper.toPropertySummaryDomain(it)
+                        }
+                        leadDomainList.add(
+                            Lead(
+                                id = it.id,
+                                leadUser = it.lead,
+                                interestedProperties = interestedProperties,
+                                status = LeadStatus.fromString(it.status),
+                                note = it.note,
+                                createdAt = it.createdAt
+                            )
+                        )
+                    }
+                }
+                
+                Result.Success(leadDomainList)
+            }
+        } catch (exp: Exception) {
+            logError("Error reading Leads", exp)
+            Result.Error(exp.message.toString())
+        }
     }
 
     // -------------- UPDATE --------------
     override suspend fun updateLead(
-        leadId: Long, updateFields: Map<String, Any>
+        leadId: Long,
+        updateData: Map<LeadUpdatableField, String>
     ): Result<Boolean> {
-        TODO("Not yet implemented")
+        return try {
+            withContext(Dispatchers.IO) {
+                if (updateData.isEmpty())
+                    return@withContext Result.Success(true)
+
+                val updatedRows = userPropertyDao.updateLead(leadId, updateData)
+                logDebug("UpdateLead -> updated rows count is $updatedRows")
+                Result.Success(updatedRows > 0)
+            }
+        } catch (exp: Exception) {
+            logError("Error updateLead($leadId)", exp)
+            Result.Error(exp.message.toString())
+        }
     }
 
     // -------------- DELETE --------------

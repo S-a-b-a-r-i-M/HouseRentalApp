@@ -14,99 +14,42 @@
         android:orientation="vertical"
         android:padding="6dp">
 
-        <LinearLayout
-            android:id="@+id/topHeader"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/separator1">
-
-            <TextView
-                android:id="@+id/tvAddedDateLabel"
-                style="@style/TextAppearance.App.Body3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Addted At : "
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvAddedDate"
-                style="@style/TextAppearance.App.Body3"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="01/01/2025"
-                app:layout_constraintStart_toEndOf="@+id/tvAddedDateLabel"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@+id/separator1"/>
-
-            <ImageButton
-                android:id="@+id/ibtnAction"
-                android:layout_width="28dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="4dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/property_action"
-                android:src="@drawable/outline_ellipsis"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="?attr/colorPrimaryDark" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/separator1"
-            style="@style/Separator"
-            android:layout_width="match_parent"
-            android:layout_height="0.25dp"
-            android:layout_marginTop="2dp"
-            app:layout_constraintTop_toBottomOf="@+id/topHeader"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgProperty"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:contentDescription="@string/image_of_an_property"
             android:scaleType="centerCrop"
-            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/separator1"
-            android:contentDescription="@string/image_of_an_property"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small" />
 
         <TextView
             android:id="@+id/tvHeader"
             style="@style/TextAppearance.App.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:singleLine="true"
             android:ellipsize="end"
+            android:singleLine="true"
             android:text="@string/property_name"
             android:textStyle="normal"
             app:layout_constraintEnd_toStartOf="@+id/tvStatus"
             app:layout_constraintStart_toStartOf="@id/guideline3"
-            app:layout_constraintTop_toBottomOf="@id/separator1" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvStatus"
             style="@style/TextAppearance.App.LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:text="status"
-            app:layout_constraintTop_toBottomOf="@id/separator1"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tvBody1"

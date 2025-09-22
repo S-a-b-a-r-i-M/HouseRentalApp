@@ -1,6 +1,5 @@
 package com.example.houserentalapp.presentation.ui.profile
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -20,6 +19,8 @@ import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewM
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.openDialer
+import com.example.houserentalapp.presentation.utils.extensions.openMail
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
@@ -43,11 +44,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         binding = FragmentProfileBinding.bind(view)
         // Take Current User
         // TODO: Why not get this data from mainactivity
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
         setupViewModel()
@@ -60,7 +57,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         mainActivity.showBottomNav()
 
         with(binding) {
-            tvAdminEmail.text = getString(R.string.andmin_gmail_com)
+            tvAdminEmail.text = getString(R.string.admin_gmail_com)
             tvAdminPhone.text = getString(R.string._9987654321)
         }
     }
@@ -96,8 +93,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 mainActivity.addFragment(ProfileEditFragment(), true)
             }
 
-            ibtnDialAdmin.setOnClickListener { openDialer(tvAdminPhone.text.toString()) }
-            ibtnEmailAdmin.setOnClickListener { openEmail(tvAdminEmail.text.toString()) }
+            ibtnDialAdmin.setOnClickListener { mainActivity.openDialer(tvAdminPhone.text.toString()) }
+            ibtnEmailAdmin.setOnClickListener { mainActivity.openMail(tvAdminEmail.text.toString()) }
         }
     }
 

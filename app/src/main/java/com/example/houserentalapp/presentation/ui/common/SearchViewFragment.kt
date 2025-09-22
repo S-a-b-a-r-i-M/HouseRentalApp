@@ -47,11 +47,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentFiltersBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
 
         val isNewSearch = arguments?.getBoolean(IS_NEW_SEARCH) ?: false
         if (isNewSearch) {

@@ -264,6 +264,13 @@
                     app:layout_constraintTop_toBottomOf="@+id/tvBHK">
 
                     <com.google.android.material.chip.Chip
+                        android:id="@+id/chip1RK"
+                        style="@style/Widget.App.Chip.Input"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/_1_rk" />
+
+                    <com.google.android.material.chip.Chip
                         android:id="@+id/chip1BHK"
                         style="@style/Widget.App.Chip.Input"
                         android:layout_width="wrap_content"
@@ -424,6 +431,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
+                android:visibility="visible"
                 android:text="@string/add_furnishing_amenities"
                 app:cornerRadius="12dp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -659,6 +667,8 @@
                 android:layout_marginTop="4dp"
                 android:hint="@string/available_from"
                 app:hintAnimationEnabled="true"
+                app:endIconMode="custom"
+                app:endIconDrawable="@drawable/outline_calendar_month_24"
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -669,6 +679,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
+                    android:focusable="false"
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -798,12 +809,25 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilSecurityDeposit" />
 
+            <ImageButton
+                android:id="@+id/ibtnAddMoreImages"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="6dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tilSecurityDeposit"
+                app:srcCompat="@drawable/outline_add_24"
+                android:tint="?attr/colorPrimaryDark"
+                android:contentDescription="@string/add_more"/>
+
             <LinearLayout
                 android:id="@+id/cvUploadImages"
                 android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:layout_margin="4dp"
+                android:layout_margin="8dp"
                 android:gravity="center"
                 android:background="@color/primary_blue_very_light"
                 app:layout_constraintStart_toStartOf="parent"
@@ -850,7 +874,7 @@
                 android:orientation="vertical"
                 android:layout_width="0dp"
                 android:layout_height="150dp"
-                android:layout_margin="4dp"
+                android:layout_margin="8dp"
                 android:gravity="center"
                 android:background="@color/primary_blue_very_light"
                 app:layout_constraintStart_toEndOf="@+id/guideline"

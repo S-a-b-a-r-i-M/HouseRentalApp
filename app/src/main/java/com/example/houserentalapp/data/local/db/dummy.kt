@@ -95,13 +95,13 @@ fun insertUsers(db: SQLiteDatabase): List<Long> {
         put(UserTable.COLUMN_NAME, "User2")
         put(UserTable.COLUMN_EMAIL, "user2@gmail.com")
         put(UserTable.COLUMN_PHONE, "9877089777")
-        put(UserTable.COLUMN_HASHED_PASSWORD, "8hiuaaf7y")
+        put(UserTable.COLUMN_HASHED_PASSWORD, "Password1234")
     }
 
     val values3 = ContentValues().apply {
         put(UserTable.COLUMN_NAME, "User3")
         put(UserTable.COLUMN_PHONE, "9877389777")
-        put(UserTable.COLUMN_HASHED_PASSWORD, "8hiuaa37y")
+        put(UserTable.COLUMN_HASHED_PASSWORD, "Password1234")
     }
 
 

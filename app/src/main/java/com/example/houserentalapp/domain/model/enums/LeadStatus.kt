@@ -1,11 +1,15 @@
 package com.example.houserentalapp.domain.model.enums
 
-enum class LeadStatus {
-    NEW, // Initial
-    FOLLOWUP,
-    SITE_VISIT,
-    DEAL_SUCCESS,
-    REJECTED,
+enum class LeadStatus(override val readable: String): ReadableEnum {
+    NEW("New"),
+    FOLLOWUP("Follow Up"),
+    SITE_VISIT("Site Visit"),
+    DEAL_SUCCESS("Deal Success"),
+    REJECTED("Rejected");
+
+    companion object : ReadableEnum.Companion<LeadStatus> {
+        override val values: Array<LeadStatus> = entries.toTypedArray()
+    }
 }
 
 enum class UserActionEnum(override val readable: String): ReadableEnum {

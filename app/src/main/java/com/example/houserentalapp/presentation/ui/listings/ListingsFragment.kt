@@ -1,26 +1,22 @@
 package com.example.houserentalapp.presentation.ui.listings
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentListingsBinding
+import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
-class ListingsFragment : Fragment() {
+class ListingsFragment : Fragment(R.layout.fragment_listings) {
     private lateinit var binding: FragmentListingsBinding
+    private lateinit var mainActivity: MainActivity
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_listings, container, false)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mainActivity = context as MainActivity
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,10 +32,9 @@ class ListingsFragment : Fragment() {
     }
 
     private fun setOnClickListeners() {
-        val appCompatActivity = requireActivity() as AppCompatActivity
         with(binding) {
             myPropertiesBtn.setOnClickListener {
-                appCompatActivity.loadFragment(
+                mainActivity.loadFragment(
                     listingsFragmentContainer.id,
                     MyPropertyFragment()
                 )
@@ -50,7 +45,7 @@ class ListingsFragment : Fragment() {
             }
 
             leadsBtn.setOnClickListener {
-                appCompatActivity.loadFragment(
+                mainActivity.loadFragment(
                     listingsFragmentContainer.id,
                     LeadsFragment()
                 )
@@ -60,9 +55,5 @@ class ListingsFragment : Fragment() {
                 leadsBtn.isClickable = !isChecked
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "ListingsFragment"
     }
 }

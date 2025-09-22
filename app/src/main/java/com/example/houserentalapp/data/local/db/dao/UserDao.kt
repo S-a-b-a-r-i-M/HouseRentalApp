@@ -8,6 +8,7 @@ import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.entity.UserPreferenceEntity
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
+import com.example.houserentalapp.data.mapper.UserMapper
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserField
@@ -61,7 +62,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
 
         cursor.use {
              if (it.moveToFirst())
-                return@withContext mapCursorToUser(it)
+                return@withContext UserMapper.toUser(it)
         }
 
         throw IllegalArgumentException("User Not found at the given id: $userId")
@@ -98,9 +99,7 @@ class UserDao(private val dbHelper: DatabaseHelper) {
             )
 
             cursor.use {
-                return@withContext if (it.moveToFirst()) {
-                    mapCursorToUser(it)
-                } else null
+                return@withContext if (it.moveToFirst()) UserMapper.toUser(it) else null
             }
         }
 
@@ -179,25 +178,6 @@ class UserDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- HELPER METHODS --------------
-    private fun mapCursorToUser(cursor: Cursor): User {
-        with(cursor) {
-            val imageSource = getStringOrNull(
-                getColumnIndexOrThrow(UserTable.COLUMN_PROFILE_IMAGE_ADDRESS)
-            )?.let {
-                ImageSource.LocalFile(it)
-            }
-
-            return User(
-                id = getLong(cursor.getColumnIndexOrThrow(UserTable.COLUMN_ID)),
-                name = getString(getColumnIndexOrThrow(UserTable.COLUMN_NAME)),
-                email = getStringOrNull(getColumnIndexOrThrow(UserTable.COLUMN_EMAIL)),
-                phone = getString(getColumnIndexOrThrow(UserTable.COLUMN_PHONE)),
-                password = getString(getColumnIndexOrThrow(UserTable.COLUMN_HASHED_PASSWORD)),
-                profileImageSource = imageSource,
-                createdAt = getLong(getColumnIndexOrThrow(UserTable.COLUMN_CREATED_AT))
-            )
-        }
-    }
 
     private fun mapCursorToUserPreferenceEntity(cursor: Cursor): UserPreferenceEntity {
         return UserPreferenceEntity(

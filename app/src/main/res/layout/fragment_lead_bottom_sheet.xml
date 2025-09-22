@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".presentation.ui.listings.LeadBottomSheet" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white_blue"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvLeadName"
+            style="@style/TextAppearance.App.Body1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lead Name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLeadPhone"
+            style="@style/TextAppearance.App.Body3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/_9988776655"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLeadName" />
+
+        <TextView
+            android:id="@+id/tvLeadEmail"
+            style="@style/TextAppearance.App.Body3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:visibility="visible"
+            android:text="@string/email_gmail_com"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvLeadPhone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLeadStatus"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/gray_very_light"
+            android:text="Current Status"
+            android:textAppearance="@style/TextAppearance.App.LabelMedium"
+            android:padding="6dp"
+            app:cornerRadius="8dp"
+            android:drawableEnd="@drawable/outline_keyboard_arrow_down_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.example.houserentalapp.presentation.ui.common.InlineEditView
+            android:id="@+id/inlineEditNote"
+            style="@style/TextAppearance.App.LabelMedium"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:drawablePadding="4dp"
+            app:drawableStartCompat="@drawable/baseline_edit_note_16"
+            app:label="Note: "
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/separator1"
+            app:layout_constraintTop_toBottomOf="@+id/tvLeadEmail" />
+
+        <View
+            android:id="@+id/separator1"
+            style="@style/Separator"
+            android:layout_width="match_parent"
+            android:layout_height="0.25dp"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/inlineEditNote" />
+
+        <TextView
+            android:id="@+id/tvInterestedProperties"
+            style="@style/TextAppearance.App.Body2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Interested Properties"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/separator1" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvLeadInterestedProperties"
+            android:layout_width="0dp"
+            android:layout_height="400dp"
+            android:layout_marginVertical="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvInterestedProperties" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

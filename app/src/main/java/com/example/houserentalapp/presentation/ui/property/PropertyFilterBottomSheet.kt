@@ -28,7 +28,6 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
         R.id.chip2BHK to BHK.TWO_BHK,
         R.id.chip3BHK to BHK.THREE_BHK,
         R.id.chip4BHK to BHK.FOUR_BHK,
-//        R.id.chip5BHK to BHK.FIVE_PLUS_BHK,
         R.id.chip5aboveBHK to BHK.FIVE_PLUS_BHK,
     )
     private val bhkToChipId = chipIdToBHK.entries.associate { (k, v) -> v to k }

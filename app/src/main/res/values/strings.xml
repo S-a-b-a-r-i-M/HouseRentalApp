@@ -83,7 +83,7 @@
     <string name="amenities_u"><u>Amenities</u></string>
     <string name="property_name">Property Name</string>
     <string name="street_name_locality_city">street name, locality, city.</string>
-    <string name="price_maintenance_month">Price + Maintanence / Month</string>
+    <string name="price_maintenance_month">Price + Maintenance / Month</string>
     <string name="bhk_property_type_un_furnished_1000_sq_ft">bhk property type | un-furnished | 1000 sq.ft.</string>
     <string name="property_image">Property Image</string>
     <string name="filters">Filters</string>
@@ -147,7 +147,7 @@
     <string name="change_image">Change Image</string>
     <string name="save">Save</string>
     <string name="_9987654321">9987654321</string>
-    <string name="andmin_gmail_com">andmin@gmail.com</string>
+    <string name="admin_gmail_com">andmin@gmail.com</string>
     <string name="call_us">Call Us</string>
     <string name="email_us">Email Us</string>
     <string name="email_gmail_com">email@gmail.com</string>
@@ -172,4 +172,5 @@
     <string name="contact_details"><u>Contact Details</u></string>
     <string name="not_available">Not Available</string>
     <string name="view_contact_details">View Contact Details</string>
+    <string name="open_lead">open lead</string>
 </resources>

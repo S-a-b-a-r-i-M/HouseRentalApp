@@ -5,7 +5,7 @@ object UserPropertyActionTable {
     const val COLUMN_ID = "id"
     const val COLUMN_TENANT_ID = "tenant_id"
     const val COLUMN_PROPERTY_ID = "property_id"
-    const val COLUMN_ACTION = "action" // VIEW, FAVOURITES
+    const val COLUMN_ACTION = "action" // VIEW, FAVOURITES, INTERESTED
     const val COLUMN_CREATED_AT = "created_at"
 
     const val CREATE_TABLE = """

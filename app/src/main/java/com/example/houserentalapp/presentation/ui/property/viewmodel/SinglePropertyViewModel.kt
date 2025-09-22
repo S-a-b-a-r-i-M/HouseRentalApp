@@ -140,9 +140,28 @@ class SinglePropertyDetailViewModel(
                     logInfo("property added to INTERESTED")
                     propertyUI = propertyUI.copy(isInterested = true, interestedStateChanged = true)
                     _propertyUIResult.value = ResultUI.Success(propertyUI)
+                    // Create Lead
+                    createLead(
+                        currentUser.id,
+                        propertyUI.property.landlordId,
+                        propertyId
+                    )
                 }
                 is Result.Error -> {
                     logError("Error while adding property to INTERESTED")
+                }
+            }
+        }
+    }
+
+    private fun createLead(tenantId: Long, landlordId: Long, propertyId: Long) {
+        viewModelScope.launch {
+            when (userPropertyUC.createLead(tenantId, landlordId, propertyId)) {
+                is Result.Success<*> -> {
+                    logInfo("Lead added")
+                }
+                is Result.Error -> {
+                    logError("Error while adding lead")
                 }
             }
         }
