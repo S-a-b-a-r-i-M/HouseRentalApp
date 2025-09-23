@@ -60,7 +60,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         setupObservers()
 
         // Load Search Histories
-        if (searchHistoryViewModel.searchHistoriesResult.value !is ResultUI.Success)
+        if (savedInstanceState == null)
             searchHistoryViewModel.loadSearchHistories(currentUser.id)
     }
 
@@ -80,8 +80,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             }
 
             // Search View
-            searchView.show()
-            updateSubmitButtonState(searchView.editText.text.toString().length > 2)
+            updateSubmitButtonState(etSearch.text.toString().length > 2)
         }
     }
 
@@ -123,23 +122,8 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
 
     private fun setupListeners() {
         with(binding) {
-
-            searchView.addTransitionListener { view, pervState, newState ->
-                when(newState) {
-                    SearchView.TransitionState.SHOWING -> {}
-                    SearchView.TransitionState.SHOWN -> {
-                        logDebug("SearchView.TransitionState.SHOWN")
-                    }
-                    SearchView.TransitionState.HIDING -> {}
-                    SearchView.TransitionState.HIDDEN -> {
-                        logDebug("SearchView.TransitionState.HIDDEN")
-                        parentFragmentManager.popBackStack()
-                    }
-                }
-            }
-
             // Setup SearchView text changes
-            searchView.editText.doOnTextChanged { text, start, before, count ->
+            etSearch.doOnTextChanged { text, start, before, count ->
                 val query = text?.toString() ?: ""
                 filtersViewModel.setSearchQuery(query)
                 updateSubmitButtonState(query.length > 2)
@@ -148,7 +132,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             }
 
             // Listens Search Icon Click in Keyboard
-            searchView.editText.setOnEditorActionListener { _, actionId, _ ->
+            etSearch.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     if (btnSubmit.isEnabled)
                         navigateToPropertiesListFragment()
@@ -158,6 +142,8 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
                     false
             }
 
+            backImgBtn.setOnClickListener { parentFragmentManager.popBackStack() }
+
             btnSubmit.setOnClickListener { navigateToPropertiesListFragment() }
         }
     }
@@ -165,7 +151,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     private fun setupObservers() {
         // Save Changes Into Viewmodel
         filtersViewModel.filters.observe(viewLifecycleOwner) { filtersData ->
-            val editText = binding.searchView.editText
+            val editText = binding.etSearch
             if (editText.text.toString() != filtersData.searchQuery)
                 editText.setText(filtersData.searchQuery)
         }
@@ -192,11 +178,6 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
                 }
             }
         }
-    }
-
-    override fun onDetach() {
-        mainActivity.showBottomNav()
-        super.onDetach()
     }
 
     companion object {
