@@ -44,11 +44,7 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileEditBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserData ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
         setupViewModel()
