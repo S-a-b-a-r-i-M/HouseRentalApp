@@ -144,13 +144,18 @@ class MyPropertiesAdapter(
     companion object {
         const val TYPE_HEADER = 1
         const val TYPE_DATA = 2
+        const val TYPE_LOADER = 3
     }
 
     private var dataList: MutableList<DataList> = mutableListOf()
 
-    override fun getItemViewType(position: Int) = when(dataList[position]) {
-        is DataList.Header -> TYPE_HEADER
-        is DataList.Data -> TYPE_DATA
+    override fun getItemViewType(position: Int): Int {
+        if (position == dataList.size) return TYPE_LOADER
+
+        return when (dataList[position]) {
+            is DataList.Header -> TYPE_HEADER
+            is DataList.Data -> TYPE_DATA
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -164,7 +169,7 @@ class MyPropertiesAdapter(
             }
             TYPE_DATA -> {
                 val view = inflater
-                    .inflate(R.layout.my_property_summary_layout2, parent, false)
+                    .inflate(R.layout.my_property_summary_layout, parent, false)
                 DataViewHolder(view)
             }
             else -> throw IllegalArgumentException("Unknown view type")

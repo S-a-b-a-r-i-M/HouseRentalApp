@@ -10,10 +10,12 @@ import com.example.houserentalapp.data.local.db.entity.NewLeadEntity
 import com.example.houserentalapp.data.local.db.entity.UserActionEntity
 import com.example.houserentalapp.data.local.db.tables.LeadPropertyMappingTable
 import com.example.houserentalapp.data.local.db.tables.LeadTable
+import com.example.houserentalapp.data.local.db.tables.PropertyTable
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
 import com.example.houserentalapp.data.mapper.UserMapper
 import com.example.houserentalapp.domain.model.Pagination
+import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
@@ -35,9 +37,12 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
             put(UserPropertyActionTable.COLUMN_ACTION, action.readable)
         }
 
-        val id = writableDb.insert(UserPropertyActionTable.TABLE_NAME, null, values)
-        if (id == -1L)
-            throw SQLException("Failed to insert to UserPropertyActionTable")
+        val id = writableDb.insertWithOnConflict(
+            UserPropertyActionTable.TABLE_NAME,
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_IGNORE
+            )
 
         return id
     }
@@ -235,6 +240,65 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
                 userActionEntityList.add(parseUserActionEntity(cursor))
 
             return userActionEntityList
+        }
+    }
+
+    fun getUserPropertyStats(userId: Long): UserPropertyStats {
+        val tenantStats =  getTenantActionStats(userId)
+        val landlordStats =  getLandlordStats(userId)
+        return UserPropertyStats(
+            viewedPropertyCount = tenantStats.getOrDefault(UserActionEnum.VIEW.readable, 0),
+            shortlistedPropertyCount = tenantStats.getOrDefault(UserActionEnum.SHORTLISTED.readable, 0),
+            contactViewedPropertyCount = tenantStats.getOrDefault(UserActionEnum.INTERESTED.readable, 0),
+            listedPropertyCount = landlordStats.getOrDefault("propertyCount", 0),
+            leadsCount = landlordStats.getOrDefault("leadCount", 0),
+        )
+    }
+
+    fun getTenantActionStats(tenantId: Long): Map<String, Int> {
+        val query = """
+            SELECT
+                ${UserPropertyActionTable.COLUMN_ACTION},
+                COUNT(*) as action_count
+            FROM ${UserPropertyActionTable.TABLE_NAME}
+            WHERE ${UserPropertyActionTable.COLUMN_TENANT_ID} = $tenantId -- Note Using UserId directly because usually SQL won't happen using int values
+            GROUP BY ${UserPropertyActionTable.COLUMN_ACTION}
+        """.trimIndent()
+
+        readableDB.rawQuery(query, null).use { cursor ->
+            val actionWithCount = mutableMapOf<String, Int>()
+            with(cursor) {
+                while (cursor.moveToNext())
+                    actionWithCount.put(
+                        getString(getColumnIndexOrThrow(UserPropertyActionTable.COLUMN_ACTION)),
+                        getInt(getColumnIndexOrThrow("action_count"))
+                    )
+            }
+            return actionWithCount
+        }
+    }
+
+    fun getLandlordStats(landlordId: Long): Map<String, Int> {
+        // Get Posted Properties Count and Leads Count
+        val propertyCountName = "propertyCount"
+        val leadCountName = "leadCount"
+        val query = """
+            SELECT
+                (SELECT COUNT(${PropertyTable.COLUMN_ID})
+                FROM ${PropertyTable.TABLE_NAME}
+                WHERE ${PropertyTable.COLUMN_LANDLORD_ID} = $landlordId) as $propertyCountName,
+                (SELECT COUNT(${LeadTable.COLUMN_ID}) 
+                 FROM ${LeadTable.TABLE_NAME} 
+                 WHERE ${LeadTable.COLUMN_LANDLORD_ID} = $landlordId) as $leadCountName
+        """.trimIndent()
+
+        readableDB.rawQuery(query, null).use { cursor ->
+            val countMap = mutableMapOf<String, Int>()
+            if (cursor.moveToNext()){
+                countMap[propertyCountName] = cursor.getInt(0)
+                countMap[leadCountName] = cursor.getInt(1)
+            }
+            return countMap
         }
     }
 

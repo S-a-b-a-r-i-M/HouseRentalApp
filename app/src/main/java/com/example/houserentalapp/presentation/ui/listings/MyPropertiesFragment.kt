@@ -30,8 +30,8 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import kotlin.getValue
 
 class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
@@ -52,11 +52,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentMyPropertyBinding.bind(view)
         // Take Current User
-        currentUser = sharedDataViewModel.currentUserLD.value ?: run {
-            mainActivity.showToast("Login again...")
-            mainActivity.finish()
-            return
-        }
+        currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
         setupViewModel()
@@ -78,6 +74,10 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
             rvProperty.apply {
                 layoutManager = LinearLayoutManager(mainActivity)
                 adapter = myPropertiesAdapter
+                val scrollListener = getScrollListener(
+                    { myPropertiesViewModel.hasMore },
+                    ::loadProperties
+                )
                 addOnScrollListener(scrollListener)
             }
         }
@@ -160,37 +160,6 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     private fun loadProperties() {
         // Can add further more filters if needed
         myPropertiesViewModel.loadPropertySummaries(filtersViewModel.filters.value)
-    }
-
-    private val scrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-
-            val layoutManger = recyclerView.layoutManager as LinearLayoutManager
-
-            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                return // No need to fetch new items while scrolling
-            }
-            else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                if (!myPropertiesViewModel.hasMore) return
-
-                val lastVisibleItemPosition =
-                    layoutManger.findLastCompletelyVisibleItemPosition() // index
-                val totalItemCount = recyclerView.adapter?.itemCount ?: run {
-                    logWarning("totalItemCount is not accessible")
-                    return
-                }
-                val shouldLoadMore = (lastVisibleItemPosition + 1) >= totalItemCount
-                if (shouldLoadMore) {
-                    logInfo("<----------- from onScroll State changed ---------->")
-                    loadProperties()
-                }
-            }
-        }
     }
 
     fun setupViewModel() {

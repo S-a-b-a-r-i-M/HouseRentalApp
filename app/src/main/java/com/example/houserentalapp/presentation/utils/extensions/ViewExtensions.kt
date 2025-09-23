@@ -18,8 +18,8 @@ fun TextView.setDrawable(
         logWarning("Drawable is not found.")
         return
     }
-    val widthInPx = widthInDp.dpToPx(context)
-    val heightInPx = heightInDp.dpToPx(context)
+    val widthInPx = widthInDp.dpToPx()
+    val heightInPx = heightInDp.dpToPx()
 
     drawable.setBounds(0, 0, widthInPx, heightInPx)
     when(position) {

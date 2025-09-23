@@ -131,7 +131,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                 }
                 contactDetailsCard.visibility = View.VISIBLE
 
-                val drawablePadding = 4.dpToPx(mainActivity)
+                val drawablePadding = 4.dpToPx()
                 tvLabelName.apply {
                     setDrawable(
                         R.drawable.baseline_person_24,
@@ -229,7 +229,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     @SuppressLint("UseCompatTextViewDrawableApis") // Im suppressing the warning because my min sdk is > 23
     private fun getAmenityView(amenity: AmenityDomain): TextView {
-        val fourDpInPx = 4.dpToPx(requireActivity())
+        val fourDpInPx = 4.dpToPx()
         val drawable = getAmenityDrawable(amenity)
 
         return TextView(context).apply {

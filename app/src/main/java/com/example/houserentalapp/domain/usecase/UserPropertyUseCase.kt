@@ -2,7 +2,7 @@ package com.example.houserentalapp.domain.usecase
 
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.Pagination
-import com.example.houserentalapp.domain.model.UserActionData
+import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
@@ -43,24 +43,27 @@ class UserPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
         }
     }
 
-    suspend fun getPropertyUserActions(
-        currentUserId: Long, propertyId: Long
-    ): Result<List<UserActionData>> {
+    suspend fun getPropertyWithActions(tenantId: Long, propertyId: Long): Result<Map<String, Any>> {
         return try {
-            return userPropertyRepo.getUserActions(currentUserId, listOf(propertyId))
+            val res = userPropertyRepo.getPropertyWithUserActions(tenantId, propertyId)
+            when (res) {
+                is Result.Success<Map<String, Any>> -> {
+                    storeTenantAction(tenantId, propertyId, UserActionEnum.VIEW)
+                    res
+                }
+                is Result.Error -> res
+            }
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while fetching property(id: $propertyId)")
             Result.Error(exp.message.toString())
         }
     }
 
-    suspend fun getPropertyWithActions(
-        currentUserId: Long, propertyId: Long
-    ): Result<Map<String, Any>> {
+    suspend fun getUserPropertyStats(userId: Long): Result<UserPropertyStats> {
         return try {
-            userPropertyRepo.getPropertyWithUserActions(currentUserId, propertyId)
+            return userPropertyRepo.getUserPropertyStats(userId)
         } catch (exp: Exception) {
-            logError("${exp.message.toString()} while fetching property(id: $propertyId)")
+            logError("${exp.message.toString()} while fetching UserPropertyStats($userId)")
             Result.Error(exp.message.toString())
         }
     }

@@ -11,6 +11,7 @@ import com.example.houserentalapp.data.mapper.UserActionMapper
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.UserActionData
+import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
@@ -86,7 +87,7 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
 
     // -------------- READ --------------
     override suspend fun getPropertyWithUserActions(
-        userId: Long, propertyId: Long
+        tenantId: Long, propertyId: Long
     ) : Result<Map<String, Any>> {
         return try {
             withContext(Dispatchers.IO) {
@@ -95,7 +96,7 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
                     propertyDao.getPropertyById(propertyId)
                 )
                 // Get Actions
-                val userActions = userPropertyDao.getUserActions(userId, propertyId).map {
+                val userActions = userPropertyDao.getUserActions(tenantId, propertyId).map {
                     UserActionMapper.toDomain(it)
                 }
                 // Get Landlord Details
@@ -176,10 +177,22 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
         }
     }
 
+    override suspend fun getUserPropertyStats(userId: Long): Result<UserPropertyStats> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val stats = userPropertyDao.getUserPropertyStats(userId)
+                logDebug("User($userId) property stats retrieved: $stats")
+                Result.Success(stats)
+            }
+        } catch (exp: Exception) {
+            logError("Error reading User's PropertyStats", exp)
+            Result.Error(exp.message.toString())
+        }
+    }
+
     // -------------- UPDATE --------------
     override suspend fun updateLead(
-        leadId: Long,
-        updateData: Map<LeadUpdatableField, String>
+        leadId: Long, updateData: Map<LeadUpdatableField, String>
     ): Result<Boolean> {
         return try {
             withContext(Dispatchers.IO) {

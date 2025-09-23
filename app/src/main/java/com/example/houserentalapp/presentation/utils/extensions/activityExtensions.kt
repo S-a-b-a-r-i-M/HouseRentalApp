@@ -49,7 +49,7 @@ fun Context.getShapableImageView(imageWidth: Int) : ShapeableImageView {
             setAllCornerSizes(24f)
         }.build()
 
-        val marginInPx = 5.dpToPx(context)
+        val marginInPx = 5.dpToPx()
         setLayoutParams(
             LinearLayout.LayoutParams(
                 imageWidth,

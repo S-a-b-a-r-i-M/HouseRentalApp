@@ -14,7 +14,7 @@
         android:layout_height="0dp"
         android:hint="@string/search_city_locality"
         app:backgroundTint="@color/white_blue"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/btnSubmit"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -34,10 +34,10 @@
                 android:visibility="gone" />
 
             <TextView
+                style="@style/TextAppearance.App.LabelMedium"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                style="@style/TextAppearance.App.LabelMedium"
                 android:text="@string/recent_searches" />
 
             <!-- Search History RecyclerView -->
@@ -54,29 +54,27 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:visibility="gone"
                 android:gravity="center"
                 android:text="@string/no_recent_searches_found"
                 android:textColor="@color/gray_medium"
                 android:textStyle="normal"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvHistory" />
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSubmit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginHorizontal="32dp"
-                android:text="@string/search_properties"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
         </LinearLayout>
     </com.google.android.material.search.SearchView>
 
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginHorizontal="32dp"
+        android:text="@string/search_properties"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

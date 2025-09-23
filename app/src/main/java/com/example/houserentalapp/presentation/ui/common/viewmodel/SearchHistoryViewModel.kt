@@ -1,10 +1,12 @@
 package com.example.houserentalapp.presentation.ui.common.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.domain.utils.Result
@@ -16,7 +18,6 @@ import kotlinx.coroutines.launch
 class SearchHistoryViewModel(private val searchHistoryUC: SearchHistoryUseCase) : ViewModel() {
     private val _searchHistoriesResult = MutableLiveData<ResultUI<List<PropertyFilters>>>(null)
     val searchHistoriesResult: LiveData<ResultUI<List<PropertyFilters>>> = _searchHistoriesResult
-
     fun loadSearchHistories(userId: Long) {
         viewModelScope.launch {
             _searchHistoriesResult.value = ResultUI.Loading
@@ -32,19 +33,14 @@ class SearchHistoryViewModel(private val searchHistoryUC: SearchHistoryUseCase) 
             }
         }
     }
-
-    fun clearSearchHistoryResult() {
-
-    }
 }
 
-class SearchHistoryViewModelFactory(
-    private val searchHistoryUC: SearchHistoryUseCase
-) : ViewModelProvider.Factory {
-
+class SearchHistoryViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(SearchHistoryViewModel::class.java))
+        if (modelClass.isAssignableFrom(SearchHistoryViewModel::class.java)) {
+            val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(context))
             return SearchHistoryViewModel(searchHistoryUC) as T
+        }
 
         throw IllegalArgumentException("SearchHistoryViewModelFactory: Unknown ViewModel class")
     }

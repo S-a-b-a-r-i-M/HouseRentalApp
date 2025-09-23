@@ -173,4 +173,11 @@
     <string name="not_available">Not Available</string>
     <string name="view_contact_details">View Contact Details</string>
     <string name="open_lead">open lead</string>
+    <string name="icon_view">icon view</string>
+    <string name="title">Title</string>
+    <string name="sub_title">sub title</string>
+    <string name="_99">99+</string>
+    <string name="your_activity_as_a_landlord">Your activity as a <u><b>Landlord</b></u></string>
+    <string name="your_activity_as_a_tenant">Your activity as a <u><b>Tenant</b></u></string>
+    <string name="hi">Hi %1$s</string>
 </resources>

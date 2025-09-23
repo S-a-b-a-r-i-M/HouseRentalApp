@@ -48,4 +48,12 @@
         <attr name="cancelIconTintColor" format="color" />
         <attr name="cancelIconBackgroundColor" format="color" />
     </declare-styleable>
+
+    <declare-styleable name="AnalyticBadgeView">
+        <attr name="iconSrc" format="reference" />
+        <attr name="iconTint" format="color|reference" />
+        <attr name="title" format="string" />
+        <attr name="subTitle" format="string" />
+        <attr name="badgeCount" format="integer" />
+    </declare-styleable>
 </resources>

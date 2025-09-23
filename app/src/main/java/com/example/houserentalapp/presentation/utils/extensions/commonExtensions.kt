@@ -2,14 +2,12 @@ package com.example.houserentalapp.presentation.utils.extensions
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import androidx.core.net.toUri
 import java.io.File
 
-fun Int.dpToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
-
-fun Int.spToPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
-
-fun Int.pxToSP(context: Context): Float = this / context.resources.displayMetrics.density
+/*** converts density-independent pixels (dp) to actual pixels (px). ***/
+fun Int.dpToPx(): Int = (this * Resources.getSystem().displayMetrics.density).toInt()
 
 fun String.deleteFile() {
     try {

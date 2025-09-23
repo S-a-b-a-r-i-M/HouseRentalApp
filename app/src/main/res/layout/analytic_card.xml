@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/llAnalyticCard"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minWidth="100dp"
+    android:gravity="center_horizontal"
+    android:padding="12dp">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imgIcon"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_margin="8dp"
+            app:srcCompat="@drawable/baseline_call_24"
+            app:tint="@color/gray_dark"
+            android:contentDescription="@string/icon_view"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/badge"
+            android:layout_width="19dp"
+            android:layout_height="19dp"
+            android:layout_gravity="top|end"
+            android:background="@drawable/badge_bg"
+            android:gravity="center"
+            android:text="99+"
+            android:textSize="11sp"
+            android:textColor="?attr/colorSurface"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/imgIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/imgIcon" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/TextAppearance.Material3.LabelLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/title"
+        android:textColor="@color/gray_dark"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgIcon" />
+
+    <TextView
+        android:id="@+id/tvSubTitle"
+        style="@style/TextAppearance.App.LabelSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text="@string/sub_title"
+        android:textAlignment="center"
+        android:textStyle="normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+</LinearLayout>

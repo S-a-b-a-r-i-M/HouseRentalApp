@@ -511,7 +511,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                                 LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.WRAP_CONTENT,
                                     LinearLayout.LayoutParams.MATCH_PARENT,
-                                ).apply { setMargins(5.dpToPx(context)) }
+                                ).apply { setMargins(5.dpToPx()) }
                             )
                         }
                         // Add Button to the view

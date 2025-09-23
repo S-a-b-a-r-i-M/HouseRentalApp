@@ -9,15 +9,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.databinding.FragmentHomeBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
+import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModelFactory
+import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModel
+import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModelFactory
 import com.example.houserentalapp.presentation.ui.home.adapter.RecentSearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
@@ -30,6 +31,8 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var mainActivity: MainActivity
     private lateinit var searchHistoryAdapter: RecentSearchHistoryAdapter
     private lateinit var currentUser: User
+
+    private lateinit var homeViewModel: HomeViewModel
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
@@ -51,8 +54,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         setupObservers()
 
         // Load Search Histories
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             searchHistoryViewModel.loadSearchHistories(currentUser.id)
+            homeViewModel.loadUserPropertyStats(currentUser.id)
+        }
     }
 
     private fun setupUI() {
@@ -60,6 +65,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         mainActivity.showBottomNav()
 
         with(binding) {
+            // Recycler View
             searchHistoryAdapter = RecentSearchHistoryAdapter(::onHistoryClick)
             rvSearchHistory.apply {
                 adapter = searchHistoryAdapter
@@ -68,15 +74,18 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                     RecyclerView.HORIZONTAL,
                     false
                 )
-
             }
+
+            titleTV.text = getString(R.string.hi, currentUser.name)
         }
     }
 
     private fun setupViewModel() {
-        val uc = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
-        val factory = SearchHistoryViewModelFactory(uc)
-        searchHistoryViewModel=ViewModelProvider(this,factory)[SearchHistoryViewModel::class]
+        val factory1 = SearchHistoryViewModelFactory(mainActivity.applicationContext)
+        searchHistoryViewModel=ViewModelProvider(this,factory1)[SearchHistoryViewModel::class]
+
+        val factory2 = HomeViewModelFactory(mainActivity.applicationContext)
+        homeViewModel = ViewModelProvider(this,factory2)[HomeViewModel::class]
     }
 
     private fun onHistoryClick(filters: PropertyFilters) {
@@ -116,8 +125,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         }
     }
 
+    private fun bindUserPropertyStats(stats: UserPropertyStats) {
+        with(binding) {
+            analyticCardViewed.setBadgeCount(stats.viewedPropertyCount)
+            analyticCardShortlisted.setBadgeCount(stats.shortlistedPropertyCount)
+            analyticCardContacted.setBadgeCount(stats.contactViewedPropertyCount)
+            analyticCardListedProperty.setBadgeCount(stats.listedPropertyCount)
+            analyticCardLeadsCount.setBadgeCount(stats.leadsCount)
+        }
+    }
+
     private fun setupObservers() {
-        // Save Changes Into Viewmodel
         searchHistoryViewModel.searchHistoriesResult.observe(viewLifecycleOwner) {
             when(it) {
                 is ResultUI.Success<List<PropertyFilters>> -> {
@@ -132,6 +150,20 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                 }
                 is ResultUI.Error -> {
                     binding.tvNoRecentSearchPlaceHolder.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        homeViewModel.userPropertyStatsResult.observe(viewLifecycleOwner) {
+            when(it) {
+                is ResultUI.Success<UserPropertyStats> -> {
+                    bindUserPropertyStats(it.data)
+                }
+                is ResultUI.Error -> {
+
+                }
+                ResultUI.Loading -> {
+
                 }
             }
         }

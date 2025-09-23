@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -34,7 +35,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="10dp"
+                    android:ellipsize="end"
+                    android:singleLine="true"
                     android:text="Hi User" />
 
                 <com.google.android.material.button.MaterialButton
@@ -62,42 +64,145 @@
         app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp" />
 
-    <TextView
-        android:id="@+id/tvHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="20dp"
-        android:drawablePadding="4dp"
-        android:text="@string/continue_where_you_left"
-        app:drawableStartCompat="@drawable/outline_history_24"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchBar" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchHistory"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHistory" />
-
-    <TextView
-        android:id="@+id/tvNoRecentSearchPlaceHolder"
-        style="@style/TextAppearance.App.Body1"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:visibility="gone"
-        android:gravity="center"
-        android:text="@string/no_recent_searches_found"
-        android:textColor="@color/gray_medium"
-        android:textStyle="normal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvHistory" />
+        android:layout_marginBottom="10dp" >
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tvHistory"
+                style="@style/TextAppearance.App.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4dp"
+                android:text="@string/continue_where_you_left"
+                app:drawableStartCompat="@drawable/outline_history_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSearchHistory"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toTopOf="@+id/guideline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHistory" />
+
+            <TextView
+                android:id="@+id/tvNoRecentSearchPlaceHolder"
+                style="@style/TextAppearance.App.Body1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/no_recent_searches_found"
+                android:textColor="@color/gray_medium"
+                android:textStyle="normal"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/guideline6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHistory" />
+
+            <TextView
+                android:id="@+id/tvLabelTenantActivity"
+                style="@style/TextAppearance.App.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/your_activity_as_a_tenant"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rvSearchHistory" />
+
+            <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
+                android:id="@+id/analyticCardViewed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/left_rounded_corner_bg"
+                app:title="Viewed"
+                app:subTitle="properties"
+                app:iconSrc="@drawable/baseline_eye_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelTenantActivity"/>
+
+            <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
+                android:id="@+id/analyticCardShortlisted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="2dp"
+                android:background="@drawable/border_white_bg"
+                app:title="Shortlisted"
+                app:subTitle="properties"
+                app:iconSrc="@drawable/baseline_favorite_filled"
+                app:layout_constraintStart_toEndOf="@+id/analyticCardViewed"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelTenantActivity" />
+
+            <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
+                android:id="@+id/analytic_card_contacted"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/right_rounded_corner_bg"
+                app:iconSrc="@drawable/baseline_call_24"
+                app:layout_constraintStart_toEndOf="@+id/analyticCardShortlisted"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelTenantActivity"
+                app:subTitle="unlocked"
+                app:title="Contact" />
+
+            <TextView
+                android:id="@+id/tvLabelLandlordActivity"
+                style="@style/TextAppearance.App.Body2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/your_activity_as_a_landlord"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/analyticCardViewed" />
+
+            <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
+                android:id="@+id/analyticCardListedProperty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/left_rounded_corner_bg"
+                app:iconSrc="@drawable/baseline_add_home_filled"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelLandlordActivity"
+                app:subTitle="properties"
+                app:title="Listed" />
+
+            <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
+                android:id="@+id/analyticCardLeadsCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="2dp"
+                android:background="@drawable/right_rounded_corner_bg"
+                app:iconSrc="@drawable/baseline_person_24"
+                app:layout_constraintStart_toEndOf="@+id/analyticCardListedProperty"
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelLandlordActivity"
+                app:subTitle="available"
+                app:title="Leads" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.2" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
+
+</LinearLayout>

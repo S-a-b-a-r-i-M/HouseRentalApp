@@ -10,11 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
@@ -104,8 +102,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     }
 
     private fun setupViewModel() {
-        val uc = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
-        val factory = SearchHistoryViewModelFactory(uc)
+        val factory = SearchHistoryViewModelFactory(mainActivity.applicationContext)
         searchHistoryViewModel=ViewModelProvider(this, factory)[SearchHistoryViewModel::class]
     }
 
@@ -180,10 +177,14 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
                 is ResultUI.Success<List<PropertyFilters>> -> {
                     searchHistoryAdapter.setDateList(it.data)
                      // If no data then show place holder
-                    binding.tvNoRecentSearchPlaceHolder.visibility = if (it.data.isEmpty())
-                        View.VISIBLE
-                    else
-                        View.GONE
+                    if (it.data.isEmpty()) {
+                        binding.tvNoRecentSearchPlaceHolder.visibility = View.VISIBLE
+                        binding.rvSearchHistory.visibility = View.GONE
+                    }
+                    else {
+                        binding.tvNoRecentSearchPlaceHolder.visibility = View.GONE
+                        binding.rvSearchHistory.visibility = View.VISIBLE
+                    }
                 }
                 ResultUI.Loading -> {
 

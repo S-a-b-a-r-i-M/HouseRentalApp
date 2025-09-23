@@ -672,6 +672,7 @@
                 app:counterEnabled="false"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:errorIconDrawable="@null"
                 app:layout_constraintTop_toBottomOf="@+id/tilBuiltUpArea">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -680,6 +681,8 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:focusable="false"
+                    android:enabled="false"
+                    android:clickable="false"
                     android:inputType="none" />
 
             </com.google.android.material.textfield.TextInputLayout>
