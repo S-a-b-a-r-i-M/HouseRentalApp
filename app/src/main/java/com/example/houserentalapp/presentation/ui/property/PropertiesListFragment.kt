@@ -8,6 +8,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -15,8 +16,8 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.getAddedFiltersCount
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
@@ -47,41 +48,52 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private lateinit var currentUser: User
     private lateinit var propertiesAdapter: PropertiesAdapter
     private lateinit var propertiesViewModel: PropertiesListViewModel
-    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
+    private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
     private var isScrolling = false
     private var hideBottomNav = false
     private var onlyShortlisted = false
     private var hideToolBar = false
-    private var hideFabButton = false
+    private var searchQuery: String? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mainActivity = context as MainActivity
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            hideBottomNav = it.getBoolean(HIDE_BOTTOM_NAV_KEY, hideBottomNav)
+            hideToolBar = it.getBoolean(HIDE_TOOLBAR_KEY, hideToolBar)
+            onlyShortlisted = it.getBoolean(ONLY_SHORTLISTED_KEY, onlyShortlisted)
+            searchQuery = it.getString("searchQuery")
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentPropertiesListBinding.bind(view)
-        // Take Current User
+        // FROM SHARED VIEW MODEL
         currentUser = sharedDataViewModel.currentUserData
-
-        // Decisions based on received values
-        hideBottomNav = sharedDataViewModel.propertiesListStore[HIDE_BOTTOM_NAV_KEY] as? Boolean ?: false
-        hideToolBar = sharedDataViewModel.propertiesListStore[HIDE_TOOLBAR_KEY] as? Boolean ?: false
-        hideFabButton = sharedDataViewModel.propertiesListStore[HIDE_FAB_BUTTON_KEY] as? Boolean ?: false
-        onlyShortlisted = sharedDataViewModel.propertiesListStore[ONLY_SHORTLISTED_KEY] as? Boolean ?: false
 
         setupUI()
         setupViewModel()
         setupListeners()
         setupObservers()
 
-        // Initial Load Data
-        filtersViewModel.setOnlyShortlisted(onlyShortlisted)
-        if (propertiesViewModel.propertySummariesResult.value !is ResultUI.Success)
+        if (savedInstanceState == null) {
+            // Initial Load Data
+            if (onlyShortlisted)
+                filtersViewModel.setPropertyFilters(PropertyFilters(onlyShortlisted = true))
+            else
+                sharedDataViewModel.getAndClearFilters()?.let {
+                    filtersViewModel.setPropertyFilters(it)
+                }
+
             loadProperties()
+        }
     }
 
     private fun loadProperties() {
@@ -168,8 +180,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             searchHistoryUC,
             currentUser
         )
-        propertiesViewModel = ViewModelProvider(this, factory)
-            .get(PropertiesListViewModel::class.java)
+        propertiesViewModel = ViewModelProvider(this, factory)[PropertiesListViewModel::class.java]
     }
 
     fun setupListeners() {
@@ -292,6 +303,5 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         const val HIDE_BOTTOM_NAV_KEY = "hideBottomNav"
         const val ONLY_SHORTLISTED_KEY = "onlyShortlisted"
         const val HIDE_TOOLBAR_KEY = "hideToolBar"
-        const val HIDE_FAB_BUTTON_KEY= "hideFabButton"
     }
 }

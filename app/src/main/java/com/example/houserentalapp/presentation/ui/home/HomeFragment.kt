@@ -22,7 +22,6 @@ import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModelFact
 import com.example.houserentalapp.presentation.ui.home.adapter.RecentSearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
-import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 
@@ -31,10 +30,9 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     private lateinit var mainActivity: MainActivity
     private lateinit var searchHistoryAdapter: RecentSearchHistoryAdapter
     private lateinit var currentUser: User
-
+    // VIEW MODELS
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
-    private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
@@ -89,17 +87,15 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun onHistoryClick(filters: PropertyFilters) {
-        filtersViewModel.setPropertyFilters(filters)
-        navigateToPropertiesListFragment()
-    }
+        // SET THE SELECTED FILTER
+        sharedDataViewModel.setCurrentFilters(filters)
+        // NAVIGATE
+        val destination = PropertiesListFragment()
+        destination.arguments = Bundle().apply {
+            putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+        }
 
-    private fun navigateToPropertiesListFragment() {
-        sharedDataViewModel.resetPropertiesListStore()
-        sharedDataViewModel.addToPropertiesListStore(
-            PropertiesListFragment.Companion.HIDE_BOTTOM_NAV_KEY, true
-        )
-
-        mainActivity.loadFragment(PropertiesListFragment(), true)
+        mainActivity.loadFragment(destination, true)
     }
 
     private fun setListeners() {

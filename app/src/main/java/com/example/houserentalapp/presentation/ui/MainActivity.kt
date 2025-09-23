@@ -100,13 +100,12 @@ class MainActivity : AppCompatActivity() {
                     loadFragment(HomeFragment())
                 }
                 R.id.bnav_shortlists -> {
-                    with(sharedDataViewModel) {
-                        resetPropertiesListStore()
-                        addToPropertiesListStore(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
-                        addToPropertiesListStore(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
-                        addToPropertiesListStore(PropertiesListFragment.HIDE_FAB_BUTTON_KEY, true)
+                    val destination = PropertiesListFragment()
+                    destination.arguments = Bundle().apply {
+                        putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
+                        putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
                     }
-                    loadFragment(PropertiesListFragment())
+                    loadFragment(destination)
                 }
                 R.id.bnav_listings -> {
                     loadFragment(ListingsFragment())
@@ -135,8 +134,12 @@ class MainActivity : AppCompatActivity() {
     fun loadFragment(
         fragment: Fragment,
         pushToBackStack: Boolean = false,
+        removeHistory: Boolean = false,
         containerId: Int = binding.pageFragmentContainer.id
     ) {
+        if (removeHistory)
+            supportFragmentManager.popBackStack(fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+
         supportFragmentManager.beginTransaction().apply {
             replace(containerId, fragment)
             if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
@@ -154,7 +157,7 @@ class MainActivity : AppCompatActivity() {
         val existingFragment = supportFragmentManager.findFragmentById(containerId)
 
         if (removeHistory)
-            supportFragmentManager.popBackStack(fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            supportFragmentManager.popBackStack(fragment.simpleClassName, 0)
 
         supportFragmentManager.beginTransaction().apply {
             add(containerId, fragment)

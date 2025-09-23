@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
@@ -17,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property

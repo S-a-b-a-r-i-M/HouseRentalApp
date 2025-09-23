@@ -111,16 +111,14 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         navigateToPropertiesListFragment()
     }
 
-    private fun navigateToPropertiesListFragment() {
-        sharedDataViewModel.resetPropertiesListStore()
-        sharedDataViewModel.addToPropertiesListStore(
-            PropertiesListFragment.Companion.HIDE_BOTTOM_NAV_KEY, true
-        )
+    private fun navigateToPropertiesListFragment(searchQuery: String? = null) {
+        val destination = PropertiesListFragment()
+        destination.arguments = Bundle().apply {
+            putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+            if (searchQuery != null) putString("searchQuery", searchQuery)
+        }
 
-        mainActivity.loadFragment(
-            PropertiesListFragment(),
-            true
-        )
+        mainActivity.loadFragment(destination)
     }
 
     private fun setupListeners() {

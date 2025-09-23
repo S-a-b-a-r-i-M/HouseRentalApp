@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.houserentalapp.domain.model.Lead
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
@@ -15,20 +16,23 @@ class SharedDataViewModel : ViewModel() {
 
     var currentLead: Lead? = null
 
-    private val _fPropertiesListStore = mutableMapOf<String, Any>()
-    val propertiesListStore: Map<String, Any> = _fPropertiesListStore
-
-    fun addToPropertiesListStore(key: String, value: Any) {
-        _fPropertiesListStore[key] = value
-    }
-
-    fun resetPropertiesListStore() {
-        _fPropertiesListStore.clear()
-    }
-
     fun setCurrentUser(user: User) {
         logDebug("CurrentUser is set: $user")
         currentUserData = user
         _currentUserLD.value = user
+    }
+
+    private var currentFilter: PropertyFilters? = null
+
+    fun getAndClearFilters(): PropertyFilters? {
+        if (currentFilter == null) return null
+
+        val temp = currentFilter
+        currentFilter = null
+        return temp
+    }
+
+    fun setCurrentFilters(propertyFilters: PropertyFilters) {
+        currentFilter = propertyFilters
     }
 }
