@@ -22,5 +22,5 @@ enum class PropertyFormField(val isRequired: Boolean = true) {
     IS_MAINTENANCE_SEPARATE,
     MAINTENANCE_CHARGES,
     SECURITY_DEPOSIT,
-    IMAGES
+    IMAGES(false)
 }

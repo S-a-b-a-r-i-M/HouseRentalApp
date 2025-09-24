@@ -192,7 +192,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             mainActivity.hideBottomNav()
 
         // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
+        setSystemBarBottomPadding(binding.root) // TODO-FIX:
 
         groupRelatedFields()
         setRequiredFieldIndicator()
@@ -315,10 +315,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             tvTenantType.text = getRequiredStyleLabel(
                 tvTenantType.text.toString(), mainActivity
             )
-
-            tvPropertyImages.text = getRequiredStyleLabel(
-                tvPropertyImages.text.toString(), mainActivity
-            )
         }
     }
 
@@ -386,10 +382,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
         viewModel.getFormErrorMap(PropertyFormField.PREFERRED_TENANT_TYPE).observe(viewLifecycleOwner) {
             binding.tvTenantType.setTextColor(getErrorState(it))
-        }
-
-        viewModel.getFormErrorMap(PropertyFormField.IMAGES).observe(viewLifecycleOwner) {
-            binding.tvPropertyImages.setTextColor(getErrorState(it))
         }
     }
 
@@ -635,11 +627,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun setEditTextListeners() {
         formTextInputFieldInfoList.forEach{ textInputFieldInfo ->
             textInputFieldInfo.editText.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus)
+                if (!hasFocus) {
+                    val text = textInputFieldInfo.editText.text.toString().trim()
                     viewModel.updateFormValue(
                         textInputFieldInfo.field,
-                        textInputFieldInfo.editText.text.toString()
+                        text
                     )
+                }
             }
 
             if (textInputFieldInfo.field.isRequired)
@@ -717,7 +711,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             }
 
             etAvailableFrom.addTextChangedListener {
-                viewModel.updateFormValue(PropertyFormField.AVAILABLE_FROM, etAvailableFrom.text.toString())
+                viewModel.updateFormValue(
+                    PropertyFormField.AVAILABLE_FROM, etAvailableFrom.text.toString()
+                )
             }
 
             // Open Amenities Sheet

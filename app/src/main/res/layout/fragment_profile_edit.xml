@@ -8,6 +8,7 @@
     tools:context=".presentation.ui.profile.ProfileEditFragment" >
 
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/white_blue"
@@ -99,6 +100,7 @@
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
                     android:inputType="number"
+                    android:enabled="false"
                     android:maxLines="1" />
 
             </com.google.android.material.textfield.TextInputLayout>

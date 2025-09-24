@@ -54,7 +54,7 @@ class MyPropertiesAdapter(
                 logError("Error on Add images programmatically exp:${exp.message}")
             }
             else // Add Place Holder Image
-                imageView.setImageResource(R.drawable.room_1)
+                imageView.setImageResource(R.drawable.no_image)
 
             // Add Details
             tvAddedDate.text = summary.createdAt.fromEpoch()

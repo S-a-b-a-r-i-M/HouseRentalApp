@@ -59,7 +59,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     private fun areFieldsValid() = with(binding) {
             var isValid = true
             // Name
-            val userName = etName.text.toString()
+            val userName = etName.text.toString().trim()
             validateUserName(userName)?.let {
                 isValid = false
                 tilName.error = it
@@ -67,7 +67,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             }
 
             // Phone
-            val phone = etPhone.text.toString()
+            val phone = etPhone.text.toString().trim()
             validatePhoneFormat(phone)?.let {
                 if (isValid) etPhone.requestFocus()
                 isValid = false
@@ -75,7 +75,7 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
             }
 
             // Password
-            val password = etPassword.text.toString()
+            val password = etPassword.text.toString().trim()
             validatePasswordStrength(password)?.let {
                 if (isValid) etPassword.requestFocus()
                 isValid = false
@@ -93,9 +93,9 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
 
         viewModel.signUp(
             NewUserUI(
-                binding.etName.text.toString(),
-                binding.etPhone.text.toString(),
-                binding.etPassword.text.toString()
+                binding.etName.text.toString().trim(),
+                binding.etPhone.text.toString().trim(),
+                binding.etPassword.text.toString().trim()
             )
         )
     }

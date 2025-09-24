@@ -368,7 +368,15 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     private fun bindPropertyDetails(property: Property) {
         // Load Images
-        adapter.setPropertyImages(property.images)
+        if (property.images.isNotEmpty()) {
+            binding.imgProperty.visibility = View.GONE
+            adapter.setPropertyImages(property.images)
+        }
+        else
+            binding.imgProperty.apply {
+                visibility = View.VISIBLE
+                setImageResource(R.drawable.no_image)
+            }
 
         // Load Details
         binding.collapsingTBarLayout.title = property.name

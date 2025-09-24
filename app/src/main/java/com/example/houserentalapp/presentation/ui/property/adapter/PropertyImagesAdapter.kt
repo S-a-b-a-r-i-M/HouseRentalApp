@@ -12,21 +12,28 @@ import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
 import java.io.File
 
-class PropertyImagesViewAdapter() : RecyclerView.Adapter<PropertyImagesViewAdapter.ViewHolder>() {
+class PropertyImagesViewAdapter(private val onClick: (List<PropertyImage>) -> Unit)
+    : RecyclerView.Adapter<PropertyImagesViewAdapter.ViewHolder>() {
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val imageView: ImageView = itemView.findViewById(R.id.imageViewProperty)
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.imageViewProperty)
 
         fun bind(filePath: String) {
             val file = File(filePath)
             if (file.exists()){
                 val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                 imageView.setImageBitmap(bitmap)
+                setOnClick()
             }
         }
 
         fun bind(uri: Uri) {
             imageView.setImageURI(uri)
+            setOnClick()
+        }
+
+        fun setOnClick() {
+            imageView.setOnClickListener { onClick(propertyImages) }
         }
     }
 

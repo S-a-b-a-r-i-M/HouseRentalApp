@@ -670,9 +670,9 @@
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/outline_calendar_month_24"
                 app:counterEnabled="false"
+                app:errorIconDrawable="@null"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:errorIconDrawable="@null"
                 app:layout_constraintTop_toBottomOf="@+id/tilBuiltUpArea">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -680,8 +680,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:imeOptions="actionNext"
-                    android:focusable="false"
+                    android:textColor="@color/black"
                     android:enabled="false"
+                    android:focusable="false"
                     android:clickable="false"
                     android:inputType="none" />
 
@@ -822,7 +823,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tilSecurityDeposit"
                 app:srcCompat="@drawable/outline_add_24"
-                android:tint="?attr/colorPrimaryDark"
+                app:tint="?attr/colorPrimaryDark"
                 android:contentDescription="@string/add_more"/>
 
             <LinearLayout
@@ -843,7 +844,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/upload_image"
-                    android:contentDescription="@string/upload_from_gallery"/>
+                    android:contentDescription="@string/upload_from_gallery" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnUploadImages"

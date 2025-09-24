@@ -153,6 +153,7 @@
         android:id="@+id/rSliderBudget"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="4dp"
         android:valueFrom="10"
         android:valueTo="1000"
         app:labelBehavior="gone"

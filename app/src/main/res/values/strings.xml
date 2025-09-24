@@ -182,4 +182,5 @@
     <string name="hi">Hi %1$s</string>
     <string name="no_leads_found">No Leads Found</string>
     <string name="minimum_3_characteres_required_to_search">minimum 3 characteres required to search</string>
+    <string name="image_view">image view</string>
 </resources>

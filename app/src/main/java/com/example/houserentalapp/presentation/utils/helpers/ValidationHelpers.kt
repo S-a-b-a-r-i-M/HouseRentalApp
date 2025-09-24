@@ -6,7 +6,7 @@ fun validateUserName(name: String): String? {
     return when {
         name.isBlank() -> "required"
         name.length < 3 -> "must contains at least 3 characters"
-        name.length > 50 -> "should not more than 50 characters"
+        name.length > 25 -> "should not more than 25 characters"
         else -> null
     }
 }

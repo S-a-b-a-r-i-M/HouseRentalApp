@@ -97,6 +97,7 @@
 
                 <ImageButton
                     android:id="@+id/ibtnSort"
+                    android:visibility="gone"
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:layout_marginStart="10dp"
@@ -117,6 +118,8 @@
         android:id="@+id/rvProperty"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:paddingBottom="10dp"
+        android:paddingHorizontal="2dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -57,14 +57,14 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     private fun areFieldsValid() = with(binding) {
         var isValid = true
         // Phone
-        validatePhoneFormat(etPhone.text.toString())?.let {
-            etPhone.requestFocus() // TODO: How auto scrolling happens
+        validatePhoneFormat(etPhone.text.toString().trim())?.let {
+            etPhone.requestFocus() // TODO-DOUBT: How auto scrolling happens
             isValid = false
             tilPhone.error = it
         }
 
         // Password
-        validatePasswordStrength(etPassword.text.toString())?.let {
+        validatePasswordStrength(etPassword.text.toString().trim())?.let {
             if (isValid) etPassword.requestFocus()
             isValid = false
             tilPassword.error = it
@@ -80,8 +80,8 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
         }
 
         viewModel.signIn(
-            binding.etPhone.text.toString(),
-            binding.etPassword.text.toString()
+            binding.etPhone.text.toString().trim(),
+            binding.etPassword.text.toString().trim()
         )
     }
 

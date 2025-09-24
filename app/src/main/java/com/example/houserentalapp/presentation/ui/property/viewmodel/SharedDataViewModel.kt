@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui.property.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
@@ -35,4 +36,6 @@ class SharedDataViewModel : ViewModel() {
     fun setCurrentFilters(propertyFilters: PropertyFilters) {
         currentFilter = propertyFilters
     }
+
+    var imageSources: List<ImageSource> = emptyList()
 }

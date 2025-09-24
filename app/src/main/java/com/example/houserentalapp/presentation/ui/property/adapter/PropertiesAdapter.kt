@@ -1,26 +1,28 @@
 package com.example.houserentalapp.presentation.ui.property.adapter
 
 import android.content.res.ColorStateList
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
+import com.example.houserentalapp.presentation.ui.base.BaseDiffCallBack
+import com.example.houserentalapp.presentation.ui.base.BaseLoadingAdapter
+import com.example.houserentalapp.presentation.ui.base.LoadingAdapterData
 import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 
-// TODO: Fix Image iteration
+typealias AdapterSummaryData = LoadingAdapterData.Data<PropertySummaryUI>
+
 class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Long) -> Unit)? = null)
-    : RecyclerView.Adapter<PropertiesAdapter.ViewHolder>() {
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    : BaseLoadingAdapter<PropertySummaryUI>() {
+    inner class DataViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private var imageContainer: LinearLayout = itemView.findViewById(R.id.imageContainer)
         private var tvHeader: TextView = itemView.findViewById(R.id.tvHeader)
         private var tvBody1: TextView = itemView.findViewById(R.id.tvBody1)
@@ -53,7 +55,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
             else // Add Place Holder Image
                 repeat(2) {
                 val shapableImageView = itemView.context.getShapableImageView(imageWidth)
-                shapableImageView.setImageResource(R.drawable.room_1)
+                shapableImageView.setImageResource(R.drawable.no_image)
                 imageContainer.addView(shapableImageView)
             }
 
@@ -133,56 +135,82 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         }
     }
 
-    private var dataList: MutableList<PropertySummaryUI> = mutableListOf()
+    inner class LoaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+
+    private var summaryUIList = listOf<PropertySummaryUI>() // Raw Data content
     private var shortlistToggledPropertyId: Long? = null
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.single_property_summary_layout, parent, false)
-        logInfo("<-------- onCreateViewHolder --------> ")
-        return ViewHolder(view)
+    override fun createDiffCallBack(
+        oldList: List<LoadingAdapterData<PropertySummaryUI>>,
+        newList: List<LoadingAdapterData<PropertySummaryUI>>
+    ): BaseDiffCallBack<PropertySummaryUI> {
+        return PropertiesDiffCallBack(oldList, newList)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(dataList[position])
-        logInfo("<------- onBindViewHolder --------> ")
+    override fun onCreateDataViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(
+            R.layout.single_property_summary_layout,
+            parent,
+            false
+        )
+        return DataViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int, payloads: List<Any?>) {
-        if (payloads.isNotEmpty() && SHORTLIST == payloads[0]) {
-            holder.bindShortlistData(dataList[position].isShortListed)
-            return
+    override fun onCreateLoaderViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
+        val view = LayoutInflater.from(parent.context).inflate(
+            R.layout.loader_item, parent, false
+        )
+        return LoaderViewHolder(view)
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        logInfo("<------- onCreateViewHolder --------> ")
+        return when(viewType) {
+            LOADER_VIEW_TYPE -> onCreateLoaderViewHolder(parent)
+            DATA_VIEW_TYPE -> onCreateDataViewHolder(parent)
+            else -> throw IllegalArgumentException("Invalid View Type($viewType) given")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(val data = dataList[position]){
+            is LoadingAdapterData.Data -> (holder as DataViewHolder).bind(data.data)
+            LoadingAdapterData.Loader -> {}
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: List<Any?>) {
+        when(holder){
+            is DataViewHolder -> {
+                if (payloads.isNotEmpty() && SHORTLIST == payloads[0]) {
+                    val data = (dataList[position] as AdapterSummaryData).data
+                    holder.bindShortlistData(data.isShortListed)
+                    return
+                }
+            }
         }
 
         onBindViewHolder(holder, position) // FallBack
     }
 
-    override fun getItemCount() = dataList.size
 
-    fun setDataList(newDataList: List<PropertySummaryUI>) {
-        if (shortlistToggledPropertyId != null && newDataList.size == dataList.size) {
-            val oldListIdx = dataList.indexOfFirst { it.summary.id == shortlistToggledPropertyId }
+    override fun setDataList(newDataList: List<PropertySummaryUI>, hasMore: Boolean) {
+        if (shortlistToggledPropertyId != null && newDataList.size == summaryUIList.size) {
+            val oldListIdx = dataList.indexOfFirst {
+                it is AdapterSummaryData &&
+                it.data.summary.id == shortlistToggledPropertyId
+            }
             val newListIdx = newDataList.indexOfFirst { it.summary.id == shortlistToggledPropertyId }
             shortlistToggledPropertyId = null // Make it null
             if (oldListIdx != -1 && newListIdx != -1) {
-                dataList[oldListIdx] = newDataList[newListIdx]
+                dataList[oldListIdx] = LoadingAdapterData.Data(newDataList[newListIdx])
                 notifyItemChanged(oldListIdx, SHORTLIST)
                 return
             }
         }
 
-        val diffCallBack = PropertiesDiffCallBack(dataList, newDataList)
-        val diffResult = DiffUtil.calculateDiff(diffCallBack)
-
-        dataList.clear()
-        dataList.addAll(newDataList)
-        diffResult.dispatchUpdatesTo(this)
-    }
-
-    fun appendDataList(newDataList: List<PropertySummaryUI>) {
-        val startPosition = newDataList.size
-        dataList.addAll(newDataList)
-        notifyItemRangeInserted(startPosition ,newDataList.size)
+        summaryUIList = newDataList // Store raw data content
+        super.setDataList(newDataList, hasMore)
     }
 
     companion object {
@@ -191,18 +219,11 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
 }
 
 class PropertiesDiffCallBack(
-    private val oldList: List<PropertySummaryUI>,
-    private val newList: List<PropertySummaryUI>,
-) : DiffUtil.Callback() {
-    override fun getOldListSize() = oldList.size
-
-    override fun getNewListSize() = newList.size
-
-    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].summary.id == newList[newItemPosition].summary.id
-    }
-
-    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].summary == newList[newItemPosition].summary
-    }
+    oldList: List<LoadingAdapterData<PropertySummaryUI>>,
+    newList: List<LoadingAdapterData<PropertySummaryUI>>,
+) : BaseDiffCallBack<PropertySummaryUI>(oldList, newList) {
+    override fun areDataItemsSame(
+        oldData: PropertySummaryUI,
+        newData: PropertySummaryUI
+    ): Boolean = oldData.summary.id == newData.summary.id
 }

@@ -81,31 +81,24 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             }
 
             // Search View
-            updateSubmitState(etSearch.text.toString().length > 2)
+            updateSubmitButtonState(etSearch.text.toString().trim().length > 2)
         }
     }
 
-    private fun updateSubmitState(enable: Boolean) {
+    private fun updateSubmitButtonState(enable: Boolean) {
         val button = binding.btnSubmit
         if (enable == button.isEnabled) return
 
-        if (enable) {
-            binding.tvHelperMsg.visibility = View.GONE
+        if (enable)
             button.apply {
                 isEnabled = true
                 alpha = 1f
             }
-        }
-        else {
-            binding.tvHelperMsg.apply {
-                visibility = View.VISIBLE
-                text = context.getString(R.string.minimum_3_characteres_required_to_search)
-            }
+        else
             button.apply {
                 isEnabled = false
                 alpha = 0.7f
             }
-        }
     }
 
     private fun setupViewModel() {
@@ -127,7 +120,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         mainActivity.loadFragment(
             destination,
             true,
-            true
+            removeHistory = true
         )
     }
 
@@ -141,11 +134,15 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         with(binding) {
             // Setup SearchView text changes
             etSearch.doOnTextChanged { text, start, before, count ->
-                val query = text?.toString() ?: ""
-                // filtersViewModel.setSearchQuery(query)
-                updateSubmitState(query.length > 2)
-                // filter search histories
-                // search locations
+                val query = text?.toString()?.trim() ?: ""
+                updateSubmitButtonState(query.length > 2)
+                if (query.length < 3)
+                    tvHelperMsg.apply {
+                        visibility = View.VISIBLE
+                        this.text = context.getString(R.string.minimum_3_characteres_required_to_search)
+                    }
+                else
+                    tvHelperMsg.visibility = View.GONE
             }
 
             // Listens Search Icon Click in Keyboard

@@ -521,16 +521,6 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             isValidationSuccess = false
         }
 
-        // Name Validation
-        when {
-            propertyData.name.isEmpty() -> "enter valid input"
-            propertyData.name.length < 3 -> "length should be greater than 3"
-            propertyData.name.length > 100 -> "length should be less than 100"
-            else -> null
-        }?.let {
-            updateError(PropertyFormField.NAME, it)
-        }
-
         fun getDataByField(field: PropertyFormField) = when (field) {
             PropertyFormField.TYPE -> propertyData.type
             PropertyFormField.BHK -> propertyData.bhk
@@ -556,6 +546,70 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             PropertyFormField.IMAGES -> null
         }
 
+
+        listOf(
+            PropertyFormField.CITY,
+            PropertyFormField.LOCALITY,
+            PropertyFormField.NAME,
+        ).forEach { field ->
+            var data = getDataByField(field) as? String ?: run {
+                updateError(field, "Enter a valid input")
+                return@forEach
+            }
+            data = data.trim()
+            when {
+                data.isEmpty() -> "Enter a valid input"
+                data.length < 3 -> "Length should be at least 3 characters"
+                data.length > 50 -> "Length should not exceed 50 characters"
+                else -> null
+            }?.let { updateError(field, it) }
+        }
+
+        if (propertyData.availableFrom.isEmpty())
+            updateError(PropertyFormField.AVAILABLE_FROM, "enter valid date")
+
+        val street = propertyData.street.trim()
+        when {
+            street.isEmpty() -> "Enter a valid input"
+            street.length < 3 -> "Length should be at least 3 characters"
+            street.length > 100 -> "Length should not exceed 100 characters"
+            else -> null
+        }?.let { updateError(PropertyFormField.STREET, it) }
+
+        val value = propertyData.securityDepositAmount.toIntOrNull()
+        when {
+            value == null -> "Enter a valid amount"
+            value < 500 -> "Value is too low (minimum 500)"
+            else -> null
+        }?.let { updateError(PropertyFormField.SECURITY_DEPOSIT, it) }
+
+        val builtUpArea = propertyData.builtUpArea.toIntOrNull()
+        when {
+            builtUpArea == null -> "Enter a valid area"
+            builtUpArea < 435 -> "Area is too small (minimum 435 sq.ft)"
+            builtUpArea > 43500 -> "Area is too large (maximum 43,500 sq.ft)"
+            else -> null
+        }?.let { updateError(PropertyFormField.BUILT_UP_AREA, it) }
+
+        val price = propertyData.price.toIntOrNull()
+        when {
+            price == null -> "Enter a valid amount"
+            price < 500 -> "Amount is too low (minimum 500)"
+            price > 2_00_000 -> "Amount should not exceed 2 Lakhs"
+            else -> null
+        }?.let { updateError(PropertyFormField.PRICE, it) }
+
+        // MAINTENANCE_CHARGES Validation
+        if (propertyData.isMaintenanceSeparate == true) {
+            val maintenance = propertyData.maintenanceCharges.toIntOrNull()
+            when {
+                maintenance == null -> "Enter a valid amount"
+                maintenance > (propertyData.price.toIntOrNull() ?: Int.MAX_VALUE) ->
+                    "Amount should not exceed the rent"
+                else -> null
+            }?.let { updateError(PropertyFormField.MAINTENANCE_CHARGES, it) }
+        }
+
         // Selectable enum types validation
         listOf(
             PropertyFormField.TYPE,
@@ -563,41 +617,11 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             PropertyFormField.BHK,
             PropertyFormField.PREFERRED_TENANT_TYPE,
             PropertyFormField.IS_MAINTENANCE_SEPARATE,
-            PropertyFormField.IS_PET_FRIENDLY
+            PropertyFormField.IS_PET_FRIENDLY,
         ).forEach { filed ->
             if (getDataByField(filed) == null)
-                updateError(filed, "select one")
+                updateError(filed, "Please select an option")
         }
-
-        // MAINTENANCE_CHARGES Validation
-        if (propertyData.isMaintenanceSeparate == true && propertyData.maintenanceCharges.isEmpty())
-            updateError(PropertyFormField.MAINTENANCE_CHARGES, "enter valid input")
-
-        // Int Input Validations
-        listOf(
-            PropertyFormField.BUILT_UP_AREA,
-            PropertyFormField.PRICE,
-            PropertyFormField.SECURITY_DEPOSIT
-        ).forEach {
-            val value = getDataByField(it)
-            if (value !is String || value.toIntOrNull() == null)
-                updateError(it, "enter valid input")
-        }
-
-        // String Input Validations
-        listOf(
-            PropertyFormField.CITY,
-            PropertyFormField.LOCALITY,
-            PropertyFormField.STREET,
-            PropertyFormField.AVAILABLE_FROM,
-        ).forEach {
-            val value = getDataByField(it) as? String
-            if (value.isNullOrEmpty())
-                updateError(it, "enter valid input")
-        }
-
-        if (_images.value!!.isEmpty())
-            updateError(PropertyFormField.IMAGES, "Upload at least one image")
 
         return isValidationSuccess
     }
@@ -607,16 +631,16 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
             val basicData = propertyDataUI
             val amenities = buildAmenities()
             val address = PropertyAddress(
-                street = basicData.street,
-                locality = basicData.locality,
-                city = basicData.city
+                street = basicData.street.trim(),
+                locality = basicData.locality.trim(),
+                city = basicData.city.trim()
             )
 
             return Property(
                 id = propertyId,
                 landlordId = currentUserId,
-                name = basicData.name,
-                description = basicData.description,
+                name = basicData.name.trim(),
+                description = basicData.description.trim(),
                 lookingTo = basicData.lookingTo,
                 kind = PropertyKind.RESIDENTIAL,
                 type = basicData.type!!,
