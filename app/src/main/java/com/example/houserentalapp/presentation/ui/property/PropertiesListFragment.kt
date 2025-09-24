@@ -190,7 +190,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             }
 
             searchBar.setOnClickListener {
-                mainActivity.addFragment(SearchViewFragment(), true)
+                 mainActivity.addFragment(SearchViewFragment(), true)
             }
 
             btnFilters.setOnClickListener {

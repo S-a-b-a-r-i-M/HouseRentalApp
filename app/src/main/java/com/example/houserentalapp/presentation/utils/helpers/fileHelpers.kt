@@ -3,8 +3,8 @@ package com.example.houserentalapp.presentation.utils.helpers
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.ImageView
 import com.example.houserentalapp.domain.model.ImageSource
-import com.google.android.material.imageview.ShapeableImageView
 import java.io.File
 
 
@@ -18,7 +18,7 @@ fun getFileBitMapFromAbsPath(absolutePath: String): Bitmap? {
         BitmapFactory.decodeFile(file.absolutePath)
 }
 
-fun loadImageSourceToImageView(imageSource: ImageSource, imageView: ShapeableImageView) {
+fun loadImageSourceToImageView(imageSource: ImageSource, imageView: ImageView) {
     when(imageSource) {
         is ImageSource.LocalFile -> {
             val bitmap = getFileBitMapFromAbsPath(imageSource.filePath) ?: run {

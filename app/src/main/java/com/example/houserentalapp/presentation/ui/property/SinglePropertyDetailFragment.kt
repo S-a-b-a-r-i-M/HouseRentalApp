@@ -19,12 +19,12 @@ import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentSinglePropertyDetailBinding
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.Property
+import com.example.houserentalapp.domain.model.PropertyImage
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.AmenityType
 import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
-import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.model.PropertyUI
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.MainActivity
@@ -40,13 +40,9 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.setDrawable
-import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
-/* TODO
-    1. FIX: Maintenance alignment
- */
 class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var adapter: PropertyImagesViewAdapter
@@ -113,7 +109,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
         with(binding) {
             // Image ViewPager 2
-            adapter = PropertyImagesViewAdapter()
+            adapter = PropertyImagesViewAdapter(::onImageClick)
             viewPager2.apply {
                 this.adapter = this@SinglePropertyDetailFragment.adapter
                 beginFakeDrag()
@@ -214,6 +210,11 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
                 viewModel.storeUserInterest(propertyId)
             }
         }
+    }
+
+    fun onImageClick(propertyImages: List<PropertyImage>) {
+        sharedDataViewModel.imageSources = propertyImages.map { it.imageSource }
+        mainActivity.addFragment(MultipleImagesFragment(), true)
     }
 
     fun updateShortlistIcon(isShortlisted: Boolean) {

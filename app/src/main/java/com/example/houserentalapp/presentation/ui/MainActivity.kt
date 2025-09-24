@@ -137,8 +137,15 @@ class MainActivity : AppCompatActivity() {
         removeHistory: Boolean = false,
         containerId: Int = binding.pageFragmentContainer.id
     ) {
-        if (removeHistory)
-            supportFragmentManager.popBackStack(fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        if (removeHistory) {
+            supportFragmentManager.popBackStack(
+                fragment.simpleClassName,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            if (pushToBackStack)
+            // The above popBackStack is async.Hence, i want to exec immediately before pushing current fragment into backstack
+                supportFragmentManager.executePendingTransactions()
+        }
 
         supportFragmentManager.beginTransaction().apply {
             replace(containerId, fragment)
@@ -156,8 +163,15 @@ class MainActivity : AppCompatActivity() {
         // EXISTING FRAGMENT
         val existingFragment = supportFragmentManager.findFragmentById(containerId)
 
-        if (removeHistory)
-            supportFragmentManager.popBackStack(fragment.simpleClassName, 0)
+        if (removeHistory) {
+            supportFragmentManager.popBackStack(
+                fragment.simpleClassName,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            if (pushToBackStack)
+                // The above popBackStack is async.Hence, i want to exec immediately before pushing current fragment into backstack
+                supportFragmentManager.executePendingTransactions()
+        }
 
         supportFragmentManager.beginTransaction().apply {
             add(containerId, fragment)

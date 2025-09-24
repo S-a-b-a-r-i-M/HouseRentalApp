@@ -7,7 +7,6 @@ import android.view.View
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentListingsBinding
 import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
 class ListingsFragment : Fragment(R.layout.fragment_listings) {
@@ -35,8 +34,8 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
         with(binding) {
             myPropertiesBtn.setOnClickListener {
                 mainActivity.loadFragment(
-                    listingsFragmentContainer.id,
-                    MyPropertyFragment()
+                    MyPropertyFragment(),
+                    containerId = listingsFragmentContainer.id,
                 )
             }
 
@@ -46,8 +45,8 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
 
             leadsBtn.setOnClickListener {
                 mainActivity.loadFragment(
-                    listingsFragmentContainer.id,
-                    LeadsFragment()
+                    LeadsFragment(),
+                    containerId = listingsFragmentContainer.id,
                 )
             }
 

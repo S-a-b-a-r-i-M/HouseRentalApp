@@ -22,9 +22,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersView
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
-import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
-import com.google.android.material.search.SearchView
 
 class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding
@@ -40,10 +38,8 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         mainActivity = context as MainActivity
     }
 
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding = FragmentFiltersBinding.bind(view)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
 
@@ -53,6 +49,11 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             logDebug("isNewSearch given as true so all the previous filters are cleared")
             filtersViewModel.resetFilters()
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentFiltersBinding.bind(view)
 
         setupUI()
         setupViewModel()
@@ -80,24 +81,31 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             }
 
             // Search View
-            updateSubmitButtonState(etSearch.text.toString().length > 2)
+            updateSubmitState(etSearch.text.toString().length > 2)
         }
     }
 
-    private fun updateSubmitButtonState(enable: Boolean) {
+    private fun updateSubmitState(enable: Boolean) {
         val button = binding.btnSubmit
         if (enable == button.isEnabled) return
 
-        if (enable)
+        if (enable) {
+            binding.tvHelperMsg.visibility = View.GONE
             button.apply {
                 isEnabled = true
                 alpha = 1f
             }
-        else
+        }
+        else {
+            binding.tvHelperMsg.apply {
+                visibility = View.VISIBLE
+                text = context.getString(R.string.minimum_3_characteres_required_to_search)
+            }
             button.apply {
                 isEnabled = false
                 alpha = 0.7f
             }
+        }
     }
 
     private fun setupViewModel() {
@@ -110,14 +118,23 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
         navigateToPropertiesListFragment()
     }
 
-    private fun navigateToPropertiesListFragment(searchQuery: String? = null) {
+    private fun navigateToPropertiesListFragment() {
         val destination = PropertiesListFragment()
         destination.arguments = Bundle().apply {
             putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
-            if (searchQuery != null) putString("searchQuery", searchQuery)
         }
 
-        mainActivity.loadFragment(destination)
+        mainActivity.loadFragment(
+            destination,
+            true,
+            true
+        )
+    }
+
+    private fun applySearchQuery() {
+        val searchQuery = binding.etSearch.text.toString()
+        if (searchQuery.isNotEmpty())
+            filtersViewModel.setSearchQuery(searchQuery)
     }
 
     private fun setupListeners() {
@@ -125,8 +142,8 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             // Setup SearchView text changes
             etSearch.doOnTextChanged { text, start, before, count ->
                 val query = text?.toString() ?: ""
-                filtersViewModel.setSearchQuery(query)
-                updateSubmitButtonState(query.length > 2)
+                // filtersViewModel.setSearchQuery(query)
+                updateSubmitState(query.length > 2)
                 // filter search histories
                 // search locations
             }
@@ -134,8 +151,10 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             // Listens Search Icon Click in Keyboard
             etSearch.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    if (btnSubmit.isEnabled)
+                    if (btnSubmit.isEnabled) {
+                        applySearchQuery()
                         navigateToPropertiesListFragment()
+                    }
                     true
                 }
                 else
@@ -144,7 +163,10 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
 
             backImgBtn.setOnClickListener { parentFragmentManager.popBackStack() }
 
-            btnSubmit.setOnClickListener { navigateToPropertiesListFragment() }
+            btnSubmit.setOnClickListener {
+                applySearchQuery()
+                navigateToPropertiesListFragment()
+            }
         }
     }
 

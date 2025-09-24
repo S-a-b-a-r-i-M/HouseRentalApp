@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -88,11 +89,26 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
 
     }
 
+    private fun onLeadsDataLoaded(leads: List<Lead>) {
+        leadsAdapter.setLeads(leads)
+        // PlaceHolder
+        val noDataPlaceHolderView = binding.noDataPlaceHolderView.root
+        if (leadsAdapter.itemCount == 0) {
+            noDataPlaceHolderView.visibility = View.VISIBLE
+            noDataPlaceHolderView.findViewById<TextView>(R.id.tvNoDataMsg)?.let { textView ->
+                textView.text = getString(R.string.no_leads_found)
+            }
+        }
+        else {
+            noDataPlaceHolderView.visibility = View.GONE
+        }
+    }
+
     private fun setupObservers() {
         leadsViewModel.leadsResult.observe(viewLifecycleOwner) { resultUI ->
             when(resultUI) {
                 is ResultUI.Success<List<Lead>> -> {
-                    leadsAdapter.setLeads(resultUI.data)
+                    onLeadsDataLoaded(resultUI.data)
                 }
                 ResultUI.Loading -> {
 

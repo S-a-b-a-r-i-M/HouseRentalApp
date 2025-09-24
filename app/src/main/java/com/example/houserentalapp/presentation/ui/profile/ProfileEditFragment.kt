@@ -18,6 +18,7 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserField
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
@@ -152,6 +153,12 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
                         mainActivity.showToast(errorMsg)
                     }
                 )
+            }
+
+            imgUserProfile.setOnClickListener {
+                profileEditViewModel.editableUser.value!!.profileImageSource?.let {
+                    requireContext().showImageDialog(it)
+                }
             }
         }
     }

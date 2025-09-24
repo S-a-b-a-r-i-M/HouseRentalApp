@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
-import androidx.core.net.toUri
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
@@ -24,6 +24,7 @@ import com.example.houserentalapp.presentation.utils.extensions.openMail
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import kotlin.getValue
 
 
@@ -42,9 +43,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentProfileBinding.bind(view)
-        // Take Current User
-        // TODO: Why not get this data from mainactivity
-        currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
         setupViewModel()
@@ -68,7 +66,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class]
     }
 
-    private fun onLogoutUserClicked() {
+    private fun logout() {
         viewModel.logOutCurrentUser(currentUser.id) {
             val intent = Intent(mainActivity, AuthActivity::class.java)
             startActivity(intent)
@@ -77,12 +75,24 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
     }
 
+    private fun onLogoutClicked() {
+        AlertDialog.Builder(mainActivity)
+            .setIcon(R.drawable.baseline_logout_24)
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Logout") { _, _ ->
+                logout()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
     private fun setupListeners() {
         with(binding) {
             toolbar.setOnMenuItemClickListener { item ->
                 if (item.itemId == R.id.tbar_logout) {
                     logInfo("Logout User")
-                    onLogoutUserClicked()
+                    onLogoutClicked()
                     return@setOnMenuItemClickListener true
                 }
 
@@ -93,24 +103,15 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 mainActivity.addFragment(ProfileEditFragment(), true)
             }
 
+            imgUserProfile.setOnClickListener {
+                currentUser.profileImageSource?.let {
+                    requireContext().showImageDialog(it)
+                }
+            }
+
             ibtnDialAdmin.setOnClickListener { mainActivity.openDialer(tvAdminPhone.text.toString()) }
             ibtnEmailAdmin.setOnClickListener { mainActivity.openMail(tvAdminEmail.text.toString()) }
         }
-    }
-
-    private fun openDialer(phone: String) {
-        val intent = Intent(Intent.ACTION_DIAL).apply {
-            data = "tel:$phone".toUri()
-        }
-        startActivity(intent)
-    }
-
-    private fun openEmail(email: String) {
-        val intent = Intent(Intent.ACTION_SENDTO).apply {
-            data = "mailto:".toUri()  // ensures only email apps respond
-            putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
-        }
-        startActivity(intent)
     }
 
     private fun bindUserData(user: User) {
@@ -118,18 +119,27 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             tvWelcome.text = System.currentTimeMillis().getTimePeriod() + " ${user.name}"
             tvUserEmail.text = user.email ?: "No Email"
             tvUserPhone.text = user.phone
-            if (user.profileImageSource != null)
+            if (user.profileImageSource != null) {
+                imgUserProfile.isClickable = true
+                imgUserProfile.isEnabled = true
                 loadImageSourceToImageView(user.profileImageSource, imgUserProfile)
-            else
+            }
+            else {
                 imgUserProfile.setImageDrawable(
                     mainActivity.getDrawable(R.drawable.bottom_nav_profile_icon)
                 )
+                imgUserProfile.isClickable = false
+                imgUserProfile.isEnabled = false
+            }
         }
     }
 
     private fun setupObservers() {
         sharedDataViewModel.currentUserLD.observe(mainActivity) {
-            if (it != null) bindUserData(it)
+            if (it != null) {
+                currentUser = it
+                bindUserData(it)
+            }
         }
     }
 }
