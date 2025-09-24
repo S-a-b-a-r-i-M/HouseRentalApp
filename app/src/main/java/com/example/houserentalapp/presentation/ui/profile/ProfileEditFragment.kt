@@ -15,17 +15,18 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentProfileEditBinding
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.model.enums.UserField
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModelFactory
+import com.example.houserentalapp.presentation.ui.profile.viewmodel.UserEditFormField
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.google.android.material.textfield.TextInputLayout
 
 class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
     private lateinit var binding: FragmentProfileEditBinding
@@ -74,13 +75,13 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
     private fun handleImagePrickerResult(intent: Intent) {
         intent.data?.let { uri ->
             logInfo("Image Uploaded Successfully")
-            profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, uri)
+            profileEditViewModel.updateChanges(UserEditFormField.PROFILE_IMAGE, uri)
         }
     }
 
     private fun handleCameraResult(uri: Uri) {
         logInfo("got image $uri")
-        profileEditViewModel.updateChanges(UserField.PROFILE_IMAGE, uri)
+        profileEditViewModel.updateChanges(UserEditFormField.PROFILE_IMAGE, uri)
     }
 
     private fun onCameraPermissionDenied() {
@@ -105,10 +106,6 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
     private fun setupUI() {
         // Hide Bottom Nav
         mainActivity.hideBottomNav()
-
-        with(binding) {
-            toolbar.setNavigationOnClickListener { handleOnBackNavigation() }
-        }
     }
 
     private fun setupViewModel() {
@@ -130,13 +127,14 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
 
     private fun setupListeners() {
         with(binding) {
+            toolbar.setNavigationOnClickListener { handleOnBackNavigation() }
+
             listOf(
-                Pair(etName, UserField.NAME),
-                Pair(etPhone, UserField.PHONE),
-                Pair(etEmail, UserField.EMAIL),
+                Pair(etName, UserEditFormField.NAME),
+                Pair(etEmail, UserEditFormField.EMAIL),
             ).forEach { (et, field) ->
                 et.addTextChangedListener {
-                    profileEditViewModel.updateChanges(field, et.text.toString())
+                    profileEditViewModel.updateChanges(field, et.text.toString().trim())
                 }
             }
 
@@ -163,23 +161,55 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
         }
     }
 
-    private fun setupObservers() {
-        profileEditViewModel.isFormDirty.observe(viewLifecycleOwner) { isFormDirty ->
-            if (isFormDirty) // Only enable if form values changes
-                binding.btnSave.apply {
-                    isClickable = true
-                    alpha = 1f
-                }
-            else
-                binding.btnSave.apply {
-                    isClickable = false
-                    alpha = 0.2f
-                }
+    private fun requestFocus() {
+        profileEditViewModel.getFieldError(UserEditFormField.NAME).value?.let {
+            binding.etName.requestFocus()
+            binding.scrollView.smoothScrollTo(0, binding.etName.top)
+            return
         }
 
-        profileEditViewModel.editableUser.observe(viewLifecycleOwner) {
-            if(it.profileImageSource != null)
-                loadImageSourceToImageView(it.profileImageSource, binding.imgUserProfile)
+        profileEditViewModel.getFieldError(UserEditFormField.EMAIL).value?.let {
+            binding.etEmail.requestFocus()
+            binding.scrollView.smoothScrollTo(0, binding.etEmail.top)
+            return
+        }
+    }
+
+    private fun observeValidationError(field: UserEditFormField, inputLayout: TextInputLayout) {
+        profileEditViewModel.getFieldError(field).observe(viewLifecycleOwner) {
+            inputLayout.error = it
+        }
+    }
+
+    private fun setupObservers() {
+        with(profileEditViewModel) {
+            isFormDirty.observe(viewLifecycleOwner) { isFormDirty ->
+                if (isFormDirty) // Only enable if form values changes
+                    binding.btnSave.apply {
+                        isClickable = true
+                        alpha = 1f
+                    }
+                else
+                    binding.btnSave.apply {
+                        isClickable = false
+                        alpha = 0.2f
+                    }
+            }
+
+            editableUser.observe(viewLifecycleOwner) {
+                if (it.profileImageSource != null)
+                    loadImageSourceToImageView(it.profileImageSource, binding.imgUserProfile)
+            }
+
+            observeValidationError(UserEditFormField.NAME, binding.tilName)
+            observeValidationError(UserEditFormField.EMAIL, binding.tilEmail)
+
+            validationError.observe(viewLifecycleOwner) {
+                if (it != null) {
+                    requestFocus()
+                    clearValidationError()
+                }
+            }
         }
     }
 

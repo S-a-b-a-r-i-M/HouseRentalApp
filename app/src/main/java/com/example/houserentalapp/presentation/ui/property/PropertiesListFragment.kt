@@ -8,10 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
@@ -35,7 +33,7 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 /* TODO
@@ -51,7 +49,6 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
-    private var isScrolling = false
     private var hideBottomNav = false
     private var onlyShortlisted = false
     private var hideToolBar = false
@@ -105,47 +102,14 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         outState.putBoolean(HIDE_BOTTOM_NAV_KEY, hideBottomNav)
     }
 
-    private val scrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            super.onScrolled(recyclerView, dx, dy)
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            super.onScrollStateChanged(recyclerView, newState)
-
-            val layoutManger = recyclerView.layoutManager as LinearLayoutManager
-
-            if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                isScrolling = true
-                return // No need to fetch new items while scrolling
-            }
-            else if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                isScrolling = false
-                if (!propertiesViewModel.hasMore) return
-
-                val lastVisibleItemPosition =
-                    layoutManger.findLastCompletelyVisibleItemPosition() // index
-                val totalItemCount = recyclerView.adapter?.itemCount ?: run {
-                    logWarning("totalItemCount is not accessible")
-                    return
-                }
-                val shouldLoadMore = (lastVisibleItemPosition + 1) >= totalItemCount
-                if (shouldLoadMore) {
-                    logInfo("<----------- from onScroll State changed ---------->")
-                    loadProperties()
-                }
-            }
-        }
-    }
-
     fun setupUI() {
-        if (hideBottomNav)
+        if (hideBottomNav) {
+            // Add paddingBottom to avoid system bar overlay
+            setSystemBarBottomPadding(binding.root)
             mainActivity.hideBottomNav()
+        }
         else
             mainActivity.showBottomNav()
-
-        // Add paddingBottom to avoid system bar overlay
-        setSystemBarBottomPadding(binding.root)
 
         with(binding) {
           // RecyclerView
@@ -155,6 +119,10 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             rvProperty.apply {
                 layoutManager = LinearLayoutManager(mainActivity)
                 adapter = propertiesAdapter
+                val scrollListener = getScrollListener(
+                    { propertiesViewModel.hasMore },
+                    ::loadProperties
+                )
                 addOnScrollListener(scrollListener)
             }
 
@@ -241,9 +209,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         }
     }
 
-    private fun onDataObserved(propertySummaryUI: List<PropertySummaryUI>) {
-        propertiesAdapter.setDataList(propertySummaryUI)
-
+    private fun shouldShowNoDataPlaceHolder() {
         // Placeholder
         val noDataPlaceHolderView = binding.noDataPlaceHolderView.root
         if (propertiesAdapter.itemCount == 0) {
@@ -262,13 +228,17 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             when(result) {
                 is ResultUI.Success<List<PropertySummaryUI>> -> {
                     logInfo("success")
-                    onDataObserved(result.data)
-                    updateFiltersBadgeCount()
                     hideProgressBar()
+                    propertiesAdapter.setDataList(
+                        result.data,
+                        propertiesViewModel.hasMore
+                    )
+                    shouldShowNoDataPlaceHolder()
+                    updateFiltersBadgeCount()
                 }
                 is ResultUI.Error -> {
                     hideProgressBar()
-                    logError("error occured")
+                    logError("error occurred")
                 }
                 ResultUI.Loading -> {
                     showProgressBar()
@@ -291,12 +261,14 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     fun showProgressBar() {
-        isScrolling
-        binding.progressBar.visibility = View.VISIBLE
+        binding.noDataPlaceHolderView.root.visibility = View.GONE // While Loading remove place holder
+        propertiesAdapter.isLoading = true
+        // binding.progressBar.visibility = View.VISIBLE <-- Global Progress Bar
     }
 
     fun hideProgressBar() {
-        binding.progressBar.visibility = View.GONE
+        propertiesAdapter.isLoading = false
+        // binding.progressBar.visibility = View.GONE <-- Global Progress Bar
     }
 
     companion object {
