@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.model.User
@@ -23,6 +22,8 @@ import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.utils.extensions.addFragment
+import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         override fun handleOnBackPressed() {
             println("handleOnBackPressed ----> ")
             remove() // Remove on first click
-            loadFragment(HomeFragment()) // Move to Home
+            loadFragmentInternal(HomeFragment()) // Move to Home
             showToast("Press again to exit...")
         }
     }
@@ -78,7 +79,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
 
         setBottomNavigation()
         if (savedInstanceState == null)
-            loadFragment(HomeFragment())
+            loadFragmentInternal(HomeFragment())
     }
 
     private fun setWindowInsets() {
@@ -95,7 +96,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.bnav_home -> {
-                    loadFragment(HomeFragment())
+                    loadFragmentInternal(HomeFragment())
                 }
                 R.id.bnav_shortlists -> {
                     val destination = PropertiesListFragment()
@@ -103,13 +104,13 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                         putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
                         putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
                     }
-                    loadFragment(destination)
+                    loadFragmentInternal(destination)
                 }
                 R.id.bnav_listings -> {
-                    loadFragment(ListingsFragment())
+                    loadFragmentInternal(ListingsFragment())
                 }
                 R.id.bnav_profile -> {
-                    loadFragment(ProfileFragment())
+                    loadFragmentInternal(ProfileFragment())
                 }
             }
 
@@ -129,51 +130,18 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         binding.bottomNavigationContainer.visibility = View.GONE
     }
 
-    fun loadFragment(
+    fun loadFragmentInternal(
         fragment: Fragment,
         pushToBackStack: Boolean = false,
         removeHistory: Boolean = false,
         containerId: Int = binding.pageFragmentContainer.id
     ) {
-        if (removeHistory) {
-            supportFragmentManager.popBackStack(
-                fragment.simpleClassName,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-            if (pushToBackStack)
-            // The above popBackStack is async.Hence, i want to exec immediately before pushing current fragment into backstack
-                supportFragmentManager.executePendingTransactions()
-        }
-
-        supportFragmentManager.beginTransaction().apply {
-            replace(containerId, fragment)
-            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // adding the current fragment/activity into the backstack
-            commit()
-        }
-    }
-
-    fun addFragment(
-        fragment: Fragment,
-        pushToBackStack: Boolean = false,
-        removeHistory: Boolean = false,
-        containerId: Int = binding.pageFragmentContainer.id
-    ) {
-        // EXISTING FRAGMENT
-        val existingFragment = supportFragmentManager.findFragmentById(containerId)
-
-        if (removeHistory) {
-            supportFragmentManager.popBackStack(
-                fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
-            if (pushToBackStack)
-                supportFragmentManager.executePendingTransactions()
-        }
-
-        supportFragmentManager.beginTransaction().apply {
-            add(containerId, fragment)
-            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // adding the current fragment/activity into the backstack
-            commit()
-        }
+        loadFragment(
+            fragment,
+            containerId,
+            pushToBackStack,
+            removeHistory
+        )
     }
 
     override fun navigateTo(destination: NavigationDestination) {
@@ -185,7 +153,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                 val fragment = destination.fragmentClass.newInstance().apply { // TODO-DOOUT: getDeclaredConstructor()
                     arguments = destination.args
                 }
-                loadFragment(
+                loadFragmentInternal(
                     fragment,
                     destination.pushToBackStack,
                     destination.removeExistingHistory,
@@ -200,8 +168,9 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                 }
                 addFragment(
                     fragment,
+                    binding.pageFragmentContainer.id,
                     destination.pushToBackStack,
-                    destination.removeExistingHistory
+                    destination.removeExistingHistory,
                 )
             }
         }
