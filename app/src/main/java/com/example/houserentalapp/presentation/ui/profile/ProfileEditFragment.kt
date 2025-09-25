@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -17,7 +18,9 @@ import com.example.houserentalapp.databinding.FragmentProfileEditBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.components.showImageDialog
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModelFactory
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.UserEditFormField
@@ -28,18 +31,19 @@ import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.google.android.material.textfield.TextInputLayout
 
-class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
+class ProfileEditFragment : BaseFragment(R.layout.fragment_profile_edit) {
     private lateinit var binding: FragmentProfileEditBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var imageHelper: ImageUploadHelper
 
+    private val _context: Context get() = requireContext()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var profileEditViewModel: ProfileEditViewModel
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +67,7 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
     }
 
     private fun addBackPressCallBack() {
-        mainActivity.onBackPressedDispatcher.addCallback(
+        (_context as AppCompatActivity).onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object: OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -86,12 +90,12 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
 
     private fun onCameraPermissionDenied() {
         logInfo("User denied the camera permission")
-        mainActivity.showToast("Please provide camera permission to take pictures")
+        _context.showToast("Please provide camera permission to take pictures")
     }
 
     private fun handleOnBackNavigation() {
         if (profileEditViewModel.isFormDirty.value == true)
-            AlertDialog.Builder(mainActivity)
+            AlertDialog.Builder(_context)
                 .setTitle("Discard Changes")
                 .setMessage("Are you sure you want to discard the changes ?")
                 .setPositiveButton("Discard") { _, _ ->
@@ -105,12 +109,11 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
 
     private fun setupUI() {
         // Hide Bottom Nav
-        mainActivity.hideBottomNav()
+        bottomNavController.hideBottomNav()
     }
 
     private fun setupViewModel() {
-        val userUC = UserUseCase(UserRepoImpl(mainActivity))
-        val factory = ProfileEditViewModelFactory(currentUser, userUC)
+        val factory = ProfileEditViewModelFactory(_context.applicationContext, currentUser)
         profileEditViewModel = ViewModelProvider(this, factory)[ProfileEditViewModel::class]
 
         if (profileEditViewModel.isFormDirty.value != true) {
@@ -138,17 +141,17 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
                 }
             }
 
-            tvChangeImage.setOnClickListener { imageHelper.showAddImageOptions(mainActivity) }
+            tvChangeImage.setOnClickListener { imageHelper.showAddImageOptions(_context) }
 
             btnSave.setOnClickListener {
                 profileEditViewModel.saveUserChanges(
                     { updatedUser ->
                         sharedDataViewModel.setCurrentUser(updatedUser) // Update Modified User Into SharedViewModel
-                        mainActivity.showToast("Changes saved successfully")
+                        _context.showToast("Changes saved successfully")
                         parentFragmentManager.popBackStack()
                     },
                     { errorMsg ->
-                        mainActivity.showToast(errorMsg)
+                        _context.showToast(errorMsg)
                     }
                 )
             }
@@ -215,6 +218,6 @@ class ProfileEditFragment : Fragment(R.layout.fragment_profile_edit) {
 
     override fun onDetach() {
         super.onDetach()
-        mainActivity.showBottomNav()
+        bottomNavController.showBottomNav()
     }
 }

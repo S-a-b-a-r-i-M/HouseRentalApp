@@ -14,6 +14,8 @@ class SharedDataViewModel : ViewModel() {
         private set
     private val _currentUserLD = MutableLiveData<User>()
     val currentUserLD: LiveData<User> = _currentUserLD
+    private val _logOutUser = MutableLiveData(false)
+    val logOutUser: LiveData<Boolean> = _logOutUser
 
     var currentLead: Lead? = null
 
@@ -21,6 +23,10 @@ class SharedDataViewModel : ViewModel() {
         logDebug("CurrentUser is set: $user")
         currentUserData = user
         _currentUserLD.value = user
+    }
+
+    fun logOutUser() {
+        _logOutUser.value = true
     }
 
     private var currentFilter: PropertyFilters? = null

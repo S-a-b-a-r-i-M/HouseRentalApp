@@ -1,0 +1,20 @@
+package com.example.houserentalapp.presentation.ui.base
+
+import android.content.Context
+import androidx.fragment.app.Fragment
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationHandler
+
+
+abstract class BaseFragment(layoutId: Int) : Fragment(layoutId) {
+    private lateinit var navigationHandler: FragmentNavigationHandler
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        navigationHandler = context as FragmentNavigationHandler
+    }
+
+    fun navigateTo(destination: NavigationDestination) {
+        navigationHandler.navigateTo(destination)
+    }
+}

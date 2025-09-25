@@ -2,7 +2,6 @@ package com.example.houserentalapp.presentation.ui.home
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -13,31 +12,33 @@ import com.example.houserentalapp.databinding.FragmentHomeBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPropertyStats
-import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
-import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModelFactory
 import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModel
 import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModelFactory
 import com.example.houserentalapp.presentation.ui.home.adapter.RecentSearchHistoryAdapter
-import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 
-class HomeFragment : Fragment(R.layout.fragment_home) {
+class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var searchHistoryAdapter: RecentSearchHistoryAdapter
     private lateinit var currentUser: User
     // VIEW MODELS
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,7 +61,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private fun setupUI() {
         // Always show bottom nav on HomeFragment
-        mainActivity.showBottomNav()
+        bottomNavController.showBottomNav()
 
         with(binding) {
             // Recycler View
@@ -68,7 +69,7 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
             rvSearchHistory.apply {
                 adapter = searchHistoryAdapter
                 layoutManager = LinearLayoutManager(
-                    mainActivity,
+                    context,
                     RecyclerView.HORIZONTAL,
                     false
                 )
@@ -79,44 +80,34 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
     }
 
     private fun setupViewModel() {
-        val factory1 = SearchHistoryViewModelFactory(mainActivity.applicationContext)
+        val factory1 = SearchHistoryViewModelFactory(_context.applicationContext)
         searchHistoryViewModel=ViewModelProvider(this,factory1)[SearchHistoryViewModel::class]
 
-        val factory2 = HomeViewModelFactory(mainActivity.applicationContext)
+        val factory2 = HomeViewModelFactory(_context.applicationContext)
         homeViewModel = ViewModelProvider(this,factory2)[HomeViewModel::class]
     }
 
     private fun onHistoryClick(filters: PropertyFilters) {
         // SET THE SELECTED FILTER
         sharedDataViewModel.setCurrentFilters(filters)
-        // NAVIGATE
-        val destination = PropertiesListFragment()
-        destination.arguments = Bundle().apply {
-            putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
-        }
 
-        mainActivity.loadFragment(destination, true)
+        val bundle = Bundle().apply { putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true) }
+        navigateTo(NavigationDestination.PropertyList(bundle))
     }
 
     private fun setListeners() {
         with(binding) {
             searchBar.setOnClickListener {
                 // Let the search view know this is a fresh search
-                val destinationFragment = SearchViewFragment()
-                destinationFragment.arguments = Bundle().apply {
-                    putBoolean(SearchViewFragment.IS_NEW_SEARCH, true)
-                }
-
-                mainActivity.loadFragment(destinationFragment, true)
+                val bundle = Bundle().apply { putBoolean(FragmentArgKey.IS_NEW_SEARCH, true) }
+                navigateTo(NavigationDestination.SeparateSearch(bundle))
             }
 
             btnPostProperty.setOnClickListener {
-                val destinationFragment = CreatePropertyFragment()
-                destinationFragment.arguments = Bundle().apply {
-                    putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                val bundle = Bundle().apply {
+                    putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
-
-                mainActivity.loadFragment(destinationFragment, true)
+                navigateTo(NavigationDestination.CreateProperty(bundle))
             }
         }
     }

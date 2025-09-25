@@ -1,8 +1,10 @@
 package com.example.houserentalapp.presentation.ui.profile.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.domain.utils.Result
 import kotlinx.coroutines.launch
@@ -22,10 +24,12 @@ class ProfileViewModel(private val userUseCase: UserUseCase) : ViewModel() {
     }
 }
 
-class ProfileViewModelFactory(private val userUC: UserUseCase) : ViewModelProvider.Factory {
+class ProfileViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ProfileViewModel::class.java))
-            return ProfileViewModel(userUC) as T
+        if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+            val repo = UserRepoImpl(context)
+            return ProfileViewModel(UserUseCase(repo)) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

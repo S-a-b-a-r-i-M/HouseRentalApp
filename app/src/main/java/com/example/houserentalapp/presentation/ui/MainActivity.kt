@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
@@ -14,8 +15,10 @@ import androidx.fragment.app.FragmentManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.presentation.enums.NavigationOptions
+import com.example.houserentalapp.presentation.ui.auth.AuthActivity
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
+import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationHandler
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
@@ -25,21 +28,15 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
-/*  TODO:
+/* TODO:
         Existing fix:
-        2. Have to add batch count in lot of places
-        3. Create an base fragment for adding system bars width(if needed)
-        4. Handle proper validation in create form and in UI
-        5. Create property images edit
-        6. Search icon click on keyboard
-        7. Fix Fonts in every place
-        8. Improve alert dialog design
+         7. Fix Fonts in every place
+         8. Improve alert dialog design
         New:
-        1. Favourites page -> move and remove properties
-        3. My Properties Page -> edit details.
- */
+         1. Favourites page -> move and remove properties
+*/
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigationHandler {
     private lateinit var binding: ActivityMainBinding
     val sharedDataViewModel: SharedDataViewModel by viewModels()
 
@@ -69,6 +66,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
         sharedDataViewModel.setCurrentUser(currentUser)
+        observeViewModel()
 
 //        onBackPressedDispatcher.addCallback(backPressedCallback)
 
@@ -123,11 +121,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showBottomNav() {
+    override fun showBottomNav() {
         binding.bottomNavigationContainer.visibility = View.VISIBLE
     }
 
-    fun hideBottomNav() {
+    override fun hideBottomNav() {
         binding.bottomNavigationContainer.visibility = View.GONE
     }
 
@@ -149,7 +147,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.beginTransaction().apply {
             replace(containerId, fragment)
-            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // adding the current fragment/activity into the backstack
             commit()
         }
     }
@@ -165,18 +163,59 @@ class MainActivity : AppCompatActivity() {
 
         if (removeHistory) {
             supportFragmentManager.popBackStack(
-                fragment.simpleClassName,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
+                fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE
             )
             if (pushToBackStack)
-                // The above popBackStack is async.Hence, i want to exec immediately before pushing current fragment into backstack
                 supportFragmentManager.executePendingTransactions()
         }
 
         supportFragmentManager.beginTransaction().apply {
             add(containerId, fragment)
-            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // ADDING THE CURRENT FRAGMENT/ACTIVITY INTO THE BACKSTACK
+            if (pushToBackStack) addToBackStack(fragment.simpleClassName) // adding the current fragment/activity into the backstack
             commit()
+        }
+    }
+
+    override fun navigateTo(destination: NavigationDestination) {
+        when(destination) {
+            is NavigationDestination.CreateProperty,
+            is NavigationDestination.PropertyList,
+            is NavigationDestination.SeparateSearch,
+            is NavigationDestination.ProfileEdit -> {
+                val fragment = destination.fragmentClass.newInstance().apply { // TODO-DOOUT: getDeclaredConstructor()
+                    arguments = destination.args
+                }
+                loadFragment(
+                    fragment,
+                    destination.pushToBackStack,
+                    destination.removeExistingHistory,
+                )
+            }
+            is NavigationDestination.MultipleImages,
+            is NavigationDestination.InPlaceSearch,
+            is NavigationDestination.SinglePropertyDetails,
+            is NavigationDestination.EditProperty -> {
+                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance().apply {
+                    arguments = destination.args
+                }
+                addFragment(
+                    fragment,
+                    destination.pushToBackStack,
+                    destination.removeExistingHistory
+                )
+            }
+        }
+    }
+
+    private fun observeViewModel() {
+        sharedDataViewModel.logOutUser.observe(this) { shouldLogOut ->
+            if (shouldLogOut) {
+                // LOG OUT
+                val intent = Intent(this, AuthActivity::class.java)
+                startActivity(intent)
+                finish()
+                showToast("Logged out successfully.")
+            }
         }
     }
 

@@ -15,6 +15,7 @@ import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadsAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModelFactory
@@ -27,7 +28,7 @@ import kotlin.getValue
 // TODO: 1. Add lead created data at UI
 class LeadsFragment : Fragment(R.layout.fragment_leads) {
     private lateinit var binding: FragmentLeadsBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var leadsAdapter: LeadsAdapter
 
@@ -35,10 +36,11 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     private val leadBottomSheet by lazy { LeadBottomSheet() }
+    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -64,7 +66,7 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
 
             rvLeads.apply {
                 adapter = leadsAdapter
-                layoutManager = LinearLayoutManager(mainActivity)
+                layoutManager = LinearLayoutManager(_context)
                 val scrollListener = getScrollListener(
                     { leadsViewModel.hasMore },
                     { leadsViewModel.loadLeads() }
@@ -75,8 +77,7 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
     }
 
     private fun setupViewModel() {
-        val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(mainActivity))
-        val factory = LeadsViewModelFactory(userPropertyUC, currentUser)
+        val factory = LeadsViewModelFactory(_context.applicationContext, currentUser)
         leadsViewModel = ViewModelProvider(this, factory)[LeadsViewModel::class]
     }
 

@@ -4,26 +4,28 @@ import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentListingsBinding
-import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
+import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
+import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 
 class ListingsFragment : Fragment(R.layout.fragment_listings) {
     private lateinit var binding: FragmentListingsBinding
-    private lateinit var mainActivity: MainActivity
+    // Child Fragments View Models
+    private lateinit var filtersViewModel: FiltersViewModel
+    private lateinit var leadsViewModel: LeadsViewModel
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = context as MainActivity
-    }
+    private val _context: Context get() = requireContext()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentListingsBinding.bind(view)
 
         setOnClickListeners()
-
+        setupViewModel()
         // ON FRAGMENT FIRST CREATION
         logDebug("savedInstanceState ------> $savedInstanceState")
         if (savedInstanceState == null)
@@ -33,7 +35,7 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
     private fun setOnClickListeners() {
         with(binding) {
             myPropertiesBtn.setOnClickListener {
-                mainActivity.loadFragment(
+                (_context as AppCompatActivity).loadFragment(
                     MyPropertyFragment(),
                     containerId = listingsFragmentContainer.id,
                 )
@@ -44,7 +46,7 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
             }
 
             leadsBtn.setOnClickListener {
-                mainActivity.loadFragment(
+                (_context as AppCompatActivity).loadFragment(
                     LeadsFragment(),
                     containerId = listingsFragmentContainer.id,
                 )
@@ -54,5 +56,9 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
                 leadsBtn.isClickable = !isChecked
             }
         }
+    }
+
+    private fun setupViewModel() {
+
     }
 }

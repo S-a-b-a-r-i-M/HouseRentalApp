@@ -26,8 +26,11 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyUI
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
-import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
@@ -43,13 +46,14 @@ import com.example.houserentalapp.presentation.utils.extensions.setDrawable
 import com.example.houserentalapp.presentation.utils.helpers.getAmenityDrawable
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
-class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_detail) {
+class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
     private lateinit var adapter: PropertyImagesViewAdapter
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var viewModel: SinglePropertyDetailViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     private var propertyId: Long = -1L
     private var isTenantView = false
@@ -57,19 +61,19 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     // onCreate() for reading arguments.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        propertyId = arguments?.getLong(PROPERTY_ID_KEY) ?: run {
+        propertyId = arguments?.getLong(FragmentArgKey.PROPERTY_ID) ?: run {
             logError("Selected property id is not found in bundle")
             parentFragmentManager.popBackStack()
             return
         }
-        isTenantView = arguments?.getBoolean(IS_TENANT_VIEW_KEY) ?: false
-        hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV_KEY) ?: false
+        isTenantView = arguments?.getBoolean(FragmentArgKey.IS_TENANT_VIEW) ?: false
+        hideAndShowBottomNav = arguments?.getBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV) ?: false
 
         logDebug("Received arguments \n" +
                 "PROPERTY_ID_KEY: $propertyId" +
@@ -105,7 +109,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
         setSystemBarBottomPadding(binding.root)
 
         // Always hide bottom nav
-        mainActivity.hideBottomNav()
+        bottomNavController.hideBottomNav()
 
         with(binding) {
             // Image ViewPager 2
@@ -177,12 +181,11 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     }
 
     fun onEditIconClick() {
-        val destinationFragment = CreatePropertyFragment()
-        destinationFragment.arguments = Bundle().apply {
-            putLong(CreatePropertyFragment.PROPERTY_ID_KEY, propertyId)
-            putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, false)
+        val bundle = Bundle().apply {
+            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
+            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, false)
         }
-        mainActivity.loadFragment(destinationFragment, true)
+        navigateTo(NavigationDestination.CreateProperty(bundle))
     }
 
     fun setListeners() {
@@ -214,7 +217,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
 
     fun onImageClick(propertyImages: List<PropertyImage>) {
         sharedDataViewModel.imageSources = propertyImages.map { it.imageSource }
-        mainActivity.addFragment(MultipleImagesFragment(), true)
+        navigateTo(NavigationDestination.MultipleImages())
     }
 
     fun updateShortlistIcon(isShortlisted: Boolean) {
@@ -428,7 +431,7 @@ class SinglePropertyDetailFragment : Fragment(R.layout.fragment_single_property_
     override fun onDetach() {
         super.onDetach()
         if (hideAndShowBottomNav)
-            mainActivity.showBottomNav()
+            bottomNavController.showBottomNav()
     }
 
     companion object {

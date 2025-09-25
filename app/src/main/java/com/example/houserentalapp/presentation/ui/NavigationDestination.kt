@@ -1,0 +1,68 @@
+package com.example.houserentalapp.presentation.ui
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
+import com.example.houserentalapp.presentation.ui.profile.ProfileEditFragment
+import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
+import com.example.houserentalapp.presentation.ui.property.MultipleImagesFragment
+import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
+import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailFragment
+
+// ONLY CLASS KNOWS ABOUT THE FRAGMENTS
+sealed class NavigationDestination(
+    val fragmentClass: Class<out Fragment>,
+    val args: Bundle? = null,
+    val pushToBackStack: Boolean = false,
+    val removeExistingHistory: Boolean = false,
+) {
+    data class SeparateSearch(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass =SearchViewFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class InPlaceSearch(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass =SearchViewFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class PropertyList(val bundle: Bundle? = null)
+        : NavigationDestination(
+        fragmentClass = PropertiesListFragment::class.java,
+        args = bundle,
+        pushToBackStack = true,
+        removeExistingHistory = true
+    )
+
+    data class CreateProperty(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = CreatePropertyFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class EditProperty(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = CreatePropertyFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class SinglePropertyDetails(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = SinglePropertyDetailFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class MultipleImages(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = MultipleImagesFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
+    data class ProfileEdit(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = ProfileEditFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+}

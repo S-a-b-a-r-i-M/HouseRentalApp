@@ -10,7 +10,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentMyPropertyBinding
@@ -19,7 +18,11 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.MyPropertiesAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
@@ -34,18 +37,19 @@ import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import kotlin.getValue
 
-class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
+class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     private lateinit var binding: FragmentMyPropertyBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var myPropertiesAdapter: MyPropertiesAdapter
     private lateinit var myPropertiesViewModel: MyPropertiesViewModel
     private lateinit var filtersViewModel: FiltersViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,7 +76,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
                 ::onPropertyAction
             )
             rvProperty.apply {
-                layoutManager = LinearLayoutManager(mainActivity)
+                layoutManager = LinearLayoutManager(_context)
                 adapter = myPropertiesAdapter
                 val scrollListener = getScrollListener(
                     { myPropertiesViewModel.hasMore },
@@ -84,14 +88,12 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     }
 
     private fun handleOnPropertyClick(propertyId: Long) {
-        val destinationFragment = SinglePropertyDetailFragment()
-        destinationFragment.arguments = Bundle().apply {
-            putLong(SinglePropertyDetailFragment.PROPERTY_ID_KEY, propertyId)
-            putBoolean(SinglePropertyDetailFragment.IS_TENANT_VIEW_KEY, false)
-            putBoolean(SinglePropertyDetailFragment.HIDE_AND_SHOW_BOTTOM_NAV_KEY, true)
+        val bundle = Bundle().apply {
+            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
+            putBoolean(FragmentArgKey.IS_TENANT_VIEW, false)
+            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
         }
-
-        mainActivity.addFragment(destinationFragment, true)
+        navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
     }
 
     private fun updateAvailability(propertyId: Long, isActive: Boolean) {
@@ -103,10 +105,10 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
                     "Property activated successfully"
                 else
                     "Property in-activated successfully"
-                Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT).show()
+                _context.showToast(message)
             },
             {
-                Toast.makeText(mainActivity, "Retry later", Toast.LENGTH_SHORT).show()
+                _context.showToast("Retry later")
             }
         )
     }
@@ -114,27 +116,26 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
     private fun deleteProperty(propertyId: Long) {
         myPropertiesViewModel.deleteProperty(
             propertyId,
-            { mainActivity.showToast("Property deleted successfully") },
-            { mainActivity.showToast("Retry later") }
+            { _context.showToast("Property deleted successfully") },
+            { _context.showToast("Retry later") }
         )
     }
 
     private fun onPropertyAction(summary: PropertySummary, action: PropertyLandlordAction) {
         when(action) {
             PropertyLandlordAction.EDIT -> {
-                val destinationFragment = CreatePropertyFragment()
-                destinationFragment.arguments = Bundle().apply {
-                    putLong(CreatePropertyFragment.PROPERTY_ID_KEY, summary.id)
-                    putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                val bundle = Bundle().apply {
+                    putLong(FragmentArgKey.PROPERTY_ID, summary.id)
+                    putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
-                mainActivity.addFragment(destinationFragment, true)
+                navigateTo(NavigationDestination.EditProperty(bundle))
             }
             PropertyLandlordAction.CHANGE_AVAILABILITY -> {
                 val newActiveState = !summary.isActive
                 if (newActiveState)
                     updateAvailability(summary.id, true)
                 else // To make it unavailable Show confirmation dialog first
-                    AlertDialog.Builder(mainActivity)
+                    AlertDialog.Builder(_context)
                         .setTitle("Make Property Unavailable")
                         .setMessage("This property will be hidden from listings. Continue?")
                         .setPositiveButton("Yes") { dialog, which ->
@@ -145,7 +146,7 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
             }
             PropertyLandlordAction.DELETE -> {
                 // Show confirmation dialog first
-                AlertDialog.Builder(mainActivity)
+                AlertDialog.Builder(_context)
                     .setTitle("Delete Property")
                     .setMessage("This action cannot be undone. Delete this property?")
                     .setPositiveButton("Delete") { _, _ ->
@@ -177,11 +178,10 @@ class MyPropertyFragment : Fragment(R.layout.fragment_my_property) {
 
     fun setupListeners() {
         binding.fabAddProperty.setOnClickListener {
-            val destinationFragment = CreatePropertyFragment()
-            destinationFragment.arguments = Bundle().apply {
-                putBoolean(CreatePropertyFragment.HIDE_AND_SHOW_BOTTOM_NAV, true)
+            val bundle = Bundle().apply {
+                putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
             }
-            mainActivity.loadFragment(destinationFragment, true)
+            navigateTo(NavigationDestination.CreateProperty(bundle))
         }
     }
 

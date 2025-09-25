@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doOnTextChanged
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,10 +12,12 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModelFactory
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
@@ -24,18 +25,19 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
-class SearchViewFragment : Fragment(R.layout.fragment_filters) {
+class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
     private lateinit var currentUser: User
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,7 +69,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
 
     private fun setupUI() {
         // Always hide bottom nav on this Fragment
-        mainActivity.hideBottomNav()
+        bottomNavController.hideBottomNav()
 
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root)
@@ -77,7 +79,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
             searchHistoryAdapter = SearchHistoryAdapter(::onHistoryClick)
             rvSearchHistory.apply {
                 adapter = searchHistoryAdapter
-                layoutManager = LinearLayoutManager(mainActivity)
+                layoutManager = LinearLayoutManager(_context)
             }
 
             // Search View
@@ -102,7 +104,7 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     }
 
     private fun setupViewModel() {
-        val factory = SearchHistoryViewModelFactory(mainActivity.applicationContext)
+        val factory = SearchHistoryViewModelFactory(_context.applicationContext)
         searchHistoryViewModel=ViewModelProvider(this, factory)[SearchHistoryViewModel::class]
     }
 
@@ -112,16 +114,10 @@ class SearchViewFragment : Fragment(R.layout.fragment_filters) {
     }
 
     private fun navigateToPropertiesListFragment() {
-        val destination = PropertiesListFragment()
-        destination.arguments = Bundle().apply {
+        val bundle = Bundle().apply {
             putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
         }
-
-        mainActivity.loadFragment(
-            destination,
-            true,
-            removeHistory = true
-        )
+        navigateTo(NavigationDestination.PropertyList(bundle))
     }
 
     private fun applySearchQuery() {

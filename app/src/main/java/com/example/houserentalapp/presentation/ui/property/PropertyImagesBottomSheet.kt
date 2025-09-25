@@ -24,16 +24,12 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
 ) {
     private lateinit var binding: FragmentPropertyImagesBottomSheetBinding
     private lateinit var imagesAdapter: PropertyImagesEditAdapter
-    private lateinit var mainActivity: MainActivity
     private lateinit var imageUploadHelper: ImageUploadHelper
+
+    private val _context: Context get() = requireContext()
 
     private val viewModel: CreatePropertyViewModel by activityViewModels {
         createPropertyViewModelFactory()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = context as MainActivity
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,7 +78,7 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
 
     private fun onCameraPermissionDenied() {
         logInfo("User denied the camera permission")
-        mainActivity.showToast("Please provide camera permission to take pictures")
+        _context.showToast("Please provide camera permission to take pictures")
     }
 
     fun setupRecyclerView() {
@@ -100,10 +96,10 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
     }
 
     private fun showAnotherPhotoDialog() {
-        AlertDialog.Builder(mainActivity)
+        AlertDialog.Builder(_context)
             .setMessage("Take another photo ?")
             .setPositiveButton("Yes") {_, _ ->
-                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
             }
             .setNegativeButton("Done", null)
             .show()
@@ -111,11 +107,11 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
 
     private fun showAddImageOptions() {
         val options = arrayOf("Camera", "Gallery")
-        AlertDialog.Builder(mainActivity)
+        AlertDialog.Builder(_context)
             .setTitle("Add Image")
             .setItems(options) { _, which ->
                 when(which) {
-                    0 -> imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                    0 -> imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
                     1 -> imageUploadHelper.openImagePicker()
                 }
             }

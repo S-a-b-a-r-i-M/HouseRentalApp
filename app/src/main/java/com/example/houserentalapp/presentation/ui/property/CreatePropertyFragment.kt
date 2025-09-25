@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
@@ -30,7 +31,10 @@ import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.model.PropertyDataUI
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.auth.AuthActivity
 import com.example.houserentalapp.presentation.ui.common.CounterView
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
@@ -59,8 +63,9 @@ import kotlin.collections.component2
 import kotlin.getValue
 
 class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
+    private val _context: Context get() = requireContext()
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var binding: FragmentCreatePropertyBinding
-    private lateinit var mainActivity: MainActivity
     private lateinit var currentUser: User
     private lateinit var imageUploadHelper: ImageUploadHelper
 
@@ -81,14 +86,14 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        propertyIdToEdit = arguments?.getLong(PROPERTY_ID_KEY)
+        propertyIdToEdit = arguments?.getLong(FragmentArgKey.PROPERTY_ID)
         if (propertyIdToEdit == 0L)  propertyIdToEdit = null
-        hideAndShowBottomNav = arguments?.getBoolean(HIDE_AND_SHOW_BOTTOM_NAV)
+        hideAndShowBottomNav = arguments?.getBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV)
             ?: hideAndShowBottomNav
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
@@ -155,11 +160,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun onCameraPermissionDenied() {
         logInfo("User denied the camera permission")
-        mainActivity.showToast("Please provide camera permission to take pictures")
+        _context.showToast("Please provide camera permission to take pictures")
     }
 
     private fun addBackPressCallBack() {
-        mainActivity.onBackPressedDispatcher.addCallback(
+        (_context as AppCompatActivity).onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
             object: OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
@@ -171,7 +176,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun handleOnBackNavigation() {
 
         if (viewModel.isFormDirty())
-            AlertDialog.Builder(mainActivity)
+            AlertDialog.Builder(_context)
                 .setTitle("Discard Changes")
                 .setMessage("Are you sure you want to discard the changes ?")
                 .setPositiveButton("Discard") { _, _ ->
@@ -189,7 +194,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     private fun setupUI() {
         // Always hide bottom nav
         if (hideAndShowBottomNav)
-            mainActivity.hideBottomNav()
+            bottomNavController.hideBottomNav()
 
         // Add paddingBottom to avoid system bar overlay
         setSystemBarBottomPadding(binding.root) // TODO-FIX:
@@ -301,19 +306,19 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             formTextInputFieldInfoList.forEach {
                 if (it.field.isRequired)
                     it.inputLayout.hint = getRequiredStyleLabel(
-                        it.inputLayout.hint.toString(), mainActivity
+                        it.inputLayout.hint.toString(), _context
                     )
             }
 
             formSingleSelectChipGroupsInfo.forEach {
                 if (it.field.isRequired)
                     it.label.text = getRequiredStyleLabel(
-                        it.label.text.toString(), mainActivity
+                        it.label.text.toString(), _context
                     )
             }
 
             tvTenantType.text = getRequiredStyleLabel(
-                tvTenantType.text.toString(), mainActivity
+                tvTenantType.text.toString(), _context
             )
         }
     }
@@ -533,13 +538,13 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                             "Property posted successfully"
                         else
                             "Property updated successfully"
-                        mainActivity.showToast(message)
+                        _context.showToast(message)
                         parentFragmentManager.popBackStack()
                     }
                     is ResultUI.Error -> {
                         hideProgressBar()
                         showError("Unexpected Error occurred, try later.")
-                        mainActivity.showToast("Unexpected Error❌ occurred, please try later.")
+                        _context.showToast("Unexpected Error❌ occurred, please try later.")
                     }
                     ResultUI.Loading -> {
                         hideError()
@@ -675,10 +680,10 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     }
 
     private fun showAnotherPhotoDialog() {
-        AlertDialog.Builder(mainActivity)
+        AlertDialog.Builder(_context)
             .setMessage("Take another photo ?")
             .setPositiveButton("Yes") {_, _ ->
-                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
             }
             .setNegativeButton("Done", null)
             .show()
@@ -686,11 +691,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     private fun showAddImageOptions() {
         val options = arrayOf("Camera", "Gallery")
-        AlertDialog.Builder(mainActivity)
+        AlertDialog.Builder(_context)
             .setTitle("Add Image")
             .setItems(options) { _, which ->
                 when(which) {
-                    0 -> imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                    0 -> imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
                     1 -> imageUploadHelper.openImagePicker()
                 }
             }
@@ -725,10 +730,10 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
             imgUploadImages.setOnClickListener { imageUploadHelper.openImagePicker() }
             btnUploadImages.setOnClickListener { imageUploadHelper.openImagePicker() }
             imgTakeImages.setOnClickListener {
-                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
             }
             btnTakeImages.setOnClickListener {
-                imageUploadHelper.checkCameraPermissionAndOpenCamera(mainActivity)
+                imageUploadHelper.checkCameraPermissionAndOpenCamera(_context)
             }
             ibtnAddMoreImages.setOnClickListener {
                 showAddImageOptions()
@@ -741,7 +746,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                     viewModel.createProperty(currentUser.id)
                 else {
                     if (!viewModel.isFormDirty()) {
-                        mainActivity.showToast("No changes are made to perform update.")
+                        _context.showToast("No changes are made to perform update.")
                         return@setOnClickListener
                     }
 
@@ -845,7 +850,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
     override fun onDetach() {
         super.onDetach()
         if (hideAndShowBottomNav)
-            mainActivity.showBottomNav()
+            bottomNavController.showBottomNav()
     }
 
     private data class TextInputFieldInfo (
@@ -859,9 +864,4 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         val label: TextView,
         val chipGroup: ChipGroup,
     )
-
-    companion object {
-        const val PROPERTY_ID_KEY = "propertyId"
-        const val HIDE_AND_SHOW_BOTTOM_NAV = "hideAndShow"
-    }
 }

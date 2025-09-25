@@ -1,10 +1,14 @@
 package com.example.houserentalapp.presentation.ui.property.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.PropertyRepoImpl
+import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
@@ -133,20 +137,23 @@ class PropertiesListViewModel(
 }
 
 class PropertiesListViewModelFactory(
-    private val propertyUC: PropertyUseCase,
-    private val propertyUserActionUC: UserPropertyUseCase,
-    private val searchHistoryUC: SearchHistoryUseCase,
+    private val context: Context,
     private val currentUser: User
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(PropertiesListViewModel::class.java))
+        if (modelClass.isAssignableFrom(PropertiesListViewModel::class.java)) {
+            val propertyUC = PropertyUseCase(PropertyRepoImpl(context))
+            val propertyUserActionUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
+            val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(context))
+
             return PropertiesListViewModel(
                 propertyUC,
                 propertyUserActionUC,
                 searchHistoryUC,
                 currentUser
             ) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

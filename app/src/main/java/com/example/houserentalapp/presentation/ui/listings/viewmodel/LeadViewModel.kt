@@ -1,10 +1,12 @@
 package com.example.houserentalapp.presentation.ui.listings.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
@@ -100,12 +102,14 @@ class LeadViewModel(
 }
 
 class LeadViewModelFactory(
-    private val userPropertyUC: UserPropertyUseCase,
+    private val context: Context,
     private val lead: Lead
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LeadViewModel::class.java))
+        if (modelClass.isAssignableFrom(LeadViewModel::class.java)) {
+            val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
             return LeadViewModel(lead, userPropertyUC) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

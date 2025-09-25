@@ -1,11 +1,13 @@
 package com.example.houserentalapp.presentation.ui.profile.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.UserField
@@ -134,12 +136,14 @@ class ProfileEditViewModel(
 }
 
 class ProfileEditViewModelFactory(
-    private val currentUser: User,
-    private val userUC: UserUseCase
+    private val context: Context,
+    private val currentUser: User
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(ProfileEditViewModel::class.java))
+        if (modelClass.isAssignableFrom(ProfileEditViewModel::class.java)) {
+            val userUC = UserUseCase(UserRepoImpl(context))
             return ProfileEditViewModel(currentUser, userUC) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

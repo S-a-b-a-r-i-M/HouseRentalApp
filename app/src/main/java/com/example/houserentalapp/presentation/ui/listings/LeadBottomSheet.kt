@@ -28,17 +28,12 @@ import kotlin.getValue
 class LeadBottomSheet
     : BottomSheetDialogFragment(R.layout.fragment_lead_bottom_sheet) {
     private lateinit var binding: FragmentLeadBottomSheetBinding
-    private lateinit var mainActivity: MainActivity
     private lateinit var currentUser: User
     private lateinit var leadInterestedPropertiesAdapter: LeadInterestedPropertiesAdapter
     private lateinit var leadViewModel: LeadViewModel
+    private val _context: Context get() = requireContext()
 
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        mainActivity = context as MainActivity
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -57,7 +52,7 @@ class LeadBottomSheet
             // Recycler View
             leadInterestedPropertiesAdapter = LeadInterestedPropertiesAdapter()
             rvLeadInterestedProperties.apply {
-                layoutManager = LinearLayoutManager(mainActivity)
+                layoutManager = LinearLayoutManager(_context)
                 adapter = leadInterestedPropertiesAdapter
             }
         }
@@ -77,15 +72,13 @@ class LeadBottomSheet
 
     private fun setupViewModel() {
         val lead = sharedDataViewModel.currentLead ?: run {
-            mainActivity.showToast("Lead data not found...")
+            _context.showToast("Lead data not found...")
             logError("currentLead data received as null from sharedDataViewModel")
             dismiss() // Close the sheet
             return
         }
 
-        val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(mainActivity))
-        // leadViewModel = LeadViewModel(lead,userPropertyUC) TODO-DOUBT
-        val factory = LeadViewModelFactory(userPropertyUC, lead)
+        val factory = LeadViewModelFactory(_context.applicationContext, lead)
         leadViewModel = ViewModelProvider(this, factory)[LeadViewModel::class]
     }
 
@@ -103,7 +96,7 @@ class LeadBottomSheet
                 "Note updated successfully."
             else
                 "Note update failed."
-            mainActivity.showToast(msg)
+            _context.showToast(msg)
         }
     }
 
@@ -111,7 +104,7 @@ class LeadBottomSheet
         val menuOptions = LeadStatus.entries.map {
             MenuOption(id = it.ordinal, title = it.readable)
         }
-        val popupMenu = CustomPopupMenu(mainActivity, view)
+        val popupMenu = CustomPopupMenu(_context, view)
         popupMenu.setOnItemClickListener { option ->
             handleMenuClick(option)
         }
@@ -125,7 +118,7 @@ class LeadBottomSheet
                 "Status updated successfully."
             else
                 "Status update failed."
-            mainActivity.showToast(msg)
+            _context.showToast(msg)
         }
     }
 

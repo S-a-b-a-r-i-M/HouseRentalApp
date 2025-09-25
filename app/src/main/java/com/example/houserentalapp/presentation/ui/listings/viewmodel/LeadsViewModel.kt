@@ -1,9 +1,11 @@
 package com.example.houserentalapp.presentation.ui.listings.viewmodel
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.User
@@ -58,13 +60,15 @@ class LeadsViewModel(
 }
 
 class LeadsViewModelFactory(
-    private val userPropertyUC: UserPropertyUseCase,
+    private val context: Context,
     private val currentUser: User
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(LeadsViewModel::class.java))
+        if (modelClass.isAssignableFrom(LeadsViewModel::class.java)) {
+            val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
             return LeadsViewModel(userPropertyUC, currentUser) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -1,43 +1,40 @@
 package com.example.houserentalapp.presentation.ui.profile
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentProfileBinding
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.UserUseCase
-import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.ui.auth.AuthActivity
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.openDialer
 import com.example.houserentalapp.presentation.utils.extensions.openMail
-import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.example.houserentalapp.presentation.ui.components.showImageDialog
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import kotlin.getValue
 
 
-class ProfileFragment : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private lateinit var binding: FragmentProfileBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var viewModel: ProfileViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -52,7 +49,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun setupUI() {
         // Show Bottom Nav
-        mainActivity.showBottomNav()
+        bottomNavController.showBottomNav()
 
         with(binding) {
             tvAdminEmail.text = getString(R.string.admin_gmail_com)
@@ -61,22 +58,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setupViewModel() {
-        val repo = UserRepoImpl(mainActivity)
-        val factory = ProfileViewModelFactory(UserUseCase(repo))
+        val factory = ProfileViewModelFactory(_context.applicationContext)
         viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class]
     }
 
     private fun logout() {
-        viewModel.logOutCurrentUser(currentUser.id) {
-            val intent = Intent(mainActivity, AuthActivity::class.java)
-            startActivity(intent)
-            mainActivity.finish()
-            mainActivity.showToast("Logged out successfully.")
-        }
+        viewModel.logOutCurrentUser(currentUser.id) { sharedDataViewModel.logOutUser() }
     }
 
     private fun onLogoutClicked() {
-        AlertDialog.Builder(mainActivity)
+        AlertDialog.Builder(_context)
             .setIcon(R.drawable.baseline_logout_24)
             .setTitle("Logout")
             .setMessage("Are you sure you want to logout?")
@@ -100,7 +91,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             }
 
             tvEditProfile.setOnClickListener {
-                mainActivity.addFragment(ProfileEditFragment(), true)
+                navigateTo(NavigationDestination.ProfileEdit())
             }
 
             imgUserProfile.setOnClickListener {
@@ -109,8 +100,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 }
             }
 
-            ibtnDialAdmin.setOnClickListener { mainActivity.openDialer(tvAdminPhone.text.toString()) }
-            ibtnEmailAdmin.setOnClickListener { mainActivity.openMail(tvAdminEmail.text.toString()) }
+            ibtnDialAdmin.setOnClickListener { _context.openDialer(tvAdminPhone.text.toString()) }
+            ibtnEmailAdmin.setOnClickListener { _context.openMail(tvAdminEmail.text.toString()) }
         }
     }
 
@@ -125,9 +116,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 loadImageSourceToImageView(user.profileImageSource, imgUserProfile)
             }
             else {
-                imgUserProfile.setImageDrawable(
-                    mainActivity.getDrawable(R.drawable.bottom_nav_profile_icon)
-                )
+                imgUserProfile.setImageResource(R.drawable.bottom_nav_profile_icon)
                 imgUserProfile.isClickable = false
                 imgUserProfile.isEnabled = false
             }
@@ -135,7 +124,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     private fun setupObservers() {
-        sharedDataViewModel.currentUserLD.observe(mainActivity) {
+        sharedDataViewModel.currentUserLD.observe(viewLifecycleOwner) {
             if (it != null) {
                 currentUser = it
                 bindUserData(it)

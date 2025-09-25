@@ -6,24 +6,19 @@ import android.text.TextUtils
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.PropertyRepoImpl
-import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
-import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentPropertiesListBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.getAddedFiltersCount
-import com.example.houserentalapp.domain.usecase.PropertyUseCase
-import com.example.houserentalapp.domain.usecase.SearchHistoryUseCase
-import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
-import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
+import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
@@ -37,18 +32,19 @@ import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 /* TODO
-    1. FIX: Bottom nav while moving to shortlists page from here
-    2. FIX: Sort
+    1. FIX: Sort
  */
-class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
+class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
-    private lateinit var mainActivity: MainActivity
+    private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var propertiesAdapter: PropertiesAdapter
     private lateinit var propertiesViewModel: PropertiesListViewModel
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
+    private val _context: Context get() = requireContext()
+
     private var hideBottomNav = false
     private var onlyShortlisted = false
     private var hideToolBar = false
@@ -56,7 +52,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mainActivity = context as MainActivity
+        bottomNavController = context as BottomNavController
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,10 +102,10 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
         if (hideBottomNav) {
             // Add paddingBottom to avoid system bar overlay
             setSystemBarBottomPadding(binding.root)
-            mainActivity.hideBottomNav()
+            bottomNavController.hideBottomNav()
         }
         else
-            mainActivity.showBottomNav()
+            bottomNavController.showBottomNav()
 
         with(binding) {
           // RecyclerView
@@ -117,7 +113,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                 ::handleOnPropertyClick, ::handleShortlistToggle
             )
             rvProperty.apply {
-                layoutManager = LinearLayoutManager(mainActivity)
+                layoutManager = LinearLayoutManager(_context)
                 adapter = propertiesAdapter
                 val scrollListener = getScrollListener(
                     { propertiesViewModel.hasMore },
@@ -139,15 +135,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     fun setupViewModel() {
-        val propertyUC = PropertyUseCase(PropertyRepoImpl(mainActivity))
-        val propertyUserActionUC = UserPropertyUseCase(UserPropertyRepoImpl(mainActivity))
-        val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(mainActivity))
-        val factory = PropertiesListViewModelFactory(
-            propertyUC,
-            propertyUserActionUC,
-            searchHistoryUC,
-            currentUser
-        )
+        val factory = PropertiesListViewModelFactory(_context, currentUser)
         propertiesViewModel = ViewModelProvider(this, factory)[PropertiesListViewModel::class.java]
     }
 
@@ -158,7 +146,7 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
             }
 
             searchBar.setOnClickListener {
-                 mainActivity.addFragment(SearchViewFragment(), true)
+                 navigateTo(NavigationDestination.InPlaceSearch())
             }
 
             btnFilters.setOnClickListener {
@@ -168,14 +156,13 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
     }
 
     private fun handleOnPropertyClick(propertyId: Long) {
-        val destinationFragment = SinglePropertyDetailFragment()
-        destinationFragment.arguments = Bundle().apply {
-            putLong(SinglePropertyDetailFragment.PROPERTY_ID_KEY, propertyId)
-            putBoolean(SinglePropertyDetailFragment.IS_TENANT_VIEW_KEY, true)
-            putBoolean(SinglePropertyDetailFragment.HIDE_AND_SHOW_BOTTOM_NAV_KEY, onlyShortlisted)
+        val bundle = Bundle().apply {
+            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
+            putBoolean(FragmentArgKey.IS_TENANT_VIEW, true)
+            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, onlyShortlisted)
         }
 
-        mainActivity.addFragment(destinationFragment, true)
+        navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
     }
 
     private fun handleShortlistToggle(propertyId: Long) {
@@ -186,10 +173,10 @@ class PropertiesListFragment : Fragment(R.layout.fragment_properties_list) {
                     "Added to shortlisted"
                 else
                     "Removed from shortlisted"
-                Toast.makeText(mainActivity, message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(_context, message, Toast.LENGTH_SHORT).show()
             },
             {
-                Toast.makeText(mainActivity, "Retry later", Toast.LENGTH_SHORT).show()
+                Toast.makeText(_context, "Retry later", Toast.LENGTH_SHORT).show()
             }
         )
     }
