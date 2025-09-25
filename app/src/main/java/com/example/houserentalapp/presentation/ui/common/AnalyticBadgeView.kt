@@ -69,8 +69,8 @@ class AnalyticBadgeView @JvmOverloads constructor(
             return
         }
         binding.badge.apply {
-            if(count > 99) {
-                text = context.getString(R.string._99)
+            if(count > 999) {
+                text = context.getString(R.string._999)
                 textSize = 9.5f
             }
             else {

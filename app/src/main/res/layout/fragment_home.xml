@@ -137,14 +137,14 @@
                 android:id="@+id/analyticCardShortlisted"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 android:layout_marginStart="2dp"
+                android:layout_marginTop="8dp"
                 android:background="@drawable/border_white_bg"
-                app:title="Shortlisted"
-                app:subTitle="properties"
                 app:iconSrc="@drawable/baseline_favorite_filled"
                 app:layout_constraintStart_toEndOf="@+id/analyticCardViewed"
-                app:layout_constraintTop_toBottomOf="@+id/tvLabelTenantActivity" />
+                app:layout_constraintTop_toBottomOf="@+id/tvLabelTenantActivity"
+                app:subTitle="properties"
+                app:title="Shortlisted" />
 
             <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
                 android:id="@+id/analytic_card_contacted"
