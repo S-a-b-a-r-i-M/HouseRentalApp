@@ -135,7 +135,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         }
     }
 
-    inner class LoaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class LoaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
 
     private var summaryUIList = listOf<PropertySummaryUI>() // Raw Data content
     private var shortlistToggledPropertyId: Long? = null
@@ -173,7 +173,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when(val data = dataList[position]){
+        when(val data = itemList[position]){
             is LoadingAdapterData.Data -> (holder as DataViewHolder).bind(data.data)
             LoadingAdapterData.Loader -> {}
         }
@@ -183,7 +183,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
         when(holder){
             is DataViewHolder -> {
                 if (payloads.isNotEmpty() && SHORTLIST == payloads[0]) {
-                    val data = (dataList[position] as AdapterSummaryData).data
+                    val data = (itemList[position] as AdapterSummaryData).data
                     holder.bindShortlistData(data.isShortListed)
                     return
                 }
@@ -196,14 +196,14 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
 
     override fun setDataList(newDataList: List<PropertySummaryUI>, hasMore: Boolean) {
         if (shortlistToggledPropertyId != null && newDataList.size == summaryUIList.size) {
-            val oldListIdx = dataList.indexOfFirst {
+            val oldListIdx = itemList.indexOfFirst {
                 it is AdapterSummaryData &&
                 it.data.summary.id == shortlistToggledPropertyId
             }
             val newListIdx = newDataList.indexOfFirst { it.summary.id == shortlistToggledPropertyId }
             shortlistToggledPropertyId = null // Make it null
             if (oldListIdx != -1 && newListIdx != -1) {
-                dataList[oldListIdx] = LoadingAdapterData.Data(newDataList[newListIdx])
+                itemList[oldListIdx] = LoadingAdapterData.Data(newDataList[newListIdx])
                 notifyItemChanged(oldListIdx, SHORTLIST)
                 return
             }

@@ -2,10 +2,8 @@ package com.example.houserentalapp.presentation.ui.listings
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -19,15 +17,12 @@ import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.FragmentArgKey
-import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.MyPropertiesAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
-import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
-import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
@@ -186,7 +181,9 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     }
 
     fun onDataObserved(propertySummaryUI : List<PropertySummaryUI>) {
-        myPropertiesAdapter.setDataList(propertySummaryUI)
+        myPropertiesAdapter.setPropertySummaryUiList(
+            propertySummaryUI, myPropertiesViewModel.hasMore
+        )
         // PlaceHolder
         val noDataPlaceHolderView = binding.noDataPlaceHolderView.root
         if (myPropertiesAdapter.itemCount == 0) {
