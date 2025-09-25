@@ -27,7 +27,6 @@ import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
-import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 
 /* TODO:
         Existing fix:

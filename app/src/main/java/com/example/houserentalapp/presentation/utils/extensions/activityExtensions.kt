@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.example.houserentalapp.presentation.enums.FragmentAnimationType
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 
@@ -26,11 +27,18 @@ fun AppCompatActivity.loadFragment(
     containerId: Int,
     pushToBackStack: Boolean = false,
     removeHistory: Boolean = false,
+    animationType: FragmentAnimationType? = FragmentAnimationType.BOOM,
 ) {
     if (removeHistory)
         clearBackStackHistory(fragment.simpleClassName, pushToBackStack)
 
     supportFragmentManager.beginTransaction().apply {
+        if (animationType != null) setCustomAnimations(
+            animationType.enter,
+            animationType.exit,
+            animationType.popEnter,
+            animationType.popExit
+        )
         replace(containerId, fragment)
         if (pushToBackStack) addToBackStack(fragment.simpleClassName) // adding the current fragment/activity into the backstack
         commit()
