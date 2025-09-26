@@ -10,6 +10,14 @@
 
     </style>
 
+    <style name="TextAppearance_Clickable">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorPrimaryDark</item>
+        <item name="android:focusable">true</item>
+        <item name="android:clickable">true</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <style name="TextAppearance.App.Headline2" parent="@style/TextAppearance.App.Headline1">
         <item name="android:textColor">@color/gray_dark</item>
         <item name="android:textSize">18sp</item>

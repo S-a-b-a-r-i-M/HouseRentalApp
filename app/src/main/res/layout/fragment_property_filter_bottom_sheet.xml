@@ -4,19 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp"
-    android:background="@color/white_blue"
+    android:paddingHorizontal="16dp"
+    android:paddingBottom="16dp"
     tools:context=".presentation.ui.property.PropertyFilterBottomSheet">
 
-  <!-- Close Btn -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnClose"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:background="@drawable/baseline_close_24"
-        app:backgroundTint="@color/icon_button_color"
+    <ImageView
+        android:id="@+id/imgDragHandler"
+        android:layout_width="42dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/round_horizontal_rule_42"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:contentDescription="@string/bottom_sheet_drag_handler"/>
 
   <!-- BHK -->
     <TextView
@@ -24,9 +24,20 @@
         style="@style/TextAppearance.App.LabelMedium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:text="@string/bhk"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnClose"/>
+        app:layout_constraintTop_toBottomOf="@+id/imgDragHandler"/>
+
+    <TextView
+        android:id="@+id/tvClearFilter"
+        style="@style/TextAppearance_Clickable"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="@string/clear_filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgDragHandler" />
 
     <HorizontalScrollView
         android:id="@+id/hScrollOfBHK"

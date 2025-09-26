@@ -44,16 +44,16 @@ class MyPropertiesViewModel(
 
                 when (result) {
                     is Result.Success<List<Pair<PropertySummary, Boolean>>> -> {
+                        // Update Offset & HasMore
+                        offset += limit
+                        hasMore = result.data.size == limit
+
                         propertySummaryUIList.addAll(
                             result.data.map {
                                 PropertySummaryUI(it.first, it.second)
                             }
                         )
                         _propertySummariesResult.value = ResultUI.Success(propertySummaryUIList)
-
-                        // Update Offset & HasMore
-                        offset += limit
-                        hasMore = result.data.size == limit
                     }
                     is Result.Error -> {
                         logError("Error on loadPropertySummaries : ${result.message}")

@@ -44,11 +44,9 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        buildUI()
-        // Observe View Mode
-        observeViewModel()
-        // Set OnClicks
-        setOnClicks()
+        setupUI()
+        setupListener()
+        setupObserver()
     }
 
     // Layout Params
@@ -115,12 +113,12 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun buildUI() {
+    private fun setupUI() {
         buildFlatFurnishingsFields()
         buildSocialAmenitiesFields()
     }
 
-    private fun setOnClicks() {
+    private fun setupListener() {
         binding.btnClose.setOnClickListener {
             dismiss() // Close The BottomSheet
         }
@@ -150,7 +148,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
-    private fun observeViewModel() {
+    private fun setupObserver() {
         // Internal Countable Amenities
         viewModel.icAmenityMap.observe(viewLifecycleOwner) { map ->
             logInfo("<------- Observing CountableInternalAmenity, $map ----->")

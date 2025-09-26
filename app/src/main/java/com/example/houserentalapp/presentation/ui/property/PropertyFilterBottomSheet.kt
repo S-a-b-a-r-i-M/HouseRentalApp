@@ -6,6 +6,7 @@ import android.view.View
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentPropertyFilterBottomSheetBinding
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.PropertyType
@@ -130,14 +131,17 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
         setupBudgetSliderListeners()
 
         with(binding) {
-            btnClose.setOnClickListener {
-                dismiss() // Close The BottomSheet
-            }
-
             btnApplyFilters.setOnClickListener {
                 applyChipGroupSelections()
                 filtersViewModel.triggerApplyFilters()
                 dismiss()
+            }
+
+            tvClearFilter.setOnClickListener {
+                val filterWithSearchQuery = PropertyFilters(searchQuery = filtersViewModel.filters.value!!.searchQuery)
+                filtersViewModel.setPropertyFilters(filterWithSearchQuery) // Clear the filters except search query
+                filtersViewModel.triggerApplyFilters() // Trigger refetch
+                dismiss() // close
             }
         }
     }

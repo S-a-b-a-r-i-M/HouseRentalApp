@@ -183,4 +183,6 @@
     <string name="no_leads_found">No Leads Found</string>
     <string name="minimum_3_characters_required_to_search">minimum 3 characters required to search</string>
     <string name="image_view">image view</string>
+    <string name="bottom_sheet_drag_handler">Bottom Sheet Drag Handler</string>
+    <string name="clear_filter"><u>clear filters</u></string>
 </resources>
