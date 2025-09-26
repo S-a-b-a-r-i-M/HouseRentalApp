@@ -54,7 +54,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
         // Load Search Histories
         if (savedInstanceState == null) {
-            searchHistoryViewModel.loadSearchHistories(currentUser.id)
+            searchHistoryViewModel.loadSearchHistories(currentUser.id, 5)
             homeViewModel.loadUserPropertyStats(currentUser.id)
         }
     }

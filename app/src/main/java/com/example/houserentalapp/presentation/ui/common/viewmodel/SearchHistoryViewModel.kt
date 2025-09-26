@@ -18,10 +18,10 @@ import kotlinx.coroutines.launch
 class SearchHistoryViewModel(private val searchHistoryUC: SearchHistoryUseCase) : ViewModel() {
     private val _searchHistoriesResult = MutableLiveData<ResultUI<List<PropertyFilters>>>(null)
     val searchHistoriesResult: LiveData<ResultUI<List<PropertyFilters>>> = _searchHistoriesResult
-    fun loadSearchHistories(userId: Long) {
+    fun loadSearchHistories(userId: Long, limit: Int = 15) {
         viewModelScope.launch {
             _searchHistoriesResult.value = ResultUI.Loading
-            when(val result = searchHistoryUC.getResentSearchHistories(userId, 10)) {
+            when(val result = searchHistoryUC.getResentSearchHistories(userId, limit)) {
                 is Result.Success<List<PropertyFilters>> -> {
                     logInfo("Search history(${result.data.size} loaded successfully")
                     _searchHistoriesResult.value = ResultUI.Success(result.data)

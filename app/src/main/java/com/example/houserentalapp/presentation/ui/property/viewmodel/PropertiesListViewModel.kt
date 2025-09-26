@@ -132,7 +132,6 @@ class PropertiesListViewModel(
         offset = 0
         hasMore = true
         propertySummaryUIList.clear()
-        _propertySummariesResult.value = ResultUI.Success(emptyList())
     }
 }
 

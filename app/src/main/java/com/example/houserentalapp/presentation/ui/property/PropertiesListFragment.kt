@@ -146,7 +146,13 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
             }
 
             searchBar.setOnClickListener {
-                 navigateTo(NavigationDestination.InPlaceSearch())
+                val bundle = Bundle().apply {
+                    putString(
+                        FragmentArgKey.SEARCH_QUERY,
+                        binding.searchBar.text.toString()
+                    )
+                }
+                 navigateTo(NavigationDestination.InPlaceSearch(bundle))
             }
 
             btnFilters.setOnClickListener {

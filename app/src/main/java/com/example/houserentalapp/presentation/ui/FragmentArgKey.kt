@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui
 object FragmentArgKey {
     // Search Fragment
     const val IS_NEW_SEARCH = "IS_NEW_SEARCH"
+    const val SEARCH_QUERY = "SEARCH_QUERY"
 
     const val PROPERTY_ID = "PROPERTY_ID"
     const val IS_TENANT_VIEW = "IS_TENANT_VIEW"

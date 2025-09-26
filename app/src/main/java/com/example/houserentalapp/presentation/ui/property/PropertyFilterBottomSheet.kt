@@ -92,8 +92,12 @@ class PropertyFilterBottomSheet : BottomSheetDialogFragment(
                 override fun onStartTrackingTouch(slider: RangeSlider) { }
 
                 override fun onStopTrackingTouch(slider: RangeSlider) {
+                    val min = slider.values[0]
+                    val max = slider.values[1]
+
                     filtersViewModel.setBudget(
-                        Pair(slider.values[0], slider.values[1])
+                        if (min == MIN_PRICE && max == MAX_PRICE) null
+                        else Pair(slider.values[0], slider.values[1])
                     )
                 }
             })

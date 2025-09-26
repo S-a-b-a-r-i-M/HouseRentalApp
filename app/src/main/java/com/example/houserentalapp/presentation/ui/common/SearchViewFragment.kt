@@ -12,6 +12,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
@@ -23,6 +24,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersView
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
 class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
@@ -33,6 +35,8 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     private lateinit var currentUser: User
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
+    private var isNewSearch: Boolean = false
+    private var existingSearchQuery: String? = null
     private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
@@ -45,12 +49,8 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
 
-        val isNewSearch = arguments?.getBoolean(IS_NEW_SEARCH) ?: false
-        if (isNewSearch) {
-            // Reset Filters on the first creation of this fragment(hence used arguments)
-            logDebug("isNewSearch given as true so all the previous filters are cleared")
-            filtersViewModel.resetFilters()
-        }
+        isNewSearch = arguments?.getBoolean(FragmentArgKey.IS_NEW_SEARCH) ?: isNewSearch
+        existingSearchQuery = arguments?.getString(FragmentArgKey.SEARCH_QUERY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,8 +63,14 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
         setupObservers()
 
         // Load Search Histories
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             searchHistoryViewModel.loadSearchHistories(currentUser.id)
+            if (isNewSearch) {
+                logDebug("isNewSearch as true so all the previous filters are cleared")
+                filtersViewModel.resetFilters()
+            } else if (existingSearchQuery != null)
+                binding.etSearch.setText(existingSearchQuery)
+        }
     }
 
     private fun setupUI() {
@@ -132,13 +138,6 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
             etSearch.doOnTextChanged { text, start, before, count ->
                 val query = text?.toString()?.trim() ?: ""
                 updateSubmitButtonState(query.length > 2)
-                if (query.length < 3)
-                    tvHelperMsg.apply {
-                        visibility = View.VISIBLE
-                        this.text = context.getString(R.string.minimum_3_characteres_required_to_search)
-                    }
-                else
-                    tvHelperMsg.visibility = View.GONE
             }
 
             // Listens Search Icon Click in Keyboard
@@ -147,7 +146,9 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
                     if (btnSubmit.isEnabled) {
                         applySearchQuery()
                         navigateToPropertiesListFragment()
-                    }
+                    } else
+                        _context.showToast(getString(R.string.minimum_3_characters_required_to_search))
+
                     true
                 }
                 else
@@ -165,12 +166,6 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
 
     private fun setupObservers() {
         // Save Changes Into Viewmodel
-        filtersViewModel.filters.observe(viewLifecycleOwner) { filtersData ->
-            val editText = binding.etSearch
-            if (editText.text.toString() != filtersData.searchQuery)
-                editText.setText(filtersData.searchQuery)
-        }
-
         searchHistoryViewModel.searchHistoriesResult.observe(viewLifecycleOwner) {
             when(it) {
                 is ResultUI.Success<List<PropertyFilters>> -> {
@@ -193,9 +188,5 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
                 }
             }
         }
-    }
-
-    companion object {
-        const val IS_NEW_SEARCH = "NEW_SEARCH"
     }
 }
