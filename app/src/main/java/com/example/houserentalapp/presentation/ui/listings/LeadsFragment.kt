@@ -2,28 +2,22 @@ package com.example.houserentalapp.presentation.ui.listings
 
 import android.content.Context
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentLeadsBinding
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
-import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadsAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
-import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
-import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
-import kotlin.getValue
 
 // TODO: 1. Add lead created data at UI
 class LeadsFragment : Fragment(R.layout.fragment_leads) {
@@ -32,7 +26,7 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
     private lateinit var currentUser: User
     private lateinit var leadsAdapter: LeadsAdapter
 
-    private lateinit var leadsViewModel: LeadsViewModel
+    private val leadsViewModel: LeadsViewModel by viewModels({ requireParentFragment() })
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     private val leadBottomSheet by lazy { LeadBottomSheet() }
@@ -50,12 +44,11 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
         currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
-        setupViewModel()
         setupListeners()
         setupObservers()
 
         // Initial Load
-        if (savedInstanceState == null)
+        if (leadsViewModel.leadsResult.value !is ResultUI.Success)
             leadsViewModel.loadLeads()
     }
 
@@ -74,11 +67,6 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
                 addOnScrollListener(scrollListener)
             }
         }
-    }
-
-    private fun setupViewModel() {
-        val factory = LeadsViewModelFactory(_context.applicationContext, currentUser)
-        leadsViewModel = ViewModelProvider(this, factory)[LeadsViewModel::class]
     }
 
     private fun onLeadItemClick(lead: Lead) {

@@ -6,14 +6,13 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentMyPropertyBinding
+import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.FragmentArgKey
@@ -21,26 +20,26 @@ import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.MyPropertiesAdapter
-import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
-import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
-import kotlin.getValue
 
 class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     private lateinit var binding: FragmentMyPropertyBinding
     private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var myPropertiesAdapter: MyPropertiesAdapter
-    private lateinit var myPropertiesViewModel: MyPropertiesViewModel
-    private lateinit var filtersViewModel: FiltersViewModel
+    private val myPropertiesViewModel: MyPropertiesViewModel by viewModels({ requireParentFragment() })
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val _context: Context get() = requireContext()
+    private var propertyFilters = PropertyFilters(
+        onlyUserProperties = true,
+        onlyAvailable = false
+    )
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,12 +53,11 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
         currentUser = sharedDataViewModel.currentUserData
 
         setupUI()
-        setupViewModel()
         setupListeners()
         setupObservers()
 
         // Initial Load
-        if (savedInstanceState == null)
+        if (myPropertiesViewModel.propertySummariesResult.value !is ResultUI.Success)
             loadProperties()
     }
 
@@ -155,20 +153,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
 
     private fun loadProperties() {
         // Can add further more filters if needed
-        myPropertiesViewModel.loadPropertySummaries(filtersViewModel.filters.value)
-    }
-
-    fun setupViewModel() {
-        val propertyUC = PropertyUseCase(PropertyRepoImpl(requireActivity()))
-        val factory = MyPropertiesViewModelFactory(propertyUC, currentUser)
-        myPropertiesViewModel = ViewModelProvider(this, factory)[MyPropertiesViewModel::class]
-        filtersViewModel = ViewModelProvider(this)[FiltersViewModel::class]
-
-        // Set Initial Filters
-        if (filtersViewModel.filters.value?.onlyUserProperties == false) {
-            filtersViewModel.setOnlyLandlordProperty(true)
-            filtersViewModel.setOnlyAvailable(false)
-        }
+        myPropertiesViewModel.loadPropertySummaries(propertyFilters)
     }
 
     fun setupListeners() {
