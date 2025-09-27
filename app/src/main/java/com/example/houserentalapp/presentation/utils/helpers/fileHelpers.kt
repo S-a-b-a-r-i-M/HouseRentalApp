@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.example.houserentalapp.domain.model.ImageSource
 import java.io.File
 
@@ -29,6 +30,21 @@ fun loadImageSourceToImageView(imageSource: ImageSource, imageView: ImageView) {
         }
         is ImageSource.Uri -> {
             imageView.setImageURI(imageSource.uri)
+            Glide.with(imageView.context)
+                .load(imageSource.uri)
+                .into(imageView)
         }
     }
+}
+
+// TODO-DOUBT: How Glide is optimized ?
+fun loadImageSourceToImageViewV2(imageSource: ImageSource, imageView: ImageView) {
+    val source = when(imageSource) {
+        is ImageSource.LocalFile -> imageSource.filePath
+        is ImageSource.Uri -> imageSource.uri
+    }
+
+    Glide.with(imageView.context)
+        .load(source)
+        .into(imageView)
 }

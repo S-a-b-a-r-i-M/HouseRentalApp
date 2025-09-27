@@ -1,20 +1,15 @@
 package com.example.houserentalapp.presentation.ui.property.adapter
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
-import android.widget.ImageView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
-import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.PropertyImage
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
-import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageViewV2
 import com.google.android.material.imageview.ShapeableImageView
-import java.io.File
 
 class PropertyImagesEditAdapter(val onDeleteBtnClick: (PropertyImage) -> Unit) :
     RecyclerView.Adapter<PropertyImagesEditAdapter.ViewHolder>()
@@ -24,7 +19,7 @@ class PropertyImagesEditAdapter(val onDeleteBtnClick: (PropertyImage) -> Unit) :
         val ibtnDelete: ImageButton = itemView.findViewById(R.id.ibtnDeleteImage)
 
         fun bind(propertyImage: PropertyImage) {
-            loadImageSourceToImageView(propertyImage.imageSource, imageView)
+            loadImageSourceToImageViewV2(propertyImage.imageSource, imageView)
             ibtnDelete.setOnClickListener {
                 deleteActionTriggeredUri = propertyImage
                 onDeleteBtnClick(propertyImage)

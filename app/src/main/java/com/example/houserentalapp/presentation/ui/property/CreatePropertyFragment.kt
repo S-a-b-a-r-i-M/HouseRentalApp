@@ -45,7 +45,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
 import com.example.houserentalapp.presentation.utils.helpers.getRequiredStyleLabel
-import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
+import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageViewV2
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.chip.ChipGroup
@@ -481,7 +481,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                             setLayoutParams(params)
                         }
-                        loadImageSourceToImageView(propertyImages[i].imageSource, imageView)
+                        loadImageSourceToImageViewV2(propertyImages[i].imageSource, imageView)
 
                         // Add Image to the view
                         llUploadedImages.addView(imageView)
