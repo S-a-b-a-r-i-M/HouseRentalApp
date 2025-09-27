@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
+import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileEditFragment
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.MultipleImagesFragment
@@ -60,9 +61,37 @@ sealed class NavigationDestination(
         pushToBackStack = true
     )
 
+    data class ShortlistedProperties(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = PropertiesListFragment::class.java,
+        args = bundle,
+        pushToBackStack = true
+    )
+
     data class ProfileEdit(val bundle: Bundle? = null) : NavigationDestination(
         fragmentClass = ProfileEditFragment::class.java,
         args = bundle,
+        pushToBackStack = true
+    )
+
+    data class MyLeads(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = ListingsFragment::class.java,
+        args = (bundle ?: Bundle()).apply {
+            putString(
+                FragmentArgKey.CHILD_FRAGMENT_NAME,
+                ListingsFragment.ChildFragmentName.LEADS.name
+            )
+        },
+        pushToBackStack = true
+    )
+
+    data class MyProperties(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = ListingsFragment::class.java,
+        args = (bundle ?: Bundle()).apply {
+            putString(
+                FragmentArgKey.CHILD_FRAGMENT_NAME,
+                ListingsFragment.ChildFragmentName.MY_PROPERTIES.name
+            )
+        },
         pushToBackStack = true
     )
 }

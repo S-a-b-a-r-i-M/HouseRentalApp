@@ -24,6 +24,7 @@ import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.showToast
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private lateinit var binding: FragmentHomeBinding
@@ -109,6 +110,27 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 }
                 navigateTo(NavigationDestination.CreateProperty(bundle))
             }
+
+            // STATS CARD LISTENERS
+            analyticCardViewed.onItemClick = {
+                _context.showToast("Yet to implement")
+            }
+
+            analyticCardContacted.onItemClick = {
+                _context.showToast("Yet to implement")
+            }
+
+            analyticCardShortlisted.onItemClick = {
+                navigateTo(NavigationDestination.ShortlistedProperties())
+            }
+
+            analyticCardListedProperty.onItemClick = {
+                navigateTo(NavigationDestination.MyProperties())
+            }
+
+            analyticCardLeads.onItemClick = {
+                navigateTo(NavigationDestination.MyLeads())
+            }
         }
     }
 
@@ -118,7 +140,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             analyticCardShortlisted.setBadgeCount(stats.shortlistedPropertyCount)
             analyticCardContacted.setBadgeCount(stats.contactViewedPropertyCount)
             analyticCardListedProperty.setBadgeCount(stats.listedPropertyCount)
-            analyticCardLeadsCount.setBadgeCount(stats.leadsCount)
+            analyticCardLeads.setBadgeCount(stats.leadsCount)
         }
     }
 

@@ -4,4 +4,8 @@ import com.example.houserentalapp.presentation.ui.NavigationDestination
 
 interface FragmentNavigationHandler {
     fun navigateTo(destination: NavigationDestination)
+
+    fun navigateBack()
+
+    fun navigateToRoot()
 }

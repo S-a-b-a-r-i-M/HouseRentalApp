@@ -21,6 +21,7 @@ import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
+import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import kotlin.getValue
 
 
@@ -45,6 +46,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
         setupViewModel()
         setupListeners()
         setupObservers()
+        onBackPressedNavigateBack()
     }
 
     private fun setupUI() {

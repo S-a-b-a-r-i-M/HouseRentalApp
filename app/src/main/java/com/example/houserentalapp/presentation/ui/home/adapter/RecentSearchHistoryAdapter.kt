@@ -1,6 +1,5 @@
 package com.example.houserentalapp.presentation.ui.home.adapter
 
-import android.icu.text.DecimalFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
+
+sealed class AdapterDataWithFooter {
+    data class Data<T>(val data: T) : AdapterDataWithFooter()
+    object Footer : AdapterDataWithFooter()
+}
 
 class RecentSearchHistoryAdapter(
     private val onItemClick: (PropertyFilters) -> Unit
@@ -100,7 +104,7 @@ class RecentSearchHistoryAdapter(
         holder.bind(dataList[position])
     }
 
-    override fun getItemCount(): Int = dataList.count()
+    override fun getItemCount(): Int = dataList.size
 
     fun setDateList(newData: List<PropertyFilters>) {
         dataList = newData

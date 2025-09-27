@@ -12,15 +12,17 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentLeadsBinding
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadsAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 
 // TODO: 1. Add lead created data at UI
-class LeadsFragment : Fragment(R.layout.fragment_leads) {
+class LeadsFragment : BaseFragment(R.layout.fragment_leads) {
     private lateinit var binding: FragmentLeadsBinding
     private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
@@ -46,6 +48,7 @@ class LeadsFragment : Fragment(R.layout.fragment_leads) {
         setupUI()
         setupListeners()
         setupObservers()
+        onBackPressedNavigateBack()
 
         // Initial Load
         if (leadsViewModel.leadsResult.value !is ResultUI.Success)

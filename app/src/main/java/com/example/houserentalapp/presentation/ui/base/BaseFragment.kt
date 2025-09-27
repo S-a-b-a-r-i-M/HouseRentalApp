@@ -7,7 +7,7 @@ import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationH
 
 
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId) {
-    private lateinit var navigationHandler: FragmentNavigationHandler
+    lateinit var navigationHandler: FragmentNavigationHandler
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

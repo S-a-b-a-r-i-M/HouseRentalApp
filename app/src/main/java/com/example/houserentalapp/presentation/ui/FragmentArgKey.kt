@@ -8,4 +8,6 @@ object FragmentArgKey {
     const val PROPERTY_ID = "PROPERTY_ID"
     const val IS_TENANT_VIEW = "IS_TENANT_VIEW"
     const val HIDE_AND_SHOW_BOTTOM_NAV = "HIDE_AND_SHOW_BOTTOM_NAV"
+
+    const val CHILD_FRAGMENT_NAME = "CHILD_FRAGMENT_NAME"
 }

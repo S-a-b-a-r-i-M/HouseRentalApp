@@ -30,7 +30,9 @@ fun AppCompatActivity.loadFragment(
     animationType: FragmentAnimationType? = FragmentAnimationType.BOOM,
 ) {
     if (removeHistory)
-        clearBackStackHistory(fragment.simpleClassName, pushToBackStack)
+        supportFragmentManager.popBackStackImmediate(
+            fragment.simpleClassName, FragmentManager.POP_BACK_STACK_INCLUSIVE
+        )
 
     supportFragmentManager.beginTransaction().apply {
         if (animationType != null) setCustomAnimations(

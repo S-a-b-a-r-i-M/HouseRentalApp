@@ -25,6 +25,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 
@@ -55,6 +56,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
         setupUI()
         setupListeners()
         setupObservers()
+        onBackPressedNavigateBack()
 
         // Initial Load
         if (myPropertiesViewModel.propertySummariesResult.value !is ResultUI.Success)

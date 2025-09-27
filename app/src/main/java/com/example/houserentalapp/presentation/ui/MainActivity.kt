@@ -3,7 +3,6 @@ package com.example.houserentalapp.presentation.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -40,16 +39,6 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
     private lateinit var binding: ActivityMainBinding
     val sharedDataViewModel: SharedDataViewModel by viewModels()
 
-    // TASK: IF USER CLICKS BACK BUTTON ON OTHER FRAGMENTS EXCEPT HOME WE HAVE TO NAVIGATE THEM TO HOME
-    private val backPressedCallback = object : OnBackPressedCallback(true){
-        override fun handleOnBackPressed() {
-            println("handleOnBackPressed ----> ")
-            remove() // Remove on first click
-            loadFragmentInternal(HomeFragment()) // Move to Home
-            showToast("Press again to exit...")
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         logInfo("<-------- MainActivity onCreate ---------->")
@@ -66,17 +55,10 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             return
         }
         sharedDataViewModel.setCurrentUser(currentUser)
-        observeViewModel()
-
-//        onBackPressedDispatcher.addCallback(backPressedCallback)
-
-//        runBlocking {
-//            UserRepoImpl(this@MainActivity).createUser(
-//                "Sabari", "", "", ""
-//            )
-//        }
 
         setBottomNavigation()
+        observeViewModel()
+
         if (savedInstanceState == null)
             loadFragmentInternal(HomeFragment())
     }
@@ -91,11 +73,18 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         }
     }
 
+    data class ProgrammaticNavSelection(val extraArgs: Bundle? = null, val pushToBackStack: Boolean = false)
+    private var programmaticNavSelection: ProgrammaticNavSelection? = null
+
     private fun setBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when(item.itemId) {
                 R.id.bnav_home -> {
-                    loadFragmentInternal(HomeFragment())
+                    val destination = HomeFragment()
+                    programmaticNavSelection?.let {
+                        destination.arguments = it.extraArgs
+                        loadFragmentInternal(destination, it.pushToBackStack)
+                    } ?: loadFragmentInternal(destination)
                 }
                 R.id.bnav_shortlists -> {
                     val destination = PropertiesListFragment()
@@ -103,21 +92,33 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                         putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
                         putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
                     }
-                    loadFragmentInternal(destination)
+                    programmaticNavSelection?.let {
+                         if (it.extraArgs != null) destination.arguments?.putAll(it.extraArgs)
+                        loadFragmentInternal(destination, it.pushToBackStack)
+                    } ?: loadFragmentInternal(destination)
                 }
                 R.id.bnav_listings -> {
-                    loadFragmentInternal(ListingsFragment())
+                    val destination = ListingsFragment()
+                    programmaticNavSelection?.let {
+                        destination.arguments = it.extraArgs
+                        loadFragmentInternal(destination, it.pushToBackStack)
+                    } ?: loadFragmentInternal(destination)
                 }
                 R.id.bnav_profile -> {
-                    loadFragmentInternal(ProfileFragment())
+                    val destination = ProfileFragment()
+                    programmaticNavSelection?.let {
+                        destination.arguments = it.extraArgs
+                        loadFragmentInternal(destination, it.pushToBackStack)
+                    } ?: loadFragmentInternal(destination)
                 }
             }
 
+            programmaticNavSelection = null // MAKE IT NULL
             return@setOnItemSelectedListener true
         }
 
         binding.bottomNavigation.setOnItemReselectedListener { item ->
-            logInfo("setOnItemReselectedListener")
+            logInfo("<------ setOnItemReselectedListener ------->")
         }
     }
 
@@ -129,18 +130,25 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         binding.bottomNavigationContainer.visibility = View.GONE
     }
 
+    private fun observeViewModel() {
+        sharedDataViewModel.logOutUser.observe(this) { shouldLogOut ->
+            if (shouldLogOut) {
+                // LOG OUT
+                val intent = Intent(this, AuthActivity::class.java)
+                startActivity(intent)
+                finish()
+                showToast("Logged out successfully.")
+            }
+        }
+    }
+
     fun loadFragmentInternal(
         fragment: Fragment,
         pushToBackStack: Boolean = false,
         removeHistory: Boolean = false,
         containerId: Int = binding.pageFragmentContainer.id
     ) {
-        loadFragment(
-            fragment,
-            containerId,
-            pushToBackStack,
-            removeHistory
-        )
+        loadFragment(fragment, containerId, pushToBackStack, removeHistory)
     }
 
     override fun navigateTo(destination: NavigationDestination) {
@@ -148,10 +156,10 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             is NavigationDestination.CreateProperty,
             is NavigationDestination.PropertyList,
             is NavigationDestination.SeparateSearch,
-            is NavigationDestination.ProfileEdit -> {
-                val fragment = destination.fragmentClass.newInstance().apply { // TODO-DOOUT: getDeclaredConstructor()
-                    arguments = destination.args
-                }
+            is NavigationDestination.ProfileEdit, -> {
+                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
+                fragment.arguments = destination.args
+
                 loadFragmentInternal(
                     fragment,
                     destination.pushToBackStack,
@@ -162,9 +170,9 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             is NavigationDestination.InPlaceSearch,
             is NavigationDestination.SinglePropertyDetails,
             is NavigationDestination.EditProperty -> {
-                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance().apply {
-                    arguments = destination.args
-                }
+                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
+                fragment.arguments = destination.args
+
                 addFragment(
                     fragment,
                     binding.pageFragmentContainer.id,
@@ -172,17 +180,52 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                     destination.removeExistingHistory,
                 )
             }
+            is NavigationDestination.MyLeads,
+            is NavigationDestination.MyProperties -> {
+                programmaticNavSelection = ProgrammaticNavSelection(destination.args)
+                binding.bottomNavigation.selectedItemId = R.id.bnav_listings
+            }
+            is NavigationDestination.ShortlistedProperties -> {
+                programmaticNavSelection = ProgrammaticNavSelection(destination.args)
+                binding.bottomNavigation.selectedItemId = R.id.bnav_shortlists
+            }
         }
     }
 
-    private fun observeViewModel() {
-        sharedDataViewModel.logOutUser.observe(this) { shouldLogOut ->
-            if (shouldLogOut) {
-                // LOG OUT
-                val intent = Intent(this, AuthActivity::class.java)
-                startActivity(intent)
-                finish()
-                showToast("Logged out successfully.")
+    override fun navigateBack() {
+        if (supportFragmentManager.backStackEntryCount != 0) {
+            // If something added into backstack don't interfere
+            supportFragmentManager.popBackStack()
+            return
+        }
+
+        with(binding) {
+            when (bottomNavigation.selectedItemId) {
+                R.id.bnav_home -> {
+                    finish() // FINISH THE CURRENT ACTIVITY
+                }
+                R.id.bnav_shortlists,
+                R.id.bnav_listings,
+                R.id.bnav_profile -> {
+                    programmaticNavSelection = ProgrammaticNavSelection()
+                    bottomNavigation.selectedItemId = R.id.bnav_home  // NAVIGATE TO HOME
+                }
+
+            }
+        }
+    }
+
+
+    override fun navigateToRoot() {
+        when (binding.bottomNavigation.selectedItemId) {
+            R.id.bnav_home -> {
+                finish() // FINISH THE CURRENT ACTIVITY
+            }
+            R.id.bnav_shortlists,
+            R.id.bnav_listings,
+            R.id.bnav_profile -> {
+                programmaticNavSelection = ProgrammaticNavSelection()
+                binding.bottomNavigation.selectedItemId = R.id.bnav_home  // NAVIGATE TO HOME
             }
         }
     }

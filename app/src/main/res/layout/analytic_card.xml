@@ -7,6 +7,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:minWidth="100dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground"
     android:gravity="center_horizontal"
     android:paddingVertical="12dp"
     android:paddingHorizontal="6dp">

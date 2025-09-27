@@ -28,6 +28,7 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
+import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
@@ -75,6 +76,10 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
         setupViewModel()
         setupListeners()
         setupObservers()
+
+        if (onlyShortlisted)
+            // Only shortlisted will make this page as standalone
+            onBackPressedNavigateBack()
 
         if (savedInstanceState == null) {
             // Initial Load Data

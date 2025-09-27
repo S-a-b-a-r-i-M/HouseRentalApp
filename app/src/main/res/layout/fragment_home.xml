@@ -182,7 +182,7 @@
                 app:title="Listed" />
 
             <com.example.houserentalapp.presentation.ui.common.AnalyticBadgeView
-                android:id="@+id/analyticCardLeadsCount"
+                android:id="@+id/analytic_card_leads"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

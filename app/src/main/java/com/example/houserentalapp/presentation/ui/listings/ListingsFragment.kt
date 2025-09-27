@@ -11,14 +11,16 @@ import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentListingsBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModelFactory
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
-import com.example.houserentalapp.presentation.utils.extensions.logDebug
+import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 
-class ListingsFragment : Fragment(R.layout.fragment_listings) {
+class ListingsFragment : BaseFragment(R.layout.fragment_listings) {
     private lateinit var binding: FragmentListingsBinding
     private lateinit var currentUser: User
     // View Models
@@ -27,6 +29,15 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     private val _context: Context get() = requireContext()
+    private var childFragmentName = ChildFragmentName.MY_PROPERTIES
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        childFragmentName = ChildFragmentName.valueOf(
+            arguments?.getString(FragmentArgKey.CHILD_FRAGMENT_NAME)
+                ?: childFragmentName.name
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,10 +47,15 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
 
         setupViewModel()
         setOnClickListeners()
+        onBackPressedNavigateBack()
+
         // ON FRAGMENT FIRST CREATION
-        logDebug("savedInstanceState ------> $savedInstanceState")
-        if (savedInstanceState == null)
-            binding.myPropertiesBtn.performClick() // PERFORM CLICK
+        if (savedInstanceState == null) {
+            if (childFragmentName == ChildFragmentName.MY_PROPERTIES)
+                binding.myPropertiesBtn.performClick()
+            else
+                binding.leadsBtn.performClick()
+        }
     }
 
     private fun setupViewModel() {
@@ -51,27 +67,32 @@ class ListingsFragment : Fragment(R.layout.fragment_listings) {
         leadsViewModel = ViewModelProvider(this, factory2)[LeadsViewModel::class]
     }
 
+    private fun loadChildFragment(
+        fragment: Fragment, containerId: Int = binding.listingsFragmentContainer.id
+    ) {
+        childFragmentManager.beginTransaction()
+        .replace(containerId, fragment)
+        .commit()
+    }
+
     private fun setOnClickListeners() {
         with(binding) {
-            myPropertiesBtn.setOnClickListener {
-                childFragmentManager.beginTransaction()
-                .replace(listingsFragmentContainer.id, MyPropertyFragment())
-                .commit()
-            }
+            myPropertiesBtn.setOnClickListener { loadChildFragment(MyPropertyFragment()) }
 
             myPropertiesBtn.addOnCheckedChangeListener { _, isChecked ->
                 myPropertiesBtn.isClickable = !isChecked
             }
 
-            leadsBtn.setOnClickListener {
-                childFragmentManager.beginTransaction()
-                .replace(listingsFragmentContainer.id, LeadsFragment())
-                .commit()
-            }
+            leadsBtn.setOnClickListener { loadChildFragment(LeadsFragment()) }
 
             leadsBtn.addOnCheckedChangeListener { _, isChecked ->
                 leadsBtn.isClickable = !isChecked
             }
         }
+    }
+
+    enum class ChildFragmentName() {
+        MY_PROPERTIES,
+        LEADS
     }
 }
