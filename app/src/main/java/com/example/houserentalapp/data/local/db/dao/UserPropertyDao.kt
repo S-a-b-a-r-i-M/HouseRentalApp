@@ -16,9 +16,8 @@ import com.example.houserentalapp.data.local.db.tables.UserTable
 import com.example.houserentalapp.data.mapper.UserMapper
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.UserPropertyStats
-import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
+import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
-import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import java.sql.SQLException
 
 // User and Properties Relation
@@ -51,7 +50,6 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
         val values = ContentValues().apply {
             put(LeadTable.COLUMN_TENANT_ID, newLeadEntity.tenantId)
             put(LeadTable.COLUMN_LANDLORD_ID, newLeadEntity.landlordId)
-            put(LeadTable.COLUMN_STATUS, newLeadEntity.status)
             put(LeadTable.COLUMN_NOTE, newLeadEntity.note)
             put(LeadTable.COLUMN_CREATED_AT, newLeadEntity.createdAt)
         }
@@ -63,10 +61,11 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
         return id
     }
 
-    fun mapLeadToProperty(leadId: Long, propertyId: Long): Long {
+    fun mapLeadToProperty(leadId: Long, propertyId: Long, status: String): Long {
         val values = ContentValues().apply {
             put(LeadPropertyMappingTable.COLUMN_PROPERTY_ID, propertyId)
             put(LeadPropertyMappingTable.COLUMN_LEAD_ID, leadId)
+            put(LeadPropertyMappingTable.COLUMN_STATUS, status)
             put(LeadPropertyMappingTable.COLUMN_CREATED_AT, System.currentTimeMillis())
         }
 
@@ -145,11 +144,11 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
                 l.${LeadTable.COLUMN_ID} as lead_id,
                 l.${LeadTable.COLUMN_TENANT_ID} as lead_tenant_id,
                 l.${LeadTable.COLUMN_LANDLORD_ID} as lead_landlord_id,
-                l.${LeadTable.COLUMN_STATUS} as lead_status,
                 l.${LeadTable.COLUMN_NOTE} as lead_note,
                 l.${LeadTable.COLUMN_CREATED_AT} as lead_created_at,
                 u.*,
-                GROUP_CONCAT(lpm.${LeadPropertyMappingTable.COLUMN_PROPERTY_ID}) as property_ids
+                GROUP_CONCAT(lpm.${LeadPropertyMappingTable.COLUMN_PROPERTY_ID}) as property_ids,
+                GROUP_CONCAT(lpm.${LeadPropertyMappingTable.COLUMN_STATUS}) as lead_property_status
             FROM ${LeadTable.TABLE_NAME} as l
             JOIN ${UserTable.TABLE_NAME} as u ON l.${LeadTable.COLUMN_TENANT_ID} = u.${UserTable.COLUMN_ID}
             LEFT JOIN ${LeadPropertyMappingTable.TABLE_NAME} as lpm ON l.${LeadTable.COLUMN_ID} = lpm.${LeadPropertyMappingTable.COLUMN_LEAD_ID}
@@ -171,6 +170,15 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
                     else
                         ids.split(",").map { it.toLong() }
                 }
+                val leadPropertyStatuses = cursor.getString(
+                    cursor.getColumnIndexOrThrow("lead_property_status")
+                ).let { statuses ->
+                    if (statuses.isBlank())
+                        emptyList()
+                    else
+                        statuses.split(",").map { LeadStatus.fromString(it) }
+                }
+                val propertyIdsWithStatus = propertyIds.zip(leadPropertyStatuses)
 
                 leadEntityList.add(
                     LeadEntity(
@@ -178,10 +186,7 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
                             cursor.getColumnIndexOrThrow("lead_id")
                         ),
                         lead = tenantUser,
-                        interestedPropertyIds = propertyIds,
-                        status = cursor.getString(
-                            cursor.getColumnIndexOrThrow("lead_status")
-                        ),
+                        interestedPropertyIdsWithStatus = propertyIdsWithStatus,
                         note = cursor.getStringOrNull(
                             cursor.getColumnIndexOrThrow("lead_note")
                         ),
@@ -303,28 +308,23 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
     }
 
     // -------------- UPDATE --------------
-    fun updateLead(leadId: Long, updateData: Map<LeadUpdatableField, String>): Int {
-        val values = ContentValues()
-        updateData.forEach { (k, v) ->
-            when(k) {
-                LeadUpdatableField.STATUS -> values.put(LeadTable.COLUMN_STATUS, v)
-                LeadUpdatableField.NOTE -> values.put(LeadTable.COLUMN_NOTE, v)
-            }
-        }
-
-        if (values.isEmpty) {
-            logWarning("updateLead: Content Values are empty")
-            return 0
-        }
-
+    fun updateLeadNote(leadId: Long, newNote: String): Int {
         return writableDb.update(
             LeadTable.TABLE_NAME,
-            values,
+            ContentValues().apply { put(LeadTable.COLUMN_NOTE, newNote) },
             "${LeadTable.COLUMN_ID} = ?",
             arrayOf(leadId.toString())
         )
     }
 
+    fun updateLeadPropertyStatus(leadId: Long, propertyId: Long, staus: LeadStatus): Int {
+        return writableDb.update(
+            LeadPropertyMappingTable.TABLE_NAME,
+            ContentValues().apply { put(LeadPropertyMappingTable.COLUMN_STATUS, staus.readable) },
+            "${LeadPropertyMappingTable.COLUMN_LEAD_ID} = ? AND ${LeadPropertyMappingTable.COLUMN_PROPERTY_ID} = ?",
+            arrayOf(leadId.toString(), propertyId.toString())
+        )
+    }
 
     // -------------- DELETE --------------
     fun removeFromShortlists(userId: Long, propertyId: Long, action: UserActionEnum): Boolean {

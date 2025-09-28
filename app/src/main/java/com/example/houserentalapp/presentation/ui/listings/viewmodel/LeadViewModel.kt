@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.enums.LeadStatus
-import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
@@ -50,46 +49,49 @@ class LeadViewModel(
         dirtyFlags.resetFlags()
     }
 
-    fun updateLeadStatus(
+    fun updateLeadPropertyStatus(
+        propertyId: Long,
         newStatus: LeadStatus,
         onResult: (Boolean) -> Unit
     ) {
-        updateLead(mapOf(LeadUpdatableField.STATUS to newStatus.readable)) {
-            onResult(it)
-            if (it) {
-                val (lead, dirtyFlags) = _leadUIResult.value!!
-                dirtyFlags.statusChanged = true
-                _leadUIResult.value = Pair(
-                    lead.copy(status = newStatus), dirtyFlags
-                )
-            }
-        }
-    }
-
-    fun updateLeadNotes(
-        newNote: String,
-        onResult: (Boolean) -> Unit
-    ) {
-        updateLead(mapOf(LeadUpdatableField.NOTE to newNote)) {
-            onResult(it)
-            if (it) {
-                val (lead, dirtyFlags) = _leadUIResult.value!!
-                dirtyFlags.noteChanged = true
-                _leadUIResult.value = Pair(
-                    lead.copy(note = newNote), dirtyFlags
-                )
-            }
-        }
-    }
-
-    private fun updateLead(
-        updateData: Map<LeadUpdatableField, String>,
-        onResult: (Boolean) -> Unit
-    ) {
         viewModelScope.launch {
-            when(val res = userPropertyUC.updateLead(lead.id, updateData)) {
+            when(val res = userPropertyUC.updateLeadPropertyStatus(
+                lead.id, propertyId, newStatus)
+            ) {
                 is Result.Success<*> -> {
-                    logDebug("Lead update is done. data: $updateData")
+                    val idx = lead.interestedPropertiesWithStatus.indexOfFirst { it.first.id == propertyId }
+                    if (idx == -1) {
+                        logError("property index is missing")
+                        onResult(false)
+                        return@launch
+                    }
+                    val newList = lead.interestedPropertiesWithStatus.toMutableList()
+                    newList[idx] = lead.interestedPropertiesWithStatus[idx].copy(second = newStatus)
+                    val (lead, dirtyFlags) = _leadUIResult.value!!
+                    dirtyFlags.interestedPropertiesChanged = true
+                    _leadUIResult.value = Pair(
+                        lead.copy(interestedPropertiesWithStatus = newList),
+                        dirtyFlags
+                    )
+                    logDebug("Lead update is done.")
+                    onResult(true)
+                }
+                is Result.Error -> {
+                    logError("Lead update is failed. exp: ${res.message}", res.exception)
+                    onResult(false)
+                }
+            }
+        }
+    }
+
+    fun updateLeadNotes(newNote: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            when(val res = userPropertyUC.updateLeadNotes(lead.id, newNote)) {
+                is Result.Success<*> -> {
+                    val (lead, dirtyFlags) = _leadUIResult.value!!
+                    dirtyFlags.noteChanged = true
+                    _leadUIResult.value = Pair(lead.copy(note = newNote), dirtyFlags)
+                    logDebug("Lead update is done.")
                     onResult(true)
                 }
                 is Result.Error -> {

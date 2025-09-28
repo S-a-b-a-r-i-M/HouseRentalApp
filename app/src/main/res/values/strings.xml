@@ -185,4 +185,5 @@
     <string name="image_view">image view</string>
     <string name="bottom_sheet_drag_handler">Bottom Sheet Drag Handler</string>
     <string name="clear_filter"><u>clear filters</u></string>
+    <string name="menu_icon">Menu Icon</string>
 </resources>

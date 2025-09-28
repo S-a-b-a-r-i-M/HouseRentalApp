@@ -12,6 +12,7 @@ import com.example.houserentalapp.data.local.db.tables.LeadTable
 import com.example.houserentalapp.data.local.db.tables.UserPreferenceTable
 import com.example.houserentalapp.data.local.db.tables.UserPropertyActionTable
 import com.example.houserentalapp.data.local.db.tables.UserTable
+import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 
@@ -71,7 +72,42 @@ class DatabaseHelper private constructor(context: Context) : SQLiteOpenHelper(
         }
     }
 
+    private fun upgradeFrom1To2(db: SQLiteDatabase){
+      // Drop status column from LeadTable
+        // 1. Rename Old Lead Table
+        db.execSQL("ALTER TABLE ${LeadTable.TABLE_NAME} RENAME TO ${LeadTable.TABLE_NAME}_old;")
+        // 2. Create New Lead Table (without status)
+        db.execSQL(LeadTable.CREATE_TABLE)
+        // 3. Copy data from old -> new(ignore status column)
+        db.execSQL("""
+                    INSERT INTO ${LeadTable.TABLE_NAME} (
+                        ${LeadTable.COLUMN_ID},
+                        ${LeadTable.COLUMN_TENANT_ID},
+                        ${LeadTable.COLUMN_LANDLORD_ID},
+                        ${LeadTable.COLUMN_NOTE},
+                        ${LeadTable.COLUMN_CREATED_AT}
+                    )
+                    SELECT
+                        ${LeadTable.COLUMN_ID},
+                        ${LeadTable.COLUMN_TENANT_ID},
+                        ${LeadTable.COLUMN_LANDLORD_ID},
+                        ${LeadTable.COLUMN_NOTE},
+                        ${LeadTable.COLUMN_CREATED_AT} 
+                    FROM ${LeadTable.TABLE_NAME}_old;
+                """.trimIndent())
+        // 4. Drop Old Table
+        db.execSQL("DROP TABLE ${LeadTable.TABLE_NAME}_old;")
+
+      // Insert NewColumns In LeadPropertyMappingTable
+        db.execSQL("""
+            ALTER ${LeadPropertyMappingTable.TABLE_NAME} ADD COLUMN ${LeadPropertyMappingTable.COLUMN_STATUS} TEXT NOT NULL DEFAULT '${LeadStatus.NEW}';
+            ALTER ${LeadPropertyMappingTable.TABLE_NAME} ADD COLUMN ${LeadPropertyMappingTable.COLUMN_NOTE} TEXT;
+        """.trimIndent())
+    }
+
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        // TODO: Need to deep dive
+        if (db != null)
+            upgradeFrom1To2(db)
+
     }
 }

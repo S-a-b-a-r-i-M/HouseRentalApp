@@ -127,7 +127,7 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     }
 
     private fun applySearchQuery() {
-        val searchQuery = binding.etSearch.text.toString()
+        val searchQuery = binding.etSearch.text.toString().trim()
         if (searchQuery.isNotEmpty())
             filtersViewModel.setSearchQuery(searchQuery)
     }

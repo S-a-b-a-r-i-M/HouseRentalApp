@@ -1,5 +1,6 @@
 package com.example.houserentalapp.presentation.ui.listings
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.View
@@ -7,15 +8,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentLeadBottomSheetBinding
-import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.LeadStatus
-import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
-import com.example.houserentalapp.presentation.ui.MainActivity
-import com.example.houserentalapp.presentation.ui.common.CustomPopupMenu
-import com.example.houserentalapp.presentation.ui.common.MenuOption
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadInterestedPropertiesAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModelFactory
@@ -23,17 +18,15 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataV
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlin.getValue
 
 class LeadBottomSheet
     : BottomSheetDialogFragment(R.layout.fragment_lead_bottom_sheet) {
     private lateinit var binding: FragmentLeadBottomSheetBinding
     private lateinit var currentUser: User
-    private lateinit var leadInterestedPropertiesAdapter: LeadInterestedPropertiesAdapter
+    private lateinit var adapter: LeadInterestedPropertiesAdapter
     private lateinit var leadViewModel: LeadViewModel
-    private val _context: Context get() = requireContext()
-
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    private val _context: Context get() = requireContext()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -50,10 +43,10 @@ class LeadBottomSheet
     private fun setupUI() {
         with(binding) {
             // Recycler View
-            leadInterestedPropertiesAdapter = LeadInterestedPropertiesAdapter()
+            adapter = LeadInterestedPropertiesAdapter(::handleStatusChange)
             rvLeadInterestedProperties.apply {
                 layoutManager = LinearLayoutManager(_context)
-                adapter = leadInterestedPropertiesAdapter
+                this.adapter = this@LeadBottomSheet.adapter
             }
         }
     }
@@ -83,41 +76,26 @@ class LeadBottomSheet
     }
 
     private fun setupListeners() {
-        binding.btnLeadStatus.setOnClickListener {
-            showCustomMenu(it)
-        }
-
         binding.inlineEditNote.onValueChanged = ::handleLeadNoteChange
+
+        @SuppressLint("ClickableViewAccessibility")
+        binding.rvLeadInterestedProperties.setOnTouchListener { v, event ->
+            v.parent?.requestDisallowInterceptTouchEvent(true)
+            false
+        }
     }
 
     private fun handleLeadNoteChange(newNote: String) {
         leadViewModel.updateLeadNotes(newNote) { isSuccess ->
-            val msg = if (isSuccess)
-                "Note updated successfully."
-            else
-                "Note update failed."
+            val msg = if (isSuccess) "Note updated successfully." else "Note update failed."
             _context.showToast(msg)
         }
     }
 
-    private fun showCustomMenu(view: View) {
-        val menuOptions = LeadStatus.entries.map {
-            MenuOption(id = it.ordinal, title = it.readable)
-        }
-        val popupMenu = CustomPopupMenu(_context, view)
-        popupMenu.setOnItemClickListener { option ->
-            handleMenuClick(option)
-        }
-        popupMenu.show(menuOptions)
-    }
 
-    private fun handleMenuClick(option: MenuOption) {
-        val newStatus = LeadStatus.values[option.id]
-        leadViewModel.updateLeadStatus(newStatus) { isSuccess ->
-            val msg = if (isSuccess)
-                "Status updated successfully."
-            else
-                "Status update failed."
+    private fun handleStatusChange(propertyId: Long, newStatus: LeadStatus) {
+        leadViewModel.updateLeadPropertyStatus(propertyId, newStatus) { isSuccess ->
+            val msg = if (isSuccess) "Status updated successfully." else "Status update failed."
             _context.showToast(msg)
         }
     }
@@ -127,14 +105,11 @@ class LeadBottomSheet
             if (dirtyFlags.leadUserInfoChanged)
                 bindLeadDetails(lead.leadUser)
 
-            if (dirtyFlags.statusChanged)
-                binding.btnLeadStatus.text = lead.status.readable
-
             if (dirtyFlags.noteChanged)
                 binding.inlineEditNote.setValue(lead.note ?: "")
 
             if (dirtyFlags.interestedPropertiesChanged)
-                leadInterestedPropertiesAdapter.setDataList(lead.interestedProperties)
+                adapter.setDataList(lead.interestedPropertiesWithStatus)
 
             // CLEAR THE FLAGS
             leadViewModel.clearDirtyFlags()

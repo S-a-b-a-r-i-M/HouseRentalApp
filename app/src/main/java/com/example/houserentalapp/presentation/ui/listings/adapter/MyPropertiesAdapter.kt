@@ -2,13 +2,11 @@ package com.example.houserentalapp.presentation.ui.listings.adapter
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.PropertySummary
@@ -17,6 +15,7 @@ import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.base.BaseDiffCallBack
 import com.example.houserentalapp.presentation.ui.base.BaseLoadingAdapter
 import com.example.houserentalapp.presentation.ui.base.LoadingAdapterData
+import com.example.houserentalapp.presentation.ui.common.PopupMenuBuilder
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
@@ -100,37 +99,39 @@ class MyPropertiesAdapter(
                 onClick(summary.id)
             }
             ibtnAction.setOnClickListener {
-                showActionsPopupMenu(ibtnAction, summary)
+                showActionsPopupMenu2(ibtnAction, summary)
             }
         }
 
-        private fun showActionsPopupMenu(anchorView: View, summary: PropertySummary) {
-            val popupMenu = PopupMenu(anchorView.context, anchorView, Gravity.START)
-            popupMenu.menuInflater.inflate(R.menu.property_action_menu, popupMenu.menu)
-            popupMenu.menu.findItem(R.id.action_change_availability).title = if (summary.isActive)
-                "Make Inactive"
-            else
-                "Make Active"
-            popupMenu.setOnMenuItemClickListener { item ->
-                when(item.itemId) {
-                    R.id.action_edit -> {
-                        onPropertyAction(summary, PropertyLandlordAction.EDIT)
-                        true
-                    }
-                    R.id.action_change_availability -> {
-                        onPropertyAction(summary, PropertyLandlordAction.CHANGE_AVAILABILITY)
-                        true
-                    }
-                    R.id.action_delete -> {
-                        onPropertyAction(summary, PropertyLandlordAction.DELETE)
-                        true
-                    }
-                    else -> false
-                }
+        private fun showActionsPopupMenu2(anchorView: View, summary: PropertySummary) {
+            var option2Title = "Make Inactive"
+            var option2Drawable = R.drawable.baseline_visibility_off_24
+            if (!summary.isActive) {
+                option2Title = "Make Active"
+                option2Drawable = R.drawable.baseline_visibility_24
             }
-
-            // popupMenu.setForceShowIcon(true) // Not Working
-            popupMenu.show()
+            PopupMenuBuilder(anchorView.context, anchorView)
+                .addItem(1, "Edit", icon = R.drawable.baseline_edit_24)
+                .addItem(2, option2Title, option2Drawable)
+                .addItem(3, "Delete", icon = R.drawable.baseline_delete_24)
+                .setOnItemClickListener { option ->
+                    when(option.id) {
+                        1 -> {
+                            onPropertyAction(summary, PropertyLandlordAction.EDIT)
+                            true
+                        }
+                        2 -> {
+                            onPropertyAction(summary, PropertyLandlordAction.CHANGE_AVAILABILITY)
+                            true
+                        }
+                        3 -> {
+                            onPropertyAction(summary, PropertyLandlordAction.DELETE)
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                .show()
         }
     }
 
@@ -235,40 +236,6 @@ class MyPropertiesAdapter(
     }
 }
 
-//class MyPropertiesDiffCallBack(
-//    private val oldList: List<MyPropertiesAdapterData>,
-//    private val newList: List<MyPropertiesAdapterData>,
-//) : DiffUtil.Callback() {
-//    override fun getOldListSize() = oldList.size
-//
-//    override fun getNewListSize() = newList.size
-//
-//    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-//        val oldItem = oldList[oldItemPosition]
-//        val newItem = newList[newItemPosition]
-//
-//
-//        return if (oldItem::class == newItem::class) {
-//            when(oldItem) {
-//                is MyPropertiesAdapterData.Header -> oldItem.date == (newItem as MyPropertiesAdapterData.Header).date
-//                is MyPropertiesAdapterData.Data ->
-//                    oldItem.data.summary.id == (newItem as MyPropertiesAdapterData.Data).data.summary.id
-//            }
-//        } else
-//            false
-//    }
-//
-//    override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-//        val oldItem = oldList[oldItemPosition]
-//        val newItem = newList[newItemPosition]
-//        return when(oldItem) {
-//            is MyPropertiesAdapterData.Header -> oldItem.date == (newItem as MyPropertiesAdapterData.Header).date
-//            is MyPropertiesAdapterData.Data -> oldItem.data == (newItem as MyPropertiesAdapterData.Data).data
-//        }
-//    }
-//}
-
-
 class MyPropertiesDiffCallBack(
     oldList: List<LoadingAdapterData<MyPropertiesAdapterData>>,
     newList: List<LoadingAdapterData<MyPropertiesAdapterData>>,
@@ -277,9 +244,12 @@ class MyPropertiesDiffCallBack(
         oldData: MyPropertiesAdapterData,
         newData: MyPropertiesAdapterData
     ): Boolean {
-        return when(oldData) {
-            is MyPropertiesAdapterData.Header -> oldData.date == (newData as MyPropertiesAdapterData.Header).date
-            is MyPropertiesAdapterData.Data -> oldData.data == (newData as MyPropertiesAdapterData.Data).data
+        return when {
+            oldData is MyPropertiesAdapterData.Header && newData is MyPropertiesAdapterData.Header
+                -> oldData.date == newData.date
+            oldData is MyPropertiesAdapterData.Data && newData is MyPropertiesAdapterData.Data
+                -> oldData.data == newData.data
+            else -> false
         }
     }
 }

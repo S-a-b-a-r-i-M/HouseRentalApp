@@ -27,8 +27,9 @@ class LeadsAdapter (private val onClick: (Lead) -> Unit)
 
         fun bind(lead: Lead) {
             tvLeadName.text = lead.leadUser.name
-            tvLeadStatus.text = lead.status.readable
-            tvInterestedProperties.text = getPropertiesSummaryText(lead.interestedProperties)
+            tvInterestedProperties.text = getPropertiesSummaryText(
+                lead.interestedPropertiesWithStatus.map { it.first }
+            )
             val context = itemView.context
             btnDialLead.setOnClickListener { context.openDialer(lead.leadUser.phone) }
             if (lead.leadUser.email != null) {

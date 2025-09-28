@@ -5,7 +5,6 @@ object LeadTable {
     const val COLUMN_ID = "id"
     const val COLUMN_TENANT_ID = "tenant_id"
     const val COLUMN_LANDLORD_ID = "landlord_id"
-    const val COLUMN_STATUS = "status"
     const val COLUMN_NOTE = "note"
     const val COLUMN_CREATED_AT = "created_at"
 
@@ -14,7 +13,6 @@ object LeadTable {
             $COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,
             $COLUMN_TENANT_ID INTEGER,
             $COLUMN_LANDLORD_ID INTEGER,
-            $COLUMN_STATUS TEXT NOT NULL,
             $COLUMN_NOTE TEXT,
             $COLUMN_CREATED_AT INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
             UNIQUE($COLUMN_TENANT_ID, $COLUMN_LANDLORD_ID),

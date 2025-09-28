@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
+    android:layout_marginBottom="4dp"
     android:elevation="50dp"
     app:cardCornerRadius="10dp" >
 
@@ -13,6 +13,55 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="6dp">
+
+        <TextView
+            android:id="@+id/tvAddedDateLabel"
+            style="@style/TextAppearance.App.Body3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Addted At : "
+            app:layout_constraintBottom_toTopOf="@+id/separator1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvAddedDate"
+            style="@style/TextAppearance.App.Body3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="01/01/2025"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAddedDateLabel"
+            app:layout_constraintStart_toEndOf="@+id/tvAddedDateLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvAddedDateLabel" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLeadStatus"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="0dp"
+            android:paddingVertical="2dp"
+            android:paddingHorizontal="4dp"
+            app:cornerRadius="8dp"
+            android:backgroundTint="@color/gray_very_light"
+            android:text="Current Status"
+            android:textAppearance="@style/TextAppearance.App.LabelSmall"
+            app:drawableEndCompat="@drawable/outline_keyboard_arrow_down_24"
+            app:drawableTint="@color/gray_medium"
+            app:layout_constraintBottom_toTopOf="@+id/separator1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/separator1"
+            style="@style/Separator"
+            android:layout_width="match_parent"
+            android:layout_height="0.25dp"
+            android:layout_marginTop="2dp"
+            app:layout_constraintTop_toBottomOf="@+id/btnLeadStatus"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/imgProperty"
@@ -23,7 +72,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/guideline3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/tvHeader"
             app:shapeAppearance="@style/ShapeAppearance.Material3.Corner.Small" />
 
         <TextView
@@ -31,25 +80,27 @@
             style="@style/TextAppearance.App.Body1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
-            android:ellipsize="end"
             android:singleLine="true"
+            android:ellipsize="end"
             android:text="@string/property_name"
             android:textStyle="normal"
             app:layout_constraintEnd_toStartOf="@+id/tvStatus"
             app:layout_constraintStart_toStartOf="@id/guideline3"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/separator1" />
 
         <TextView
             android:id="@+id/tvStatus"
             style="@style/TextAppearance.App.LabelSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
             android:gravity="center_vertical"
             android:text="status"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/separator1"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
             android:id="@+id/tvBody1"

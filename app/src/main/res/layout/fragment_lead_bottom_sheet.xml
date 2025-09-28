@@ -27,7 +27,7 @@
             style="@style/TextAppearance.App.Body1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:text="Lead Name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgDragHandler" />
@@ -53,21 +53,6 @@
             android:text="@string/email_gmail_com"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLeadPhone" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLeadStatus"
-            style="@style/Widget.Material3.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/gray_very_light"
-            android:drawableEnd="@drawable/outline_keyboard_arrow_down_24"
-            android:layout_marginTop="12dp"
-            android:padding="6dp"
-            android:text="Current Status"
-            android:textAppearance="@style/TextAppearance.App.LabelMedium"
-            app:cornerRadius="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imgDragHandler" />
 
         <com.example.houserentalapp.presentation.ui.common.InlineEditView
             android:id="@+id/inlineEditNote"
@@ -107,7 +92,9 @@
             android:id="@+id/rvLeadInterestedProperties"
             android:layout_width="0dp"
             android:layout_height="400dp"
-            android:layout_marginVertical="12dp"
+            android:paddingVertical="12dp"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

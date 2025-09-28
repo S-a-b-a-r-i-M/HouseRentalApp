@@ -4,7 +4,6 @@ import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.Pagination
 import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.domain.model.enums.LeadStatus
-import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.repo.UserPropertyRepo
 import com.example.houserentalapp.domain.utils.Result
@@ -68,11 +67,9 @@ class UserPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
         }
     }
 
-    suspend fun updateLead(
-        leadId: Long, updateData: Map<LeadUpdatableField, String>
-    ): Result<Unit> {
+    suspend fun updateLeadNotes(leadId: Long, updateData: String): Result<Unit> {
         return try {
-            when(val res = userPropertyRepo.updateLead(leadId, updateData)) {
+            when(val res = userPropertyRepo.updateLeadNote(leadId, updateData)) {
                 is Result.Success<Boolean> -> {
                     if (res.data) {
                         logInfo("Update lead($leadId) success.")
@@ -87,6 +84,29 @@ class UserPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
             }
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while updateLead(id: $leadId)")
+            Result.Error(exp.message.toString())
+        }
+    }
+
+    suspend fun updateLeadPropertyStatus(
+        leadId: Long, propertyId: Long, newStatus: LeadStatus
+    ): Result<Unit> {
+        return try {
+            when(val res = userPropertyRepo.updateLeadPropertyStatus(leadId, propertyId, newStatus)) {
+                is Result.Success<Boolean> -> {
+                    if (res.data) {
+                        logInfo("Update lead($leadId)'s property status success.")
+                        Result.Success(Unit)
+                    }
+                    else {
+                        logError("Update Lead's property status failed, received success with false from repo")
+                        Result.Error("update Lead's property status failed")
+                    }
+                }
+                is Result.Error -> res
+            }
+        } catch (exp: Exception) {
+            logError("${exp.message.toString()} while Lead's property status(id: $leadId)")
             Result.Error(exp.message.toString())
         }
     }

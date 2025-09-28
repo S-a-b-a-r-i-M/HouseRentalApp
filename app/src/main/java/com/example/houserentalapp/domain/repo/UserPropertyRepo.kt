@@ -30,8 +30,12 @@ interface UserPropertyRepo {
     suspend fun getUserPropertyStats(userId: Long): Result<UserPropertyStats>
 
     // UPDATE
-    suspend fun updateLead(leadId: Long, updateData: Map<LeadUpdatableField, String>): Result<Boolean>
+    suspend fun updateLeadNote(leadId: Long, newNotes: String): Result<Boolean>
 
-    // DELETE
+    suspend fun updateLeadPropertyStatus(
+        leadId: Long, propertyId: Long, newStatus: LeadStatus
+    ): Result<Boolean>
+
+        // DELETE
     suspend fun deleteUserAction(userId: Long, propertyId: Long, action: UserActionEnum): Result<Boolean>
 }

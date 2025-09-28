@@ -67,7 +67,6 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
                             tenantId = tenantId,
                             landlordId = landlordId,
                             propertyId = propertyId,
-                            status = status.readable,
                         )
                     )
                     logDebug("Lead($leadId) created")
@@ -75,7 +74,7 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
 
                 // Map Lead With Property
                 logInfo("Lead($leadId) Mapped to Property($propertyId)")
-                userPropertyDao.mapLeadToProperty(leadId, propertyId)
+                userPropertyDao.mapLeadToProperty(leadId, propertyId, status.readable)
 
                 Result.Success(leadId)
             }
@@ -141,27 +140,31 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
                 // Get Property Summaries
                 val leadDomainList = mutableListOf<Lead>()
                 if (leadEntityList.isNotEmpty()) {
+                    // Parse Only PropertyIDS
                     val uniquePropertyIds = mutableSetOf<Long>()
-                    leadEntityList.forEach {
-                        uniquePropertyIds.addAll(it.interestedPropertyIds)
+                    leadEntityList.forEach { entity ->
+                        uniquePropertyIds.addAll(
+                            entity.interestedPropertyIdsWithStatus.map { it.first }
+                        )
                     }
-                    val propertySummariesMap = propertyDao.getPropertySummariesById(
+                    // Get Property Summary Details by ids
+                    val summariesMap = propertyDao.getPropertySummariesById(
                         uniquePropertyIds.toList()
                     ).associateBy { it.id }
 
                     // Add Interested Properties into each lead data
                     leadEntityList.forEach {
-                        val interestedProperties = it.interestedPropertyIds.mapNotNull { propertyId ->
-                            propertySummariesMap[propertyId]
-                        }.map {
-                            PropertyMapper.toPropertySummaryDomain(it)
+                        val interestedPropertiesWithStatus = it.interestedPropertyIdsWithStatus.map {
+                            (propertyId, status) ->
+                            val entity = summariesMap.getValue(propertyId)
+                            val domain = PropertyMapper.toPropertySummaryDomain(entity)
+                            Pair(domain, status)
                         }
                         leadDomainList.add(
                             Lead(
                                 id = it.id,
                                 leadUser = it.lead,
-                                interestedProperties = interestedProperties,
-                                status = LeadStatus.fromString(it.status),
+                                interestedPropertiesWithStatus,
                                 note = it.note,
                                 createdAt = it.createdAt
                             )
@@ -191,16 +194,26 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
     }
 
     // -------------- UPDATE --------------
-    override suspend fun updateLead(
-        leadId: Long, updateData: Map<LeadUpdatableField, String>
+    override suspend fun updateLeadNote(leadId: Long, newNotes: String): Result<Boolean> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val updatedRows = userPropertyDao.updateLeadNote(leadId, newNotes)
+                logDebug("updateLeadNote -> updated rows count is $updatedRows")
+                Result.Success(updatedRows > 0)
+            }
+        } catch (exp: Exception) {
+            logError("Error updateLeadNote($leadId)", exp)
+            Result.Error(exp.message.toString())
+        }
+    }
+
+    override suspend fun updateLeadPropertyStatus(
+        leadId: Long, propertyId: Long, newStatus: LeadStatus
     ): Result<Boolean> {
         return try {
             withContext(Dispatchers.IO) {
-                if (updateData.isEmpty())
-                    return@withContext Result.Success(true)
-
-                val updatedRows = userPropertyDao.updateLead(leadId, updateData)
-                logDebug("UpdateLead -> updated rows count is $updatedRows")
+                val updatedRows = userPropertyDao.updateLeadPropertyStatus(leadId, propertyId, newStatus)
+                logDebug("updateLeadPropertyStatus -> updated rows count is $updatedRows")
                 Result.Success(updatedRows > 0)
             }
         } catch (exp: Exception) {
