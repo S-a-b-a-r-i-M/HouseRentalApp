@@ -56,7 +56,6 @@
             style="@style/TextAppearance.App.Body1"
             android:layout_marginTop="2dp"
             android:text="@string/price_maintenance_month"
-            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

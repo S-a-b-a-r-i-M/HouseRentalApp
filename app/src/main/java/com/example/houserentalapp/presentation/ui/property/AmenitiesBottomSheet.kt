@@ -79,7 +79,7 @@ class AmenitiesBottomSheet : BottomSheetDialogFragment() {
             val counterView = CounterView(context).apply {
                 label = it.readable
                 labelSize = 14f
-                labelColor = resources.getColor(R.color.black)
+                labelColor = resources.getColor(R.color.gray_dark)
                 labelStyle = Typeface.DEFAULT
                 setPadding(30)
                 setIconDimensions(30f, 30f)

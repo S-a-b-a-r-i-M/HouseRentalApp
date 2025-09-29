@@ -16,7 +16,7 @@
         android:layout_margin="6dp"
         android:layout_gravity="end"
         android:background="@drawable/baseline_close_24"
-        app:backgroundTint="@color/icon_button_color" />
+        app:backgroundTint="@color/gray_dark" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

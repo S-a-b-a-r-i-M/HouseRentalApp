@@ -6,9 +6,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="TextAppearance.App.Toolbar" parent="@style/TextAppearance.App.Headline1" >
-
-    </style>
+    <style name="TextAppearance.App.Toolbar" parent="@style/TextAppearance.App.Headline1" />
 
     <style name="TextAppearance_Clickable">
         <item name="android:textStyle">bold</item>
@@ -49,9 +47,5 @@
     <style name="TextAppearance.App.LabelSmall" parent="TextAppearance.Material3.LabelSmall">
         <item name="android:textColor">@color/gray_dark</item>
         <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="TextAppearance.App.NormalLabelSmall" parent="TextAppearance.App.LabelSmall">
-        <item name="android:textStyle">normal</item>
     </style>
 </resources>

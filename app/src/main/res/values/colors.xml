@@ -3,22 +3,30 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="gray_dark">#616161</color>
+    <color name="gray_medium">#ACB2B9</color>
+    <color name="separator_color">#adb5bd</color>
+    <color name="gray_light">#E0E0E0</color>
+    <color name="gray_very_light">#F2F1F1</color>
+
+    <!-- BLUE -->
     <color name="white_blue">#F2F3F6</color>
     <color name="primary_blue">#1CA6EF</color>
     <color name="primary_blue_dark">#2D74CF</color>
     <color name="primary_blue_light">#A4CEE5</color>
     <color name="primary_blue_very_light">#DBEAF0</color>
 
-    <color name="gray_medium">#ACB2B9</color>
-    <color name="separator_color">#adb5bd</color>
-    <color name="gray_light">#E0E0E0</color>
-    <color name="gray_very_light">#F2F1F1</color>
-    <color name="gray_dark">#616161</color>
-    <color name="icon_button_color">#616161</color>
-
+    <!-- RED -->
     <color name="red_error">#AF2B1E</color>
     <color name="red_error_very_light">#F5E6E8</color>
-    <color name="red_halo">#f44336</color>
     <color name="green_success">#5CD85A</color>
     <color name="green_success_light">#C8E6C9</color>
+
+    <!-- RED -->
+    <!--    <color name="red_primary">#f44336</color>-->
+    <color name="red_primary">#E53935</color>
+    <color name="red_dark">#C62828</color>           <!-- Dark red for contrast -->
+    <color name="red_light">#FFCDD2</color>          <!-- Light red for containers -->
+    <color name="red_very_light">#FFEBEE</color>     <!-- Very light pink for surfaces -->
+    <color name="white_red">#F2ECEC</color>
 </resources>
