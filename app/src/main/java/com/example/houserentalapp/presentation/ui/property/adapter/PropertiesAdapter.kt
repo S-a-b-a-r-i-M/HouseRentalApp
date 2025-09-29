@@ -13,7 +13,9 @@ import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.base.BaseDiffCallBack
 import com.example.houserentalapp.presentation.ui.base.BaseLoadingAdapter
 import com.example.houserentalapp.presentation.ui.base.LoadingAdapterData
+import com.example.houserentalapp.presentation.utils.extensions.MaterialColorAttr
 import com.example.houserentalapp.presentation.utils.extensions.getShapableImageView
+import com.example.houserentalapp.presentation.utils.extensions.getThemeColor
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
@@ -101,7 +103,7 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
 
 
         fun bindShortlistData(isShortListed: Boolean) {
-            var colorId = R.color.primary_blue
+            var colorId = ibtnShortlist.context.getThemeColor(MaterialColorAttr.COLOR_PRIMARY)
             if (isShortListed) {
                 // Heart beat animation for shortlisted
                 ibtnShortlist.animate()
@@ -126,12 +128,10 @@ class PropertiesAdapter(val onClick: (Long) -> Unit, val onShortlistToggle: ((Lo
                     .setDuration(200)
                     .start()
 
-                colorId = R.color.gray_medium
+                colorId = itemView.context.getColor(R.color.gray_medium)
             }
 
-            ibtnShortlist.imageTintList = ColorStateList.valueOf(
-                itemView.context.getColor(colorId)
-            )
+            ibtnShortlist.imageTintList = ColorStateList.valueOf(colorId)
         }
     }
 

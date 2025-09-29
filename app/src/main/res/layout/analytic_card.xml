@@ -23,7 +23,7 @@
         android:text="99"
         android:singleLine="true"
         android:textSize="14sp"
-        android:textColor="?attr/colorSurface"
+        android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/imgIcon"
         app:layout_constraintEnd_toEndOf="parent"

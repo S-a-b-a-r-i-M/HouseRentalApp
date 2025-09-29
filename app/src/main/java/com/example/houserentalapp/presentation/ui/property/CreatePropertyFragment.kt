@@ -32,13 +32,14 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePrope
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.model.PropertyDataUI
 import com.example.houserentalapp.presentation.ui.FragmentArgKey
-import com.example.houserentalapp.presentation.ui.auth.AuthActivity
 import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.utils.extensions.MaterialColorAttr
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
+import com.example.houserentalapp.presentation.utils.extensions.getThemeColor
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
@@ -495,7 +496,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                                 propertyImages.size - maxImageDisplaySize
                             )
                             textSize = 14f
-                            setTextColor(context.resources.getColor(R.color.primary_blue_dark))
+                            setTextColor(
+                                context.getThemeColor(MaterialColorAttr.COLOR_PRIMARY_DARK)
+                            )
                             backgroundTintList = ColorStateList.valueOf(Color.TRANSPARENT)
 
                             // On Click Event

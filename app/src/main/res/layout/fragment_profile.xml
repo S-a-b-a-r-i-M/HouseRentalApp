@@ -6,8 +6,7 @@
     android:gravity="center_horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ui.profile.ProfileFragment"
-    android:background="@color/white_blue">
+    tools:context=".presentation.ui.profile.ProfileFragment">
 
     <!--  APP BAR  -->
     <com.google.android.material.appbar.AppBarLayout

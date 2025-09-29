@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.houserentalapp.domain.model.ImageSource
-import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.utils.extensions.logDebug

@@ -8,6 +8,16 @@
     tools:context=".presentation.ui.MainActivity"
     android:theme="@style/AppTheme">
 
+    <View
+        android:id="@+id/statusBarOverlayView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/wholeContainerView"/>
+
     <LinearLayout
         android:id="@+id/wholeContainerView"
         android:layout_width="match_parent"
@@ -16,7 +26,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/statusBarOverlayView">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/pageFragmentContainer"

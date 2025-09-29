@@ -41,8 +41,8 @@ class AuthActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.auth)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, imeInsets.bottom)
+            binding.statusBarOverlayView.layoutParams.height = systemBars.top // ADD SYSTEM BAR PADSING
+            v.setPadding(systemBars.left, 0, systemBars.right, imeInsets.bottom)
             insets
         }
     }

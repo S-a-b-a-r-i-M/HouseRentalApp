@@ -1,10 +1,12 @@
 package com.example.houserentalapp.presentation.utils.extensions
 
 import android.content.Context
+import android.util.TypedValue
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.houserentalapp.presentation.enums.FragmentAnimationType
@@ -83,4 +85,15 @@ fun Context.getShapableImageView(imageWidth: Int) : ShapeableImageView {
             }
         )
     }
+}
+
+enum class MaterialColorAttr(val id: Int) {
+    COLOR_PRIMARY(com.google.android.material.R.attr.colorPrimary),
+    COLOR_PRIMARY_DARK(com.google.android.material.R.attr.colorPrimaryDark),
+}
+
+fun Context.getThemeColor(attr: MaterialColorAttr) : Int {
+    val typedValue = TypedValue()
+    theme.resolveAttribute(attr.id, typedValue, true)
+    return ContextCompat.getColor(this, typedValue.resourceId)
 }

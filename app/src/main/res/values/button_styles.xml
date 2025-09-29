@@ -3,14 +3,13 @@
 
     <!-- Text Button Style (Tertiary Actions) -->
     <style name="Widget.App.TextButton" parent="Widget.Material3.Button.TextButton">
-        <item name="backgroundTint">@color/primary_blue_very_light</item>
+        <item name="backgroundTint">?attr/colorSurfaceVariant</item>
         <item name="drawableTint">?attr/colorPrimaryDark</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.02</item>
         <item name="android:textColor">?attr/colorPrimaryDark</item>
-        <item name="rippleColor">@color/primary_blue_light</item>
         <item name="android:paddingHorizontal">8dp</item>
         <item name="cornerRadius">12dp</item>
     </style>

@@ -5,7 +5,14 @@
     android:id="@+id/auth"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".presentation.ui.auth.AuthActivity">
+
+    <View
+        android:id="@+id/statusBarOverlayView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="?attr/colorPrimary" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentContainer"

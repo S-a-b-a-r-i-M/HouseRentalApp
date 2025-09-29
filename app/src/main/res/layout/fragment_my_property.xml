@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white_blue"
     tools:context=".presentation.ui.listings.MyPropertyFragment">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -26,7 +25,7 @@
         android:layout_marginBottom="25dp"
         app:maxImageSize="32dp"
         app:tint="?attr/colorPrimary"
-        android:backgroundTint="@color/primary_blue_very_light"
+        android:backgroundTint="?attr/colorSurfaceVariant"
         android:src="@drawable/outline_add_24"
         android:contentDescription="@string/add_property"
         app:layout_constraintBottom_toBottomOf="parent"
