@@ -6,6 +6,7 @@ object FragmentArgKey {
     const val SEARCH_QUERY = "SEARCH_QUERY"
 
     const val PROPERTY_ID = "PROPERTY_ID"
+    const val LEAD_ID = "LEAD_ID"
     const val IS_TENANT_VIEW = "IS_TENANT_VIEW"
     const val HIDE_AND_SHOW_BOTTOM_NAV = "HIDE_AND_SHOW_BOTTOM_NAV"
 

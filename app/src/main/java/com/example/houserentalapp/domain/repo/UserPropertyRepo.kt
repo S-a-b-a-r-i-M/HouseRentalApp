@@ -27,6 +27,8 @@ interface UserPropertyRepo {
 
     suspend fun getLeadsByLandlord(landlordId: Long, pagination: Pagination): Result<List<Lead>>
 
+    suspend fun getLead(leadId: Long): Result<Lead>
+
     suspend fun getUserPropertyStats(userId: Long): Result<UserPropertyStats>
 
     // UPDATE

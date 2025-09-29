@@ -17,8 +17,6 @@ class SharedDataViewModel : ViewModel() {
     private val _logOutUser = MutableLiveData(false)
     val logOutUser: LiveData<Boolean> = _logOutUser
 
-    var currentLead: Lead? = null
-
     fun setCurrentUser(user: User) {
         logDebug("CurrentUser is set: $user")
         currentUserData = user

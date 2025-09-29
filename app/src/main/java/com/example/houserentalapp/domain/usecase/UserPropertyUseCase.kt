@@ -42,6 +42,15 @@ class UserPropertyUseCase(private val userPropertyRepo: UserPropertyRepo) {
         }
     }
 
+    suspend fun getLead(leadId: Long): Result<Lead> {
+        return try {
+            userPropertyRepo.getLead(leadId)
+        } catch (exp: Exception) {
+            logError("${exp.message.toString()} while reading Lead($leadId)")
+            Result.Error(exp.message.toString())
+        }
+    }
+
     suspend fun getPropertyWithActions(tenantId: Long, propertyId: Long): Result<Map<String, Any>> {
         return try {
             val res = userPropertyRepo.getPropertyWithUserActions(tenantId, propertyId)

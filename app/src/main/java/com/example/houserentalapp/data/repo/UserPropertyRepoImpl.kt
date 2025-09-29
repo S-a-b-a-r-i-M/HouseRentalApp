@@ -13,7 +13,6 @@ import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.UserActionData
 import com.example.houserentalapp.domain.model.UserPropertyStats
 import com.example.houserentalapp.domain.model.enums.LeadStatus
-import com.example.houserentalapp.domain.model.enums.LeadUpdatableField
 import com.example.houserentalapp.domain.model.enums.UserActionEnum
 import com.example.houserentalapp.domain.repo.UserPropertyRepo
 import com.example.houserentalapp.domain.utils.Result
@@ -176,6 +175,32 @@ class UserPropertyRepoImpl(context: Context) : UserPropertyRepo {
             }
         } catch (exp: Exception) {
             logError("Error reading Leads", exp)
+            Result.Error(exp.message.toString())
+        }
+    }
+
+    override suspend fun getLead(leadId: Long): Result<Lead> {
+        return try {
+            // Get Lead Data
+            val leadEntity = userPropertyDao.getLead(leadId)
+            // Add Property Summary by ids
+            val summariesMap = propertyDao.getPropertySummariesById(
+                leadEntity.interestedPropertyIdsWithStatus.map { it.first }.toList()
+            ).associateBy { it.id }
+            val summariesWithStaus = leadEntity.interestedPropertyIdsWithStatus.map { (id, status) ->
+                val summary = PropertyMapper.toPropertySummaryDomain(summariesMap.getValue(id))
+                Pair(summary, status)
+            }
+            // Merge The results and return
+            return Result.Success(Lead(
+                id = leadEntity.id,
+                leadUser = leadEntity.lead,
+                interestedPropertiesWithStatus = summariesWithStaus,
+                note = leadEntity.note,
+                createdAt = leadEntity.createdAt
+            ))
+        }  catch (exp: Exception) {
+            logError("Error reading Lead($leadId)", exp)
             Result.Error(exp.message.toString())
         }
     }

@@ -161,9 +161,9 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="signing_in">Signing In...</string>
-    <string name="create_naccount">Create \nAccount</string>
+    <string name="create_n_account">Create \nAccount</string>
     <string name="user_name">User Name</string>
-    <string name="continue_where_you_left">continue where you left</string>
+    <string name="continue_where_you_left">Continue where you left</string>
     <string name="no_recent_searches_found">No Recent Searches Found</string>
     <string name="no_data_found">No Data Found</string>
     <string name="post_your_properties_to_see_the_magic">Post Your Properties To See The Magic</string>

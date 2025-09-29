@@ -11,14 +11,15 @@ import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.enums.LeadStatus
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.domain.utils.Result
+import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModel.LeadDirtyFlags
+import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
 
-class LeadViewModel(
-    private val lead: Lead,
-    private val userPropertyUC: UserPropertyUseCase
-) : ViewModel() {
+typealias LeadWithFlags = Pair<Lead, LeadDirtyFlags>
+
+class LeadViewModel(private val userPropertyUC: UserPropertyUseCase) : ViewModel() {
     data class LeadDirtyFlags (
         var leadUserInfoChanged: Boolean = false,
         var statusChanged: Boolean = false,
@@ -33,20 +34,36 @@ class LeadViewModel(
         }
     }
 
-    private val _leadUIResult = MutableLiveData<Pair<Lead, LeadDirtyFlags>>(
-        Pair(lead,
-        LeadDirtyFlags (
-            leadUserInfoChanged = true,
-            statusChanged = true,
-            noteChanged = true,
-            interestedPropertiesChanged = true
-        ))
-    )
-    val leadUIResult: LiveData<Pair<Lead, LeadDirtyFlags>> = _leadUIResult
+    private val _leadUIResult = MutableLiveData<ResultUI<LeadWithFlags>>()
+    val leadUIResult: LiveData<ResultUI<LeadWithFlags>> = _leadUIResult
+    private lateinit var leadWithFlags: LeadWithFlags
 
     fun clearDirtyFlags() {
-        val (_, dirtyFlags) = _leadUIResult.value!!
+        val (_, dirtyFlags) = leadWithFlags
         dirtyFlags.resetFlags()
+    }
+
+    fun loadLead(leadId: Long) {
+        viewModelScope.launch {
+            when(val res = userPropertyUC.getLead(leadId)) {
+                is Result.Success<Lead> -> {
+                    leadWithFlags = Pair(
+                        res.data,
+                        LeadDirtyFlags().apply {
+                            leadUserInfoChanged = true
+                            statusChanged = true
+                            noteChanged = true
+                            interestedPropertiesChanged = true
+                        }
+                    )
+                    _leadUIResult.value = ResultUI.Success(leadWithFlags)
+                    logDebug("Lead fetched is done.")
+                }
+                is Result.Error -> {
+                    logError("Lead loadLead is failed. exp: ${res.message}", res.exception)
+                }
+            }
+        }
     }
 
     fun updateLeadPropertyStatus(
@@ -55,24 +72,25 @@ class LeadViewModel(
         onResult: (Boolean) -> Unit
     ) {
         viewModelScope.launch {
+            val (lead, dirtyFlags) = leadWithFlags
             when(val res = userPropertyUC.updateLeadPropertyStatus(
                 lead.id, propertyId, newStatus)
             ) {
                 is Result.Success<*> -> {
                     val idx = lead.interestedPropertiesWithStatus.indexOfFirst { it.first.id == propertyId }
                     if (idx == -1) {
-                        logError("property index is missing")
+                        logError("property index is missing for propertyId($propertyId")
                         onResult(false)
                         return@launch
                     }
                     val newList = lead.interestedPropertiesWithStatus.toMutableList()
                     newList[idx] = lead.interestedPropertiesWithStatus[idx].copy(second = newStatus)
-                    val (lead, dirtyFlags) = _leadUIResult.value!!
                     dirtyFlags.interestedPropertiesChanged = true
-                    _leadUIResult.value = Pair(
+                    leadWithFlags = Pair(
                         lead.copy(interestedPropertiesWithStatus = newList),
                         dirtyFlags
                     )
+                    _leadUIResult.value = ResultUI.Success(leadWithFlags)
                     logDebug("Lead update is done.")
                     onResult(true)
                 }
@@ -86,16 +104,17 @@ class LeadViewModel(
 
     fun updateLeadNotes(newNote: String, onResult: (Boolean) -> Unit) {
         viewModelScope.launch {
+            val (lead, dirtyFlags) = leadWithFlags
             when(val res = userPropertyUC.updateLeadNotes(lead.id, newNote)) {
                 is Result.Success<*> -> {
-                    val (lead, dirtyFlags) = _leadUIResult.value!!
                     dirtyFlags.noteChanged = true
-                    _leadUIResult.value = Pair(lead.copy(note = newNote), dirtyFlags)
-                    logDebug("Lead update is done.")
+                    leadWithFlags = Pair(lead.copy(note = newNote), dirtyFlags)
+                    _leadUIResult.value = ResultUI.Success(leadWithFlags)
+                    logDebug("Lead note update is done.")
                     onResult(true)
                 }
                 is Result.Error -> {
-                    logError("Lead update is failed. exp: ${res.message}", res.exception)
+                    logError("Lead note update is failed. exp: ${res.message}", res.exception)
                     onResult(false)
                 }
             }
@@ -103,14 +122,11 @@ class LeadViewModel(
     }
 }
 
-class LeadViewModelFactory(
-    private val context: Context,
-    private val lead: Lead
-) : ViewModelProvider.Factory {
+class LeadViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LeadViewModel::class.java)) {
             val userPropertyUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
-            return LeadViewModel(lead, userPropertyUC) as T
+            return LeadViewModel(userPropertyUC) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")

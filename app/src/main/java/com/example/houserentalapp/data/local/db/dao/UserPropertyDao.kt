@@ -160,44 +160,36 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
 
         readableDB.rawQuery(query, arrayOf(landlordId.toString())).use { cursor ->
             val leadEntityList = mutableListOf<LeadEntity>()
-            while (cursor.moveToNext()) {
-                val tenantUser = UserMapper.toUser(cursor)
-                val propertyIds = cursor.getString(
-                    cursor.getColumnIndexOrThrow("property_ids")
-                ).let { ids ->
-                    if (ids.isNullOrEmpty())
-                        emptyList()
-                    else
-                        ids.split(",").map { it.toLong() }
-                }
-                val leadPropertyStatuses = cursor.getString(
-                    cursor.getColumnIndexOrThrow("lead_property_status")
-                ).let { statuses ->
-                    if (statuses.isBlank())
-                        emptyList()
-                    else
-                        statuses.split(",").map { LeadStatus.fromString(it) }
-                }
-                val propertyIdsWithStatus = propertyIds.zip(leadPropertyStatuses)
-
-                leadEntityList.add(
-                    LeadEntity(
-                        id = cursor.getLong(
-                            cursor.getColumnIndexOrThrow("lead_id")
-                        ),
-                        lead = tenantUser,
-                        interestedPropertyIdsWithStatus = propertyIdsWithStatus,
-                        note = cursor.getStringOrNull(
-                            cursor.getColumnIndexOrThrow("lead_note")
-                        ),
-                        createdAt = cursor.getLong(
-                            cursor.getColumnIndexOrThrow("lead_created_at")
-                        )
-                    )
-                )
-            }
+            while (cursor.moveToNext())
+                leadEntityList.add(parseLeadEntity(cursor))
 
             return leadEntityList
+        }
+    }
+
+    fun getLead(leadId: Long): LeadEntity {
+        val query = """
+            SELECT
+                l.${LeadTable.COLUMN_ID} as lead_id,
+                l.${LeadTable.COLUMN_TENANT_ID} as lead_tenant_id,
+                l.${LeadTable.COLUMN_LANDLORD_ID} as lead_landlord_id,
+                l.${LeadTable.COLUMN_NOTE} as lead_note,
+                l.${LeadTable.COLUMN_CREATED_AT} as lead_created_at,
+                u.*,
+                GROUP_CONCAT(lpm.${LeadPropertyMappingTable.COLUMN_PROPERTY_ID}) as property_ids,
+                GROUP_CONCAT(lpm.${LeadPropertyMappingTable.COLUMN_STATUS}) as lead_property_status
+            FROM ${LeadTable.TABLE_NAME} as l
+            JOIN ${UserTable.TABLE_NAME} as u ON l.${LeadTable.COLUMN_TENANT_ID} = u.${UserTable.COLUMN_ID}
+            LEFT JOIN ${LeadPropertyMappingTable.TABLE_NAME} as lpm ON l.${LeadTable.COLUMN_ID} = lpm.${LeadPropertyMappingTable.COLUMN_LEAD_ID}
+            WHERE l.${LeadTable.COLUMN_ID} = ? 
+            GROUP BY l.${LeadTable.COLUMN_ID}
+        """.trimIndent()
+
+        readableDB.rawQuery(query, arrayOf(leadId.toString())).use { cursor ->
+            if (cursor.moveToNext())
+                return parseLeadEntity(cursor)
+
+            throw IllegalArgumentException("Lead not found at the given id: $leadId")
         }
     }
 
@@ -355,4 +347,41 @@ class UserPropertyDao(private val dbHelper: DatabaseHelper) {
                 UserPropertyActionTable.COLUMN_CREATED_AT
             ))
         )
+
+    fun parseLeadEntity(cursor: Cursor) = with(cursor) {
+        // Get Lead User Info
+        val leadUser = UserMapper.toUser(cursor)
+        // Combine PropertyId With Status
+        val propertyIds = cursor.getString(
+            cursor.getColumnIndexOrThrow("property_ids")
+        ).let { ids ->
+            if (ids.isNullOrEmpty())
+                emptyList()
+            else
+                ids.split(",").map { it.toLong() }
+        }
+        val leadPropertyStatuses = cursor.getString(
+            cursor.getColumnIndexOrThrow("lead_property_status")
+        ).let { statuses ->
+            if (statuses.isBlank())
+                emptyList()
+            else
+                statuses.split(",").map { LeadStatus.fromString(it) }
+        }
+        val propertyIdsWithStatus = propertyIds.zip(leadPropertyStatuses)
+
+        LeadEntity(
+            id = cursor.getLong(
+                cursor.getColumnIndexOrThrow("lead_id")
+            ),
+            lead = leadUser,
+            interestedPropertyIdsWithStatus = propertyIdsWithStatus,
+            note = cursor.getStringOrNull(
+                cursor.getColumnIndexOrThrow("lead_note")
+            ),
+            createdAt = cursor.getLong(
+                cursor.getColumnIndexOrThrow("lead_created_at")
+            )
+        )
+    }
 }

@@ -19,7 +19,6 @@ class LeadsAdapter (private val onClick: (Lead) -> Unit)
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvLeadName = itemView.findViewById<TextView>(R.id.tvLeadName)
         private val ibtnOpenLead = itemView.findViewById<ImageButton>(R.id.ibtnOpenLead)
-        private val tvLeadStatus = itemView.findViewById<TextView>(R.id.tvLeadStatus)
         private val tvInterestedProperties = itemView.findViewById<TextView>(R.id.tvInterestedProperties)
         private val btnDialLead = itemView.findViewById<ImageButton>(R.id.ibtnDial)
         private val btnEmailLead = itemView.findViewById<ImageButton>(R.id.ibtnEmail)
@@ -42,7 +41,6 @@ class LeadsAdapter (private val onClick: (Lead) -> Unit)
             // OnClick Listener
             itemView.setOnClickListener { onClick(lead) }
             ibtnOpenLead.setOnClickListener { onClick(lead) }
-            tvLeadStatus.setOnClickListener { onClick(lead) }
             tvInterestedProperties.setOnClickListener { onClick(lead) }
         }
 

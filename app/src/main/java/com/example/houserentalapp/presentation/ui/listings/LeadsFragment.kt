@@ -12,6 +12,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentLeadsBinding
 import com.example.houserentalapp.domain.model.Lead
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.ui.FragmentArgKey
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadsAdapter
@@ -73,7 +74,7 @@ class LeadsFragment : BaseFragment(R.layout.fragment_leads) {
     }
 
     private fun onLeadItemClick(lead: Lead) {
-        sharedDataViewModel.currentLead = lead
+        leadBottomSheet.arguments = Bundle().apply { putLong(FragmentArgKey.LEAD_ID, lead.id) }
         leadBottomSheet.show(parentFragmentManager, "LeadBottomSheet")
     }
 
