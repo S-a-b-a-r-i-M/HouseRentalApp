@@ -16,7 +16,7 @@ import com.example.houserentalapp.presentation.ui.listings.adapter.LeadIntereste
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadWithFlags
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.showToast

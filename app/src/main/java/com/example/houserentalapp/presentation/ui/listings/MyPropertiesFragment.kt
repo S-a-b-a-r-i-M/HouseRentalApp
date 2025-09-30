@@ -21,7 +21,7 @@ import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.MyPropertiesAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
@@ -200,6 +200,13 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
                     showProgressBar()
                     logInfo("loading")
                 }
+            }
+        }
+
+        sharedDataViewModel.updatedPropertyId.observe(viewLifecycleOwner) {
+            if (it != null) {
+                sharedDataViewModel.clearUpdatedPropertyId()
+                myPropertiesViewModel.loadUpdatedPropertySummary(it)
             }
         }
     }

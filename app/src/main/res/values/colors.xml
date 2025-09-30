@@ -1,13 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Common Colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
     <color name="gray_dark">#616161</color>
     <color name="gray_medium">#ACB2B9</color>
     <color name="separator_color">#adb5bd</color>
     <color name="gray_light">#E0E0E0</color>
     <color name="gray_very_light">#F2F1F1</color>
+
+    <!-- Success, Error -->
+    <color name="red_error">#AF2B1E</color>
+    <color name="red_error_very_light">#F5E6E8</color>
+    <color name="green_success">#5CD85A</color>
+    <color name="green_success_light">#C8E6C9</color>
 
     <!-- BLUE -->
     <color name="white_blue">#F2F3F6</color>
@@ -17,16 +23,23 @@
     <color name="primary_blue_very_light">#DBEAF0</color>
 
     <!-- RED -->
-    <color name="red_error">#AF2B1E</color>
-    <color name="red_error_very_light">#F5E6E8</color>
-    <color name="green_success">#5CD85A</color>
-    <color name="green_success_light">#C8E6C9</color>
-
-    <!-- RED -->
-    <!--    <color name="red_primary">#f44336</color>-->
-    <color name="red_primary">#E53935</color>
+    <color name="red_primary">#f44336</color>
     <color name="red_dark">#C62828</color>           <!-- Dark red for contrast -->
     <color name="red_light">#FFCDD2</color>          <!-- Light red for containers -->
     <color name="red_very_light">#FFEBEE</color>     <!-- Very light pink for surfaces -->
     <color name="white_red">#F2ECEC</color>
+
+    <!-- VIOLET -->
+    <color name="violet_primary">#7E57C2</color>      <!-- Main vibrant violet -->
+    <color name="violet_dark">#5E35B1</color>         <!-- Dark violet for contrast -->
+    <color name="violet_light">#E1BEE7</color>        <!-- Light violet for containers -->
+    <color name="violet_very_light">#F3E5F5</color>   <!-- Very light violet for surfaces -->
+    <color name="white_violet">#F2F0F5</color>
+
+    <!-- colors.xml - Green -->
+    <color name="green_primary">#43A047</color>       <!-- Main vibrant green -->
+    <color name="green_dark">#2E7D32</color>          <!-- Dark green for contrast -->
+    <color name="green_light">#C8E6C9</color>         <!-- Light green for containers -->
+    <color name="green_very_light">#E8F5E9</color>    <!-- Very light green for surfaces -->
+    <color name="white_green">#F2F6F2</color>
 </resources>

@@ -33,6 +33,15 @@ class PropertyUseCase(private val propertyRepo: PropertyRepo) {
         }
     }
 
+    suspend fun getPropertySummary(userId: Long, propertyId: Long): Result<PropertySummary> {
+        return try {
+            return propertyRepo.getPropertySummary(userId, propertyId)
+        } catch (exp: Exception) {
+            logError("${exp.message.toString()} while fetching property(id: $propertyId)")
+            Result.Error(exp.message.toString())
+        }
+    }
+
     suspend fun createProperty(property: Property): Result<Long> {
         return try {
             when(val result = propertyRepo.createProperty(property)){

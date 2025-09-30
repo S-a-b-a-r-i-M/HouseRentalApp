@@ -20,7 +20,8 @@ import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationH
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.addFragment
 import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logError
@@ -38,8 +39,10 @@ import com.example.houserentalapp.presentation.utils.extensions.showToast
 class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigationHandler {
     private lateinit var binding: ActivityMainBinding
     val sharedDataViewModel: SharedDataViewModel by viewModels()
+    val preferredThemeViewModel: PreferredThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
         super.onCreate(savedInstanceState)
         logInfo("<-------- MainActivity onCreate ---------->")
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,6 +50,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
 
         enableEdgeToEdge()
         setWindowInsets()
+        observeViewModel()
 
         // Set Current User Into Shared ViewModel
         val currentUser = intent.getParcelableExtra<User>(CURRENT_USER_KEY) ?: run {
@@ -57,7 +61,6 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         sharedDataViewModel.setCurrentUser(currentUser)
 
         setBottomNavigation()
-        observeViewModel()
 
         if (savedInstanceState == null)
             loadFragmentInternal(HomeFragment())
@@ -138,6 +141,13 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                 startActivity(intent)
                 finish()
                 showToast("Logged out successfully.")
+            }
+        }
+
+        preferredThemeViewModel.isThemeUpdated.observe(this) {
+            if (it) {
+                preferredThemeViewModel.clearThemUpdate()
+                recreate() // Recreate To Load Current Theme
             }
         }
     }

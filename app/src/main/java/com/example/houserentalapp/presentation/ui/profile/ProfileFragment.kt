@@ -1,6 +1,7 @@
 package com.example.houserentalapp.presentation.ui.profile
 
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -9,11 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentProfileBinding
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.enums.AppTheme
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileViewModelFactory
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.openDialer
 import com.example.houserentalapp.presentation.utils.extensions.openMail
@@ -21,6 +23,8 @@ import com.example.houserentalapp.presentation.utils.helpers.getTimePeriod
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
+import com.example.houserentalapp.presentation.utils.extensions.dpToPx
 import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import kotlin.getValue
 
@@ -31,6 +35,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private lateinit var currentUser: User
     private lateinit var viewModel: ProfileViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
+    val preferredThemeViewModel: PreferredThemeViewModel by activityViewModels()
     private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
@@ -56,6 +61,40 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
         with(binding) {
             tvAdminEmail.text = getString(R.string.admin_gmail_com)
             tvAdminPhone.text = getString(R.string._9987654321)
+        }
+        buildThemeSwitcherOptions()
+    }
+
+    // Creating Drawable At Runtime
+    private fun getShape(colorId: Int, withStroke: Boolean = false) = GradientDrawable().apply {
+        shape = GradientDrawable.OVAL
+        setColor(_context.getColor(colorId))
+        if (withStroke) setStroke(1.dpToPx(), _context.getColor(R.color.black))
+    }
+
+    private fun buildThemeSwitcherOptions() {
+        binding.viewBlue.background = getShape(R.color.primary_blue)
+        binding.viewViolet.background = getShape(R.color.violet_primary)
+        onPreferredThemeReceived(preferredThemeViewModel.getTheme())
+    }
+
+    private fun onPreferredThemeReceived(theme: AppTheme?) {
+        val (view, colorId) = when(theme) {
+            AppTheme.VIOLET -> {
+                binding.viewBlue.isEnabled = true
+                Pair(binding.viewViolet, R.color.violet_primary)
+            }
+            else -> { // Default Theme
+                binding.viewViolet.isEnabled = true
+                Pair(binding.viewBlue, R.color.primary_blue)
+            }
+        }
+        // Change Appearance
+        view.apply {
+            background = getShape(colorId, true)
+            scaleX = 1.20f
+            scaleY = 1.20f
+            isEnabled = false
         }
     }
 
@@ -100,6 +139,14 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 currentUser.profileImageSource?.let {
                     requireContext().showImageDialog(it)
                 }
+            }
+
+            viewBlue.setOnClickListener {
+                preferredThemeViewModel.saveTheme(AppTheme.BLUE)
+            }
+
+            viewViolet.setOnClickListener {
+                preferredThemeViewModel.saveTheme(AppTheme.VIOLET)
             }
 
             ibtnDialAdmin.setOnClickListener { _context.openDialer(tvAdminPhone.text.toString()) }

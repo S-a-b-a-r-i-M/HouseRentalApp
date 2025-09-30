@@ -27,14 +27,13 @@ import com.example.houserentalapp.domain.model.enums.BachelorType
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
-import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.model.PropertyDataUI
 import com.example.houserentalapp.presentation.ui.FragmentArgKey
 import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.MaterialColorAttr
 import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
@@ -77,7 +76,6 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
         createPropertyViewModelFactory()
     }
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-
     private val formTextInputFieldInfoList = mutableListOf<TextInputFieldInfo>()
     private val formCounterViewList = mutableListOf<Pair<PropertyFormField, CounterView>>()
     private val formSingleSelectChipGroupsInfo = mutableListOf<SingleSelectableChipGroupInfo>()
@@ -537,10 +535,11 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         hideError()
                         resetForm()
 
-                        val message = if (propertyIdToEdit == null)
-                            "Property posted successfully"
-                        else
-                            "Property updated successfully"
+                        var message = "Property posted successfully"
+                        propertyIdToEdit?.let{
+                            sharedDataViewModel.setUpdatedPropertyId(it) // Set Updated Property ID
+                            message = "Property updated successfully"
+                        }
                         _context.showToast(message)
                         parentFragmentManager.popBackStack()
                     }

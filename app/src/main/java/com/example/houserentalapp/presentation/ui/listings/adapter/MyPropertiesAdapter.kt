@@ -221,7 +221,7 @@ class MyPropertiesAdapter(
 
     fun setPropertySummaryUiList(newSummaryUI: List<PropertySummaryUI>, hasMore: Boolean) {
         val newDataList = groupByDate(newSummaryUI)
-        // TODO: Handle only status change, Handle delete property change
+        // TODO: Handle only status change, Handle delete property change, single propertySummaryUpdate
         super.setDataList(newDataList, hasMore)
     }
 

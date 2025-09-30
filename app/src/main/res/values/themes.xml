@@ -1,22 +1,85 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.Material3.Light.NoActionBar">
+    <style name="BaseAppTheme" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Text -->
+        <item name="fontFamily">@font/poppins</item>
+        <!-- ScrollBar Visibility -->
+        <item name="android:scrollbarThumbHorizontal">@null</item>
+        <item name="android:scrollbarThumbVertical">@null</item>
+        <!-- Backgrounds -->
+        <item name="popupMenuBackground">@drawable/popup_bg</item>
+    </style>
+
+    <style name="AppTheme.Blue" parent="BaseAppTheme">
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/primary_blue</item> <!-- main brand color -->
         <item name="colorOnPrimary">@color/white</item>
         <item name="colorPrimaryDark">@color/primary_blue_dark</item>
+
+        <!-- Container colors -->
         <item name="colorPrimaryContainer">@color/primary_blue_light</item> <!-- Lighter variant for containers -->
         <item name="colorOnPrimaryContainer">@color/primary_blue_dark</item>
+
+        <!-- Surface -->
         <item name="colorSurfaceVariant">@color/primary_blue_very_light</item> <!-- Alternate surface for differentiation -->
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- BackGroud Color -->
         <item name="android:colorBackground">@color/white_blue</item>
-        <item name="android:statusBarColor">@color/black</item>
+    </style>
 
-        <!-- Text -->
-        <item name="fontFamily">@font/poppins</item>
+    <style name="AppTheme.Red" parent="BaseAppTheme">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/red_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/red_dark</item>
 
-        <item name="android:scrollbarThumbHorizontal">@null</item>
-        <item name="android:scrollbarThumbVertical">@null</item>
+        <!-- Container colors -->
+        <item name="colorPrimaryContainer">@color/red_light</item>
+        <item name="colorOnPrimaryContainer">@color/red_dark</item>
 
-        <item name="popupMenuBackground">@drawable/popup_bg</item>
+        <!-- Surface -->
+        <item name="colorSurfaceVariant">@color/red_very_light</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- BackGroud Color -->
+        <item name="android:colorBackground">@color/white_red</item>
+    </style>
+
+    <style name="AppTheme.Violet" parent="BaseAppTheme">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/violet_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/violet_dark</item>
+
+        <!-- Container colors -->
+        <item name="colorPrimaryContainer">@color/violet_light</item>
+        <item name="colorOnPrimaryContainer">@color/violet_dark</item>
+
+        <!-- Surface -->
+        <item name="colorSurfaceVariant">@color/violet_very_light</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- BackGroud Color -->
+        <item name="android:colorBackground">@color/white_violet</item>
+    </style>
+
+    <style name="AppTheme.Green" parent="BaseAppTheme">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/green_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/green_dark</item>
+
+        <!-- Container colors -->
+        <item name="colorPrimaryContainer">@color/green_light</item>
+        <item name="colorOnPrimaryContainer">@color/green_dark</item>
+
+        <!-- Surface -->
+        <item name="colorSurfaceVariant">@color/green_very_light</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- BackGroud Color -->
+        <item name="android:colorBackground">@color/white_green</item>
     </style>
 
     <style name="Widget.App.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">

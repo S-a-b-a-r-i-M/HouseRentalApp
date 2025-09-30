@@ -17,7 +17,7 @@ import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewMo
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModelFactory
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.MyPropertiesViewModelFactory
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 
 class ListingsFragment : BaseFragment(R.layout.fragment_listings) {

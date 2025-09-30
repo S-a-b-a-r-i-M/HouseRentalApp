@@ -3,6 +3,7 @@ package com.example.houserentalapp.presentation.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -16,14 +17,17 @@ import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModelFactory
-import com.example.houserentalapp.presentation.utils.ResultUI
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
+import kotlin.getValue
 
 class AuthActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAuthBinding
     lateinit var authViewModel: AuthViewModel
+    val preferredThemeViewModel: PreferredThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityAuthBinding.inflate(layoutInflater)

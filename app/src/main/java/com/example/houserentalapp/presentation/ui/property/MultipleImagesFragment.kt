@@ -1,23 +1,18 @@
 package com.example.houserentalapp.presentation.ui.property
 
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.RecyclerView
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentMultipleImagesBinding
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.presentation.ui.property.adapter.ImagePagerAdapter
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.helpers.loadImageSourceToImageView
 import com.google.android.material.tabs.TabLayoutMediator
-import java.io.File
 
 class MultipleImagesFragment : Fragment(R.layout.fragment_multiple_images) {
     private lateinit var binding: FragmentMultipleImagesBinding

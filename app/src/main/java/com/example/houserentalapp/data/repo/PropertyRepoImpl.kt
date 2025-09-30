@@ -150,6 +150,22 @@ class PropertyRepoImpl(private val context: Context) : PropertyRepo {
         }
     }
 
+    override suspend fun getPropertySummary(
+        userId: Long,
+        propertyId: Long
+    ): Result<PropertySummary> {
+        return try {
+            withContext(Dispatchers.IO) {
+                val summaryEntity = propertyDao.getPropertySummariesById(listOf(propertyId))[0]
+                val summaryDomain = PropertyMapper.toPropertySummaryDomain(summaryEntity)
+                Result.Success(summaryDomain)
+            }
+        } catch (e: Exception) {
+            logError("Error reading property summaries", e)
+            Result.Error(e.message.toString())
+        }
+    }
+
     // -------------- UPDATE --------------
 
     suspend fun updatePropertyAmenities(

@@ -106,7 +106,7 @@
                 android:layout_marginHorizontal="6dp"/>
 
             <View
-                android:id="@+id/viewRed"
+                android:id="@+id/viewViolet"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginHorizontal="6dp" />

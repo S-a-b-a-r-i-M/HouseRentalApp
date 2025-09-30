@@ -23,7 +23,7 @@ import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAda
 import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.PropertiesListViewModelFactory
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo

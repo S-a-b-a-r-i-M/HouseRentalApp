@@ -22,7 +22,7 @@ import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModelFact
 import com.example.houserentalapp.presentation.ui.home.adapter.RecentSearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 

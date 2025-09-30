@@ -24,7 +24,7 @@ import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModel
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.ProfileEditViewModelFactory
 import com.example.houserentalapp.presentation.ui.profile.viewmodel.UserEditFormField
-import com.example.houserentalapp.presentation.ui.property.viewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper

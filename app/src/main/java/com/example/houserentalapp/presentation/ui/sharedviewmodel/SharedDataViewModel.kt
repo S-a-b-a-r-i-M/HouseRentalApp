@@ -1,4 +1,4 @@
-package com.example.houserentalapp.presentation.ui.property.viewmodel
+package com.example.houserentalapp.presentation.ui.sharedviewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +15,8 @@ class SharedDataViewModel : ViewModel() {
     val currentUserLD: LiveData<User> = _currentUserLD
     private val _logOutUser = MutableLiveData(false)
     val logOutUser: LiveData<Boolean> = _logOutUser
+    private val _updatedPropertyId = MutableLiveData<Long?>(null)
+    val updatedPropertyId: LiveData<Long?> = _updatedPropertyId
 
     fun setCurrentUser(user: User) {
         logDebug("CurrentUser is set: $user")
@@ -38,6 +40,14 @@ class SharedDataViewModel : ViewModel() {
 
     fun setCurrentFilters(propertyFilters: PropertyFilters) {
         currentFilter = propertyFilters
+    }
+
+    fun setUpdatedPropertyId(propertyId: Long) {
+        _updatedPropertyId.value = propertyId
+    }
+
+    fun clearUpdatedPropertyId() {
+        _updatedPropertyId.value = null
     }
 
     var imageSources: List<ImageSource> = emptyList()

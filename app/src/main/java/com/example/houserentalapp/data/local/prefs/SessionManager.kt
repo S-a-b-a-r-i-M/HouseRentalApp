@@ -15,7 +15,7 @@ class SessionManager(context: Context) {
         try {
             sharedPreferences.edit {
                 putLong(KEY_USER_ID, userId)
-                .putBoolean(KEY_IS_LOGGED_IN, true)
+                putBoolean(KEY_IS_LOGGED_IN, true)
             }
             true
         } catch (e: Exception) {

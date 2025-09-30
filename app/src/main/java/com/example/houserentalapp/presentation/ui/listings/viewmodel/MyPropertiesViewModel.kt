@@ -16,9 +16,7 @@ import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 
-/* TODO
-    1. View Count
- */
+// TODO: No need for PropertySummaryUI (can be replaced by PropertySummary)
 class MyPropertiesViewModel(
     private val propertyUC: PropertyUseCase, private val currentUser: User
 ) : ViewModel() {
@@ -58,6 +56,31 @@ class MyPropertiesViewModel(
                     is Result.Error -> {
                         logError("Error on loadPropertySummaries : ${result.message}")
                         _propertySummariesResult.value = ResultUI.Error(result.message)
+                    }
+                }
+            } catch (exp: Exception) {
+                logError("Error on loadPropertySummaries : ${exp.message}")
+                _propertySummariesResult.value = ResultUI.Error("Unexpected Error")
+            }
+        }
+    }
+
+    fun loadUpdatedPropertySummary(propertyId: Long) {
+        viewModelScope.launch {
+            try {
+                val result = propertyUC.getPropertySummary(currentUser.id, propertyId)
+                when (result) {
+                    is Result.Success<PropertySummary> -> {
+                        val idx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
+                        if (idx == -1) {
+                            logWarning("Can't find updated property id in list")
+                            return@launch
+                        }
+                        propertySummaryUIList[idx] = PropertySummaryUI(result.data, false)
+                        _propertySummariesResult.value = ResultUI.Success(propertySummaryUIList)
+                    }
+                    is Result.Error -> {
+                        logError("Error on loadPropertySummaries : ${result.message}")
                     }
                 }
             } catch (exp: Exception) {
