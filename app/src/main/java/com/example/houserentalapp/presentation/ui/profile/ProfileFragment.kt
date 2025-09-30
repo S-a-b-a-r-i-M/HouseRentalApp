@@ -25,6 +25,7 @@ import com.example.houserentalapp.presentation.ui.components.showImageDialog
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
 import com.example.houserentalapp.presentation.utils.extensions.dpToPx
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNavigateBack
 import kotlin.getValue
 
@@ -75,6 +76,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private fun buildThemeSwitcherOptions() {
         binding.viewBlue.background = getShape(R.color.primary_blue)
         binding.viewViolet.background = getShape(R.color.violet_primary)
+        binding.viewGreen.background = getShape(R.color.green_primary)
         onPreferredThemeReceived(preferredThemeViewModel.getTheme())
     }
 
@@ -82,11 +84,18 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
         val (view, colorId) = when(theme) {
             AppTheme.VIOLET -> {
                 binding.viewBlue.isEnabled = true
+                binding.viewGreen.isEnabled = true
                 Pair(binding.viewViolet, R.color.violet_primary)
             }
-            else -> { // Default Theme
+            AppTheme.BLUE, null -> { // Default Theme
                 binding.viewViolet.isEnabled = true
+                binding.viewGreen.isEnabled = true
                 Pair(binding.viewBlue, R.color.primary_blue)
+            }
+            AppTheme.GREEN -> {
+                binding.viewBlue.isEnabled = true
+                binding.viewViolet.isEnabled = true
+                Pair(binding.viewGreen, R.color.green_primary)
             }
         }
         // Change Appearance
@@ -119,6 +128,11 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             .show()
     }
 
+    private fun saveTheme(theme: AppTheme) {
+        logDebug("New Theme Selected: ${theme.readable}")
+        preferredThemeViewModel.saveTheme(theme)
+    }
+
     private fun setupListeners() {
         with(binding) {
             toolbar.setOnMenuItemClickListener { item ->
@@ -141,13 +155,11 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 }
             }
 
-            viewBlue.setOnClickListener {
-                preferredThemeViewModel.saveTheme(AppTheme.BLUE)
-            }
+            viewBlue.setOnClickListener { saveTheme(AppTheme.BLUE) }
 
-            viewViolet.setOnClickListener {
-                preferredThemeViewModel.saveTheme(AppTheme.VIOLET)
-            }
+            viewViolet.setOnClickListener { saveTheme(AppTheme.VIOLET) }
+
+            viewGreen.setOnClickListener { saveTheme(AppTheme.GREEN) }
 
             ibtnDialAdmin.setOnClickListener { _context.openDialer(tvAdminPhone.text.toString()) }
             ibtnEmailAdmin.setOnClickListener { _context.openMail(tvAdminEmail.text.toString()) }

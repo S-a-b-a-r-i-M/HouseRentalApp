@@ -6,6 +6,7 @@ import com.example.houserentalapp.domain.model.enums.ReadableEnum
 
 enum class AppTheme(override val readable: String, @StyleRes val theme: Int) : ReadableEnum {
     BLUE("Blue", R.style.AppTheme_Blue),
+    GREEN("Green", R.style.AppTheme_Green),
     VIOLET("Violet", R.style.AppTheme_Violet);
 
     companion object : ReadableEnum.Companion<AppTheme> {

@@ -41,5 +41,5 @@
     <color name="green_dark">#2E7D32</color>          <!-- Dark green for contrast -->
     <color name="green_light">#C8E6C9</color>         <!-- Light green for containers -->
     <color name="green_very_light">#E8F5E9</color>    <!-- Very light green for surfaces -->
-    <color name="white_green">#F2F6F2</color>
+    <color name="white_green">#F9FBF9</color>
 </resources>

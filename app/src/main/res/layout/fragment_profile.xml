@@ -111,6 +111,12 @@
                 android:layout_height="36dp"
                 android:layout_marginHorizontal="6dp" />
 
+            <View
+                android:id="@+id/viewGreen"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginHorizontal="6dp" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
