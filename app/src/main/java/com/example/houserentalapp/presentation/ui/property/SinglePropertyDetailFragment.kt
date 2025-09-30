@@ -192,7 +192,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         with(binding) {
           // ToolBar Listeners
             toolbar.setNavigationOnClickListener {
-                parentFragmentManager.popBackStack()
+                navigationHandler.navigateBack()
             }
 
             toolbar.setOnMenuItemClickListener { item ->

@@ -46,6 +46,7 @@ abstract class BaseLoadingAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHol
     override fun getItemCount() = itemList.size
 
     open fun setDataList(newDataList: List<T>, hasMore: Boolean = false) {
+        // TODO: Optimize extra space
         val newAdapterDataList: MutableList<LoadingAdapterData<T>> = newDataList.map {
             LoadingAdapterData.Data(it)
         }.toMutableList()

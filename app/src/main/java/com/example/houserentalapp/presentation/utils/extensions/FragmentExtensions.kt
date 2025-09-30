@@ -22,3 +22,9 @@ fun BaseFragment.onBackPressedNavigateBack() {
         }
     )
 }
+
+fun Fragment.loadChildFragment(fragment: Fragment, containerId: Int) {
+    childFragmentManager.beginTransaction()
+        .replace(containerId, fragment)
+        .commit()
+}

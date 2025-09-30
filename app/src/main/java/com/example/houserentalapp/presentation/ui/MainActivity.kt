@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         setWindowInsets()
         observeViewModel()
 
-        // Set Current User Into Shared ViewModel
+        // Set Current User Into Shared ViewModel // TODO - ONLY RECEIVE USER ID
         val currentUser = intent.getParcelableExtra<User>(CURRENT_USER_KEY) ?: run {
             logError("Current User is not found in intent")
             OnBackPressedDispatcher().onBackPressed()
@@ -179,6 +179,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             is NavigationDestination.MultipleImages,
             is NavigationDestination.InPlaceSearch,
             is NavigationDestination.SinglePropertyDetails,
+            is NavigationDestination.SinglePropertyDetailsTenantView,
             is NavigationDestination.EditProperty -> {
                 val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
                 fragment.arguments = destination.args

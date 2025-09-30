@@ -167,7 +167,8 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
             putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, onlyShortlisted)
         }
 
-        navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
+        // navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
+        navigateTo(NavigationDestination.SinglePropertyDetailsTenantView(bundle))
     }
 
     private fun handleShortlistToggle(propertyId: Long) {
