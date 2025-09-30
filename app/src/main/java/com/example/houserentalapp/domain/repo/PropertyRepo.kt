@@ -21,7 +21,11 @@ interface PropertyRepo {
         filters: PropertyFilters? = null
     ): Result<List<Pair<PropertySummary, Boolean>>>
 
-    suspend fun getPropertySummary(userId: Long, propertyId: Long): Result<PropertySummary>
+    suspend fun getPropertySummaryWithAction(
+        userId: Long, propertyId: Long
+    ) : Result<Pair<PropertySummary, Boolean>>
+
+    suspend fun getOnlyPropertySummary(userId: Long, propertyId: Long): Result<PropertySummary>
 
     // UPDATE
     suspend fun updateProperty(property: Property, updatedFields: List<PropertyFields> = emptyList()): Result<Boolean>

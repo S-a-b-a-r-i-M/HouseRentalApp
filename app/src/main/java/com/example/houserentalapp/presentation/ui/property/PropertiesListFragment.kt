@@ -32,9 +32,6 @@ import com.example.houserentalapp.presentation.utils.extensions.onBackPressedNav
 import com.example.houserentalapp.presentation.utils.helpers.getScrollListener
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
 
-/* TODO
-    1. FIX: Sort
- */
 class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
     private lateinit var binding: FragmentPropertiesListBinding
     private lateinit var bottomNavController: BottomNavController
@@ -152,10 +149,7 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
 
             searchBar.setOnClickListener {
                 val bundle = Bundle().apply {
-                    putString(
-                        FragmentArgKey.SEARCH_QUERY,
-                        binding.searchBar.text.toString()
-                    )
+                    putString(FragmentArgKey.SEARCH_QUERY, binding.searchBar.text.toString())
                 }
                  navigateTo(NavigationDestination.InPlaceSearch(bundle))
             }
@@ -254,6 +248,13 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
             if (shouldLoad) {
                 loadProperties()
                 filtersViewModel.onFiltersApplied()
+            }
+        }
+
+        sharedDataViewModel.updatedPropertyId.observe(viewLifecycleOwner) {
+            if (it != null){
+                sharedDataViewModel.clearUpdatedPropertyId()
+                propertiesViewModel.loadUpdatedPropertySummary(it)
             }
         }
     }

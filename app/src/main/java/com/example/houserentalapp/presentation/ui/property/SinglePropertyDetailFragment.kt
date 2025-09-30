@@ -5,10 +5,10 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
@@ -197,7 +197,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
 
             toolbar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
-                    R.id.tbar_shortlist -> viewModel.toggleFavourite(propertyId)
+                    R.id.tbar_shortlist -> handleShortlistToggle(propertyId)
                     R.id.tbar_edit -> {
                         if (isTenantView)
                             logWarning("A Tenant should not edit an property")
@@ -213,6 +213,24 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                 viewModel.storeUserInterest(propertyId)
             }
         }
+    }
+    private fun handleShortlistToggle(propertyId: Long) {
+        viewModel.toggleShortlist(
+            propertyId,
+            { isShortlisted ->
+                val message = if (isShortlisted)
+                    "Added to shortlisted"
+                else
+                    "Removed from shortlisted"
+                Toast.makeText(_context, message, Toast.LENGTH_SHORT).show()
+
+                // Trigger Update Event In SharedViewModel
+                sharedDataViewModel.setUpdatedPropertyId(propertyId)
+            },
+            {
+                Toast.makeText(_context, "Retry later", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 
     fun onImageClick(propertyImages: List<PropertyImage>) {

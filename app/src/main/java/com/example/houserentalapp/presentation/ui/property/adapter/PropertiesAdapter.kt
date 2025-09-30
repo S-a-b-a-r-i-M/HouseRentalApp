@@ -225,5 +225,5 @@ class PropertiesDiffCallBack(
     override fun areDataItemsSame(
         oldData: PropertySummaryUI,
         newData: PropertySummaryUI
-    ): Boolean = oldData.summary.id == newData.summary.id
+    ): Boolean = oldData.summary.id == newData.summary.id && oldData.isShortListed == newData.isShortListed
 }

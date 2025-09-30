@@ -68,7 +68,7 @@ class MyPropertiesViewModel(
     fun loadUpdatedPropertySummary(propertyId: Long) {
         viewModelScope.launch {
             try {
-                val result = propertyUC.getPropertySummary(currentUser.id, propertyId)
+                val result = propertyUC.getOnlyPropertySummary(currentUser.id, propertyId)
                 when (result) {
                     is Result.Success<PropertySummary> -> {
                         val idx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }

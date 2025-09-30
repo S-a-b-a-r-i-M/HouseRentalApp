@@ -172,6 +172,40 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
         throw IllegalArgumentException("property Not found at the given id: $propertyId")
     }
 
+    private fun getPropertySummaryQuery(joinType: String, userId: Long, whereClause: String) : String {
+        val pt = PropertyTable
+        val pit = PropertyImagesTable
+        val upt = UserPropertyActionTable
+
+        return """
+            SELECT 
+                p.*,
+                CASE
+                    WHEN COUNT(pi.${pit.COLUMN_ID}) > 0 THEN
+                        '[' || GROUP_CONCAT(
+                            json_object(
+                                '${pit.COLUMN_ID}', pi.${pit.COLUMN_ID},
+                                '${pit.COLUMN_IMAGE_ADDRESS}', pi.${pit.COLUMN_IMAGE_ADDRESS},
+                                '${pit.COLUMN_IS_PRIMARY}', pi.${pit.COLUMN_IS_PRIMARY},
+                                '${pit.COLUMN_CREATED_AT}', pi.${pit.COLUMN_CREATED_AT}
+                            )
+                        ) || ']'
+                    ELSE '[]'
+                END as images,
+                CASE 
+                    WHEN MAX(upa.${upt.COLUMN_ID}) IS NOT NULL THEN 1 ELSE 0 
+                END as isShortlisted
+            FROM ${pt.TABLE_NAME} as p
+            LEFT JOIN ${pit.TABLE_NAME} as pi ON pi.${pit.COLUMN_PROPERTY_ID} = p.${pt.COLUMN_ID}
+            $joinType ${upt.TABLE_NAME} as upa
+                ON upa.${upt.COLUMN_TENANT_ID} = $userId AND 
+                   upa.${upt.COLUMN_PROPERTY_ID} = p.${pt.COLUMN_ID} AND
+                   upa.${upt.COLUMN_ACTION} = '${UserActionEnum.SHORTLISTED.readable}' 
+            WHERE $whereClause
+            GROUP BY p.${pt.COLUMN_ID}
+        """.trimIndent()
+    }
+
     fun getPropertySummariesWithFilter(
         userId: Long,
         pagination: Pagination,
@@ -241,6 +275,28 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
             }
 
             return result
+        }
+    }
+
+    fun getPropertySummaryWithAction(
+        userId: Long, propertyId: Long
+    ): Pair<PropertySummaryEntity, Boolean> {
+        val joinType = "LEFT JOIN"
+        val whereClause = "p.${PropertyTable.COLUMN_ID} = ?"
+        val query = getPropertySummaryQuery(joinType, userId, whereClause)
+
+        /* close cursors after use because it's hold native resources that won't be garbage collected. */
+        readableDB.rawQuery(query, arrayOf(propertyId.toString())).use { cursor ->
+            if (cursor.moveToFirst()) {
+                val summaryEntity = PropertyMapper.toPropertySummaryEntity(cursor)
+                val imagesJsonString = cursor.getString(cursor.getColumnIndexOrThrow("images"))
+                val imagesEntity = PropertyImageMapper.toEntityFromJson(imagesJsonString)
+                val isShortListed = cursor.getInt(cursor.getColumnIndexOrThrow("isShortlisted")) == 1
+
+                return Pair(summaryEntity.copy(images = imagesEntity), isShortListed)
+            }
+
+            throw IllegalArgumentException("property Not found at the given id: $propertyId")
         }
     }
 

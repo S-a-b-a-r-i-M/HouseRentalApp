@@ -24,6 +24,17 @@ class PropertyUseCase(private val propertyRepo: PropertyRepo) {
         }
     }
 
+    suspend fun getPropertySummaryWithAction(
+        userId: Long, propertyId: Long
+    ): Result<Pair<PropertySummary, Boolean>> {
+        return try {
+            return propertyRepo.getPropertySummaryWithAction(userId, propertyId)
+        } catch (exp: Exception) {
+            logError("${exp.message.toString()} while fetching property summaries")
+            Result.Error(exp.message.toString())
+        }
+    }
+
     suspend fun getProperty(propertyId: Long): Result<Property> {
         return try {
             return propertyRepo.getDetailedPropertyById(propertyId)
@@ -33,9 +44,9 @@ class PropertyUseCase(private val propertyRepo: PropertyRepo) {
         }
     }
 
-    suspend fun getPropertySummary(userId: Long, propertyId: Long): Result<PropertySummary> {
+    suspend fun getOnlyPropertySummary(userId: Long, propertyId: Long): Result<PropertySummary> {
         return try {
-            return propertyRepo.getPropertySummary(userId, propertyId)
+            return propertyRepo.getOnlyPropertySummary(userId, propertyId)
         } catch (exp: Exception) {
             logError("${exp.message.toString()} while fetching property(id: $propertyId)")
             Result.Error(exp.message.toString())

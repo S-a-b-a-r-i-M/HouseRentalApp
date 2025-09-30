@@ -97,40 +97,6 @@ class SinglePropertyDetailViewModel(
         }
     }
 
-    private fun removeFromShortlists(propertyId: Long) {
-        viewModelScope.launch {
-            when(userPropertyUC.deleteUserAction(
-                currentUser.id, propertyId, UserActionEnum.SHORTLISTED
-            )) {
-                is Result.Success<Boolean> -> {
-                    logInfo("property removed from shortlisted")
-                    propertyUI = propertyUI.copy(isShortlisted = false, shortlistStateChanged = true)
-                    _propertyUIResult.value = ResultUI.Success(propertyUI)
-                }
-                is Result.Error -> {
-                    logError("Error while removing property from shortlisted")
-                }
-            }
-        }
-    }
-
-    private fun addToShortlists(propertyId: Long) {
-        viewModelScope.launch {
-            when (userPropertyUC.storeTenantAction(
-                currentUser.id, propertyId, UserActionEnum.SHORTLISTED
-            )) {
-                is Result.Success<*> -> {
-                    logInfo("property added to shortlisted")
-                    propertyUI = propertyUI.copy(isShortlisted = true, shortlistStateChanged = true)
-                    _propertyUIResult.value = ResultUI.Success(propertyUI)
-                }
-                is Result.Error -> {
-                    logError("Error while adding property to shortlisted")
-                }
-            }
-        }
-    }
-
     fun storeUserInterest(propertyId: Long) {
         viewModelScope.launch {
             when (userPropertyUC.storeTenantAction(
@@ -167,11 +133,30 @@ class SinglePropertyDetailViewModel(
         }
     }
 
-    fun toggleFavourite(propertyId: Long) {
-        if (propertyUI.isShortlisted)
-            removeFromShortlists(propertyId)
-        else // Add to favourites
-            addToShortlists(propertyId)
+    fun toggleShortlist(propertyId: Long, onSuccess: (Boolean) -> Unit, onFailure: () -> Unit) {
+        viewModelScope.launch {
+            val result = if (propertyUI.isShortlisted)
+                userPropertyUC.deleteUserAction( // Remove From Shortlists
+                    currentUser.id, propertyId, UserActionEnum.SHORTLISTED
+                )
+            else // Add To Shortlists
+                userPropertyUC.storeTenantAction(
+                    currentUser.id, propertyId, UserActionEnum.SHORTLISTED
+                )
+
+            when(result) {
+                is Result.Success<*> -> {
+                    val newState = !propertyUI.isShortlisted
+                    propertyUI = propertyUI.copy(isShortlisted = newState, shortlistStateChanged = true)
+                    _propertyUIResult.value = ResultUI.Success(propertyUI)
+                    onSuccess(newState)
+                }
+                is Result.Error -> {
+                    logError("Error while toggling property to shortlisted")
+                    onFailure()
+                }
+            }
+        }
     }
 }
 
