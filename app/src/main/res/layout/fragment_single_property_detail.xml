@@ -832,25 +832,6 @@
 
             </androidx.cardview.widget.CardView>
 
-          <!-- Recommendations -->
-            <TextView
-                android:id="@+id/tvRecommendation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Recommendation"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/fragmentContainerProperty" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvRecommendedProperties"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvRecommendation"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>

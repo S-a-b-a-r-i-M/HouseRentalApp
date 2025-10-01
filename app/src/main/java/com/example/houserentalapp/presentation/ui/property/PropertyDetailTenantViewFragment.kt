@@ -3,9 +3,7 @@ package com.example.houserentalapp.presentation.ui.property
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentPropertyDetailTenantViewBinding
@@ -15,7 +13,6 @@ import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.loadChildFragment
-import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlin.getValue
