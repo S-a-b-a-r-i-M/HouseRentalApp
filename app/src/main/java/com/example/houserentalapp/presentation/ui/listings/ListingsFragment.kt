@@ -28,7 +28,6 @@ class ListingsFragment : BaseFragment(R.layout.fragment_listings) {
     private lateinit var leadsViewModel: LeadsViewModel // Child's Usage
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
-    private val _context: Context get() = requireContext()
     private var childFragmentName = ChildFragmentName.MY_PROPERTIES
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -33,7 +33,6 @@ class LeadsFragment : BaseFragment(R.layout.fragment_leads) {
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     private val leadBottomSheet by lazy { LeadBottomSheet() }
-    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

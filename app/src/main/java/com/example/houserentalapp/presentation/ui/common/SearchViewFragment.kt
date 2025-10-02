@@ -37,7 +37,6 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private var isNewSearch: Boolean = false
     private var existingSearchQuery: String? = null
-    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

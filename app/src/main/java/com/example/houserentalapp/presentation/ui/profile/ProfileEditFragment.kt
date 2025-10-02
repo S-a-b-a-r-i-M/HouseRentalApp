@@ -37,7 +37,6 @@ class ProfileEditFragment : BaseFragment(R.layout.fragment_profile_edit) {
     private lateinit var currentUser: User
     private lateinit var imageHelper: ImageUploadHelper
 
-    private val _context: Context get() = requireContext()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private lateinit var profileEditViewModel: ProfileEditViewModel
 

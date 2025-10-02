@@ -1,10 +1,13 @@
 package com.example.houserentalapp.domain.model
 
+import android.os.Parcelable
 import com.example.houserentalapp.domain.model.enums.BHK
 import com.example.houserentalapp.domain.model.enums.FurnishingType
 import com.example.houserentalapp.domain.model.enums.PropertyType
 import com.example.houserentalapp.domain.model.enums.TenantType
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class PropertyFilters (
     val searchQuery: String = "",
     val bhkTypes: List<BHK> = emptyList(),
@@ -16,7 +19,7 @@ data class PropertyFilters (
     // Internal Filters
     val onlyAvailable: Boolean = true,
     val onlyUserProperties: Boolean = false, // Only his uploaded properties
-)
+) : Parcelable
 
 fun PropertyFilters.getAddedFiltersCount() : Int {
     var count = 0

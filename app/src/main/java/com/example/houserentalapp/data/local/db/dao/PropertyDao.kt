@@ -230,7 +230,11 @@ class PropertyDao(private val dbHelper: DatabaseHelper) {
                 joinType = "JOIN"
                 orderBy = "$upa.${UserPropertyActionTable.COLUMN_CREATED_AT} DESC"
             }
+        } else { // Fetch Excepts Current User's Property
+            whereConditions = "${PropertyTable.COLUMN_LANDLORD_ID}  != ?"
+            whereArgs = arrayOf(userId.toString())
         }
+
 
         val query = """
             SELECT 

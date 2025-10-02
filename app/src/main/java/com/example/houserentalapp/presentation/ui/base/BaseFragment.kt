@@ -8,6 +8,7 @@ import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationH
 
 abstract class BaseFragment(layoutId: Int) : Fragment(layoutId) {
     lateinit var navigationHandler: FragmentNavigationHandler
+    protected val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

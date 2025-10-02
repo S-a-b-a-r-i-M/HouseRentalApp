@@ -35,7 +35,6 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var searchHistoryViewModel : SearchHistoryViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

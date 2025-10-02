@@ -25,7 +25,6 @@ class PropertyDetailTenantViewFragment
     private lateinit var currentUser: User
 
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-    private val _context: Context get() = requireContext()
 
     private var propertyId: Long = -1L
     private var hideAndShowBottomNav = false

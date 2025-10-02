@@ -9,10 +9,12 @@ import android.view.View
 import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.GridLayoutManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
@@ -31,6 +33,8 @@ import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
+import com.example.houserentalapp.presentation.ui.property.adapter.IconLabelValueData
+import com.example.houserentalapp.presentation.ui.property.adapter.IconLabelValueAdapter
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesViewAdapter
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.ui.property.viewmodel.SinglePropertyDetailViewModel
@@ -48,12 +52,12 @@ import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomP
 
 class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_property_detail) {
     private lateinit var binding: FragmentSinglePropertyDetailBinding
-    private lateinit var adapter: PropertyImagesViewAdapter
+    private lateinit var imagesAdapter: PropertyImagesViewAdapter
+    private lateinit var iconLabelValueAdapter: IconLabelValueAdapter
     private lateinit var bottomNavController: BottomNavController
     private lateinit var currentUser: User
     private lateinit var viewModel: SinglePropertyDetailViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-    private val _context: Context get() = requireContext()
 
     private var propertyId: Long = -1L
     private var isTenantView = false
@@ -113,12 +117,19 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
 
         with(binding) {
             // Image ViewPager 2
-            adapter = PropertyImagesViewAdapter(::onImageClick)
+            imagesAdapter = PropertyImagesViewAdapter(::onImageClick)
             viewPager2.apply {
-                this.adapter = this@SinglePropertyDetailFragment.adapter
+                this.adapter = this@SinglePropertyDetailFragment.imagesAdapter
                 beginFakeDrag()
                 fakeDragBy(-2.0f)
                 endFakeDrag()
+            }
+
+            // RecyclerView
+            iconLabelValueAdapter = IconLabelValueAdapter()
+            rvOverviewDetails.apply {
+                adapter = iconLabelValueAdapter
+                layoutManager = GridLayoutManager(_context, 2)
             }
 
             // Render Toolbar icons
@@ -157,6 +168,8 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                     )
                     compoundDrawablePadding = drawablePadding
                 }
+                fragmentContainerRecommendedProperties.visibility = View.VISIBLE
+                renderPropertyRecommendation()
             } else {
                 toolbar.menu.findItem(R.id.tbar_edit).apply {
                     isVisible = true
@@ -164,8 +177,17 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                 }
 
                 contactDetailsCard.visibility = View.GONE
+                fragmentContainerRecommendedProperties.visibility = View.GONE
             }
         }
+    }
+
+    private fun renderPropertyRecommendation() {
+        val destination = RecommendationFragment()
+        destination.arguments = Bundle().apply { putLong(FragmentArgKey.PROPERTY_ID, propertyId) }
+        childFragmentManager.beginTransaction()
+            .replace(binding.fragmentContainerRecommendedProperties.id, destination)
+            .commit()
     }
 
     fun setupViewModel() {
@@ -286,7 +308,6 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
             tvAddress.text = property.address.let { "${it.street}, ${it.locality}, ${it.city}" }
             tvFurnishingType.text = property.furnishingType.readable
             tvBuiltArea.text = getString(R.string.area_with_sq_ft, property.builtUpArea)
-            tvPreferredTenant.text = property.preferredTenantType.joinToString(",") { it.readable }
             tvRent.text = getString(R.string.property_price, property.price)
             tvMaintenance.text = getString(
                 R.string.property_price,
@@ -297,23 +318,65 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     }
 
     private fun bindOverviewCardDetails(property: Property) {
+        fun getIconLabelValueData(drawableId: Int, labelStringId: Int, value: String) =
+            IconLabelValueData(
+                AppCompatResources.getDrawable(_context, drawableId),
+                getString(labelStringId),
+                value
+            )
+
+        var tenants = property.preferredTenantType.joinToString(", ") { it.readable }
+        tenants += if (TenantType.BACHELORS in property.preferredTenantType &&
+            property.preferredBachelorType != null)
+            "(${property.preferredBachelorType.readable.lowercase()})"
+        else ""
+        val iconValueLabelList = listOf(
+            getIconLabelValueData(
+                R.drawable.outline_house_24,
+                R.string.property_type,
+                property.type.readable
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_family_filled,
+                R.string.preferred_tenant,
+                tenants
+            ),
+            getIconLabelValueData(
+                R.drawable.baseline_pets_24,
+                R.string.pet_allowed,
+                if (property.isPetAllowed) "Yes allowed" else "Not allowed"
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_bathroom_24,
+                R.string.bathroom,
+                property.bathRoomCount.toString()
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_calendar_month_24,
+                R.string.posted_on,
+                property.createdAt.fromEpoch()
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_calendar_month_24,
+                R.string.available_from,
+                property.availableFrom.fromEpoch()
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_garage_24,
+                R.string.covered_parking,
+                property.countOfCoveredParking.toString()
+            ),
+            getIconLabelValueData(
+                R.drawable.outline_open_parking,
+                R.string.open_parking,
+                property.countOfOpenParking.toString()
+            ),
+        )
+        // Set Recycler View Data
+        iconLabelValueAdapter.setDataList(iconValueLabelList)
+
         with(binding) {
-            tvPropertyType.text = property.type.readable
             tvBHK.text = property.bhk.readable
-            tvIsPetAllowed.text = if (property.isPetAllowed) "Yes allowed" else "Not allowed"
-            tvBathroomCount.text = property.bathRoomCount.toString()
-            tvPostedOn.text = property.createdAt.fromEpoch()
-            tvAvailableFrom.text = property.availableFrom.fromEpoch()
-            tvOpenParking.text = property.countOfOpenParking.toString()
-            tvCoveredParking.text = property.countOfCoveredParking.toString()
-
-            var tenants = property.preferredTenantType.joinToString(", ") { it.readable }
-            tenants += if (TenantType.BACHELORS in property.preferredTenantType &&
-                property.preferredBachelorType != null)
-                "(${property.preferredBachelorType.readable.lowercase()})"
-            else ""
-            tvPreferredTenant.text = tenants
-
             if (property.description != null && property.description.isNotBlank())
                 tvDescription.text = property.description
             else
@@ -391,7 +454,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         // Load Images
         if (property.images.isNotEmpty()) {
             binding.imgProperty.visibility = View.GONE
-            adapter.setPropertyImages(property.images)
+            imagesAdapter.setPropertyImages(property.images)
         }
         else
             binding.imgProperty.apply {
@@ -412,12 +475,19 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                 viewModel.propertyUIResult.observe(viewLifecycleOwner) { result ->
                     when(result) {
                         is ResultUI.Success<PropertyUI> -> {
-                            if (result.data.propertyInfoChanged)
-                                bindPropertyDetails(result.data.property)
-                            if (result.data.shortlistStateChanged)
-                                updateShortlistIcon(result.data.isShortlisted)
-                            if (result.data.interestedStateChanged && result.data.isInterested)
-                                bindContactCardDetails(result.data.landlordUser)
+                            val propertyUI = result.data
+
+                            val isConfigChange = !(propertyUI.propertyInfoChanged ||
+                                    propertyUI.interestedStateChanged ||
+                                    propertyUI.shortlistStateChanged ||
+                                    propertyUI.landlordUserInfoChanged)
+
+                            if (isConfigChange || propertyUI.propertyInfoChanged)
+                                bindPropertyDetails(propertyUI.property)
+                            if (isConfigChange || propertyUI.shortlistStateChanged)
+                                updateShortlistIcon(propertyUI.isShortlisted)
+                            if (isConfigChange || propertyUI.interestedStateChanged && propertyUI.isInterested)
+                                bindContactCardDetails(propertyUI.landlordUser)
 
                             viewModel.clearChangeFlags()
                         }

@@ -36,7 +36,6 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     private lateinit var myPropertiesAdapter: MyPropertiesAdapter
     private val myPropertiesViewModel: MyPropertiesViewModel by viewModels({ requireParentFragment() })
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
-    private val _context: Context get() = requireContext()
     private var propertyFilters = PropertyFilters(
         onlyUserProperties = true,
         onlyAvailable = false

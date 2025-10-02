@@ -37,7 +37,6 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private lateinit var viewModel: ProfileViewModel
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     val preferredThemeViewModel: PreferredThemeViewModel by activityViewModels()
-    private val _context: Context get() = requireContext()
 
     override fun onAttach(context: Context) {
         super.onAttach(context)

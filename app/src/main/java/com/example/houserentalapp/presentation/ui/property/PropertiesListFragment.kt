@@ -41,7 +41,6 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
     private val filtersViewModel: FiltersViewModel by activityViewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filterBottomSheet: PropertyFilterBottomSheet by lazy { PropertyFilterBottomSheet() }
-    private val _context: Context get() = requireContext()
 
     private var hideBottomNav = false
     private var onlyShortlisted = false
