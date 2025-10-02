@@ -27,7 +27,8 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
-    private lateinit var binding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding: FragmentHomeBinding get() = _binding!!
     private lateinit var bottomNavController: BottomNavController
     private lateinit var searchHistoryAdapter: RecentSearchHistoryAdapter
     private lateinit var currentUser: User
@@ -43,7 +44,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentHomeBinding.bind(view)
+        _binding = FragmentHomeBinding.bind(view)
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
 
@@ -175,5 +176,10 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 }
             }
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null // Release the detached view, so it can be immediately collected by CG.
     }
 }

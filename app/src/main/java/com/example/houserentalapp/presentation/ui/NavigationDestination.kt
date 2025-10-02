@@ -8,7 +8,6 @@ import com.example.houserentalapp.presentation.ui.profile.ProfileEditFragment
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.MultipleImagesFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
-import com.example.houserentalapp.presentation.ui.property.PropertyDetailTenantViewFragment
 import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailFragment
 
 // ONLY CLASS KNOWS ABOUT THE FRAGMENTS
@@ -50,14 +49,14 @@ sealed class NavigationDestination(
         pushToBackStack = true
     )
 
-    data class SinglePropertyDetails(val bundle: Bundle? = null) : NavigationDestination(
+    data class SinglePropertyDetail(val bundle: Bundle? = null) : NavigationDestination(
         fragmentClass = SinglePropertyDetailFragment::class.java,
         args = bundle,
         pushToBackStack = true
     )
 
-    data class SinglePropertyDetailsTenantView(val bundle: Bundle? = null) : NavigationDestination(
-        fragmentClass = PropertyDetailTenantViewFragment::class.java,
+    data class RecommendedSinglePropertyDetail(val bundle: Bundle? = null) : NavigationDestination(
+        fragmentClass = SinglePropertyDetailFragment::class.java,
         args = bundle,
         pushToBackStack = true
     )

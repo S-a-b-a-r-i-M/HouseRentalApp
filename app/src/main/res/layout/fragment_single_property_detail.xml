@@ -488,11 +488,23 @@
             </androidx.cardview.widget.CardView>
 
           <!-- Recommendation Fragment -->
+            <TextView
+                android:id="@+id/tvRecommendation"
+                style="@style/TextAppearance.App.Body1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                android:text="@string/recommended_properties"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fragmentContainerRecommendedProperties"
+                android:id="@+id/fragmentContainerRecommendation"
                 android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
 
         </LinearLayout>
 

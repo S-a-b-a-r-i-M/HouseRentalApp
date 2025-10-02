@@ -5,7 +5,9 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.GridLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -64,12 +66,14 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     private var hideAndShowBottomNav = false
 
     override fun onAttach(context: Context) {
+        logDebug("<-------- onAttach (Fragment is attached to Activity) ---------->")
         super.onAttach(context)
         bottomNavController = context as BottomNavController
     }
 
     // onCreate() for reading arguments.
     override fun onCreate(savedInstanceState: Bundle?) {
+        logDebug("<-------- onCreate (Fragment instance is created) ---------->")
         super.onCreate(savedInstanceState)
         propertyId = arguments?.getLong(FragmentArgKey.PROPERTY_ID) ?: run {
             logError("Selected property id is not found in bundle")
@@ -80,17 +84,27 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         hideAndShowBottomNav = arguments?.getBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV) ?: false
 
         logDebug("Received arguments \n" +
-                "PROPERTY_ID_KEY: $propertyId" +
-                "IS_TENANT_VIEW_KEY: $isTenantView" +
-                "HIDE_AND_SHOW_BOTTOM_NAV_KEY: $hideAndShowBottomNav"
+                " PROPERTY_ID_KEY: $propertyId" +
+                " IS_TENANT_VIEW_KEY: $isTenantView" +
+                " HIDE_AND_SHOW_BOTTOM_NAV_KEY: $hideAndShowBottomNav"
         )
 
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        logDebug("<-------- onCreateView (Time to create the UI) ---------->")
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
     // onViewCreated() for applying arguments to UI
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        logDebug("<-------- onViewCreated (View hierarchy is created) ---------->")
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentSinglePropertyDetailBinding.bind(view)
 
@@ -138,55 +152,58 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                     isVisible = true
                     isEnabled = true
                 }
-                contactDetailsCard.visibility = View.VISIBLE
 
-                val drawablePadding = 4.dpToPx()
-                tvLabelName.apply {
-                    setDrawable(
-                        R.drawable.baseline_person_24,
-                        16,
-                        16,
-                        DrawablePosition.LEFT
-                    )
-                    compoundDrawablePadding = drawablePadding
-                }
-                tvLabelPhone.apply {
-                    setDrawable(
-                        R.drawable.baseline_call_24,
-                        16,
-                        16,
-                        DrawablePosition.LEFT
-                    )
-                    compoundDrawablePadding = drawablePadding
-                }
-                tvLabelEmail.apply {
-                    setDrawable(
-                        R.drawable.baseline_email_24,
-                        16,
-                        16,
-                        DrawablePosition.LEFT
-                    )
-                    compoundDrawablePadding = drawablePadding
-                }
-                fragmentContainerRecommendedProperties.visibility = View.VISIBLE
+                renderContactDetailsCard()
                 renderPropertyRecommendation()
             } else {
                 toolbar.menu.findItem(R.id.tbar_edit).apply {
                     isVisible = true
                     isEnabled = true
                 }
-
-                contactDetailsCard.visibility = View.GONE
-                fragmentContainerRecommendedProperties.visibility = View.GONE
             }
         }
     }
 
+    private fun renderContactDetailsCard() {
+        binding.contactDetailsCard.visibility = View.VISIBLE
+        val drawablePadding = 4.dpToPx()
+        binding.tvLabelName.apply {
+            setDrawable(
+                R.drawable.baseline_person_24,
+                16,
+                16,
+                DrawablePosition.LEFT
+            )
+            compoundDrawablePadding = drawablePadding
+        }
+        binding.tvLabelPhone.apply {
+            setDrawable(
+                R.drawable.baseline_call_24,
+                16,
+                16,
+                DrawablePosition.LEFT
+            )
+            compoundDrawablePadding = drawablePadding
+        }
+        binding.tvLabelEmail.apply {
+            setDrawable(
+                R.drawable.baseline_email_24,
+                16,
+                16,
+                DrawablePosition.LEFT
+            )
+            compoundDrawablePadding = drawablePadding
+        }
+    }
+
     private fun renderPropertyRecommendation() {
+        binding.tvRecommendation.visibility = View.VISIBLE
+        binding.fragmentContainerRecommendation.visibility = View.VISIBLE
+
         val destination = RecommendationFragment()
         destination.arguments = Bundle().apply { putLong(FragmentArgKey.PROPERTY_ID, propertyId) }
         childFragmentManager.beginTransaction()
-            .replace(binding.fragmentContainerRecommendedProperties.id, destination)
+            .replace(binding.fragmentContainerRecommendation.id, destination)
             .commit()
     }
 
@@ -516,7 +533,48 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         }
     }
 
+    override fun onStart() {
+        logDebug("<-------- onStart (Fragment becomes visible) ---------->")
+        super.onStart()
+    }
+
+    override fun onResume() {
+        logDebug("<-------- onResume (Fragment is active and can interact with user) ---------->")
+        super.onResume()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        logDebug("<-------- onSaveInstanceState (store the state) ---------->")
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        logDebug("<-------- onViewStateRestored (re-store the state) ---------->")
+        super.onViewStateRestored(savedInstanceState)
+    }
+
+    override fun onPause() {
+        logDebug("<-------- onPause (Fragment loses focus (another fragment/activity comes to front)) ---------->")
+        super.onPause()
+    }
+
+    override fun onStop() {
+        logDebug("<-------- onStop (Fragment is no longer visible) ---------->")
+        super.onStop()
+    }
+
+    override fun onDestroyView() {
+        logDebug("<-------- onDestroyView (ViewHierarchy is being destroyed) ---------->")
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        logDebug("<-------- onDestroy (Fragment instance is being destroyed) ---------->")
+        super.onDestroy()
+    }
+
     override fun onDetach() {
+        logDebug("<-------- onDetach (Fragment is detached from Activity) ---------->")
         super.onDetach()
         if (hideAndShowBottomNav)
             bottomNavController.showBottomNav()

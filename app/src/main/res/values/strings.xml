@@ -187,4 +187,5 @@
     <string name="clear_filter"><u>clear filters</u></string>
     <string name="menu_icon">Menu Icon</string>
     <string name="description">Description:</string>
+    <string name="recommended_properties">Recommended Properties</string>
 </resources>

@@ -87,7 +87,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
             putBoolean(FragmentArgKey.IS_TENANT_VIEW, false)
             putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
         }
-        navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
+        navigateTo(NavigationDestination.SinglePropertyDetail(bundle))
     }
 
     private fun updateAvailability(propertyId: Long, isActive: Boolean) {

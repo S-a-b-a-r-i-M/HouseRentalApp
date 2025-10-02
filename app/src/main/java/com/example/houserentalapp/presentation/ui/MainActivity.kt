@@ -166,6 +166,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             is NavigationDestination.CreateProperty,
             is NavigationDestination.PropertyList,
             is NavigationDestination.SeparateSearch,
+            is NavigationDestination.RecommendedSinglePropertyDetail,
             is NavigationDestination.ProfileEdit, -> {
                 val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
                 fragment.arguments = destination.args
@@ -178,8 +179,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             }
             is NavigationDestination.MultipleImages,
             is NavigationDestination.InPlaceSearch,
-            is NavigationDestination.SinglePropertyDetails,
-            is NavigationDestination.SinglePropertyDetailsTenantView,
+            is NavigationDestination.SinglePropertyDetail,
             is NavigationDestination.EditProperty -> {
                 val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
                 fragment.arguments = destination.args

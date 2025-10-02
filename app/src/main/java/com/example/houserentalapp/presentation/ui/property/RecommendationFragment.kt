@@ -98,7 +98,7 @@ class RecommendationFragment : BaseFragment(R.layout.fragment_recommandation) {
             putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, false)
         }
 
-        navigateTo(NavigationDestination.SinglePropertyDetails(bundle))
+        navigateTo(NavigationDestination.RecommendedSinglePropertyDetail(bundle))
     }
 
     private fun handleShortlistToggle(propertyId: Long) {
