@@ -24,7 +24,7 @@ class SinglePropertyDetailViewModel(
     private val currentUser: User
 ) : ViewModel() {
     private val _onlyPropertyDetailsRes = MutableLiveData<ResultUI<Property>>()
-    val onlyPropertyDetailsRes: LiveData<ResultUI<Property>> = _onlyPropertyDetailsRes
+    val propertyResult: LiveData<ResultUI<Property>> = _onlyPropertyDetailsRes
 
     private val _propertyUIResult = MutableLiveData<ResultUI<PropertyUI>>()
     val propertyUIResult: LiveData<ResultUI<PropertyUI>> = _propertyUIResult

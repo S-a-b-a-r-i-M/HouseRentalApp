@@ -12,7 +12,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
@@ -48,8 +48,8 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
 
-        isNewSearch = arguments?.getBoolean(FragmentArgKey.IS_NEW_SEARCH) ?: isNewSearch
-        existingSearchQuery = arguments?.getString(FragmentArgKey.SEARCH_QUERY)
+        isNewSearch = arguments?.getBoolean(BundleKeys.IS_NEW_SEARCH) ?: isNewSearch
+        existingSearchQuery = arguments?.getString(BundleKeys.SEARCH_QUERY)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -120,7 +120,7 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
 
     private fun navigateToPropertiesListFragment() {
         val bundle = Bundle().apply {
-            putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true)
+            putBoolean(BundleKeys.HIDE_BOTTOM_NAV, true)
         }
         navigateTo(NavigationDestination.PropertyList(bundle))
     }

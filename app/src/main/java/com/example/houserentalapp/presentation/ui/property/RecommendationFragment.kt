@@ -11,7 +11,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentRecommandationBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertiesAdapter
@@ -33,7 +33,7 @@ class RecommendationFragment : BaseFragment(R.layout.fragment_recommandation) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        propertyId = arguments?.getLong(FragmentArgKey.PROPERTY_ID) ?: 0L
+        propertyId = arguments?.getLong(BundleKeys.PROPERTY_ID) ?: 0L
         if (propertyId == 0L) {
             logError("Offset is not found in the args")
             navigationHandler.navigateBack()
@@ -93,9 +93,9 @@ class RecommendationFragment : BaseFragment(R.layout.fragment_recommandation) {
 
     private fun handleOnPropertyClick(propertyId: Long) {
         val bundle = Bundle().apply {
-            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
-            putBoolean(FragmentArgKey.IS_TENANT_VIEW, true)
-            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, false)
+            putLong(BundleKeys.PROPERTY_ID, propertyId)
+            putBoolean(BundleKeys.IS_TENANT_VIEW, true)
+            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, false)
         }
 
         navigateTo(NavigationDestination.RecommendedSinglePropertyDetail(bundle))

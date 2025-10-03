@@ -11,7 +11,7 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentLeadBottomSheetBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.enums.LeadStatus
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.listings.adapter.LeadInterestedPropertiesAdapter
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadViewModelFactory
@@ -34,7 +34,7 @@ class LeadBottomSheet
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        leadId = arguments?.getLong(FragmentArgKey.LEAD_ID) ?: 0L
+        leadId = arguments?.getLong(BundleKeys.LEAD_ID) ?: 0L
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

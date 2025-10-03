@@ -12,7 +12,7 @@ import com.example.houserentalapp.databinding.FragmentHomeBinding
 import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.UserPropertyStats
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
@@ -92,7 +92,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         // SET THE SELECTED FILTER
         sharedDataViewModel.setCurrentFilters(filters)
 
-        val bundle = Bundle().apply { putBoolean(PropertiesListFragment.HIDE_BOTTOM_NAV_KEY, true) }
+        val bundle = Bundle().apply { putBoolean(BundleKeys.HIDE_BOTTOM_NAV, true) }
         navigateTo(NavigationDestination.PropertyList(bundle))
     }
 
@@ -100,13 +100,13 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         with(binding) {
             searchBar.setOnClickListener {
                 // Let the search view know this is a fresh search
-                val bundle = Bundle().apply { putBoolean(FragmentArgKey.IS_NEW_SEARCH, true) }
+                val bundle = Bundle().apply { putBoolean(BundleKeys.IS_NEW_SEARCH, true) }
                 navigateTo(NavigationDestination.SeparateSearch(bundle))
             }
 
             btnPostProperty.setOnClickListener {
                 val bundle = Bundle().apply {
-                    putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                    putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
                 navigateTo(NavigationDestination.CreateProperty(bundle))
             }

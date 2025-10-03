@@ -15,7 +15,7 @@ import com.example.houserentalapp.domain.model.PropertyFilters
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.model.getAddedFiltersCount
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
@@ -55,9 +55,9 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            hideBottomNav = it.getBoolean(HIDE_BOTTOM_NAV_KEY, hideBottomNav)
-            hideToolBar = it.getBoolean(HIDE_TOOLBAR_KEY, hideToolBar)
-            onlyShortlisted = it.getBoolean(ONLY_SHORTLISTED_KEY, onlyShortlisted)
+            hideBottomNav = it.getBoolean(BundleKeys.HIDE_BOTTOM_NAV, hideBottomNav)
+            hideToolBar = it.getBoolean(BundleKeys.HIDE_TOOLBAR, hideToolBar)
+            onlyShortlisted = it.getBoolean(BundleKeys.ONLY_SHORTLISTED, onlyShortlisted)
             searchQuery = it.getString("searchQuery")
         }
     }
@@ -92,11 +92,6 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
 
     private fun loadProperties() {
         propertiesViewModel.loadPropertySummaries(filtersViewModel.filters.value)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putBoolean(HIDE_BOTTOM_NAV_KEY, hideBottomNav)
     }
 
     fun setupUI() {
@@ -148,7 +143,7 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
 
             searchBar.setOnClickListener {
                 val bundle = Bundle().apply {
-                    putString(FragmentArgKey.SEARCH_QUERY, binding.searchBar.text.toString())
+                    putString(BundleKeys.SEARCH_QUERY, binding.searchBar.text.toString())
                 }
                  navigateTo(NavigationDestination.InPlaceSearch(bundle))
             }
@@ -161,9 +156,9 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
 
     private fun handleOnPropertyClick(propertyId: Long) {
         val bundle = Bundle().apply {
-            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
-            putBoolean(FragmentArgKey.IS_TENANT_VIEW, true)
-            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, onlyShortlisted)
+            putLong(BundleKeys.PROPERTY_ID, propertyId)
+            putBoolean(BundleKeys.IS_TENANT_VIEW, true)
+            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, onlyShortlisted)
         }
 
         navigateTo(NavigationDestination.SinglePropertyDetail(bundle))
@@ -261,17 +256,9 @@ class PropertiesListFragment : BaseFragment(R.layout.fragment_properties_list) {
     fun showProgressBar() {
         binding.noDataPlaceHolderView.root.visibility = View.GONE // While Loading remove place holder
         propertiesAdapter.isLoading = true
-        // binding.progressBar.visibility = View.VISIBLE <-- Global Progress Bar
     }
 
     fun hideProgressBar() {
         propertiesAdapter.isLoading = false
-        // binding.progressBar.visibility = View.GONE <-- Global Progress Bar
-    }
-
-    companion object {
-        const val HIDE_BOTTOM_NAV_KEY = "hideBottomNav"
-        const val ONLY_SHORTLISTED_KEY = "onlyShortlisted"
-        const val HIDE_TOOLBAR_KEY = "hideToolBar"
     }
 }

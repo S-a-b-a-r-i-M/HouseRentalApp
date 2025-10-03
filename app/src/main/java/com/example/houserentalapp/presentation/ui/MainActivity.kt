@@ -92,8 +92,8 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                 R.id.bnav_shortlists -> {
                     val destination = PropertiesListFragment()
                     destination.arguments = Bundle().apply {
-                        putBoolean(PropertiesListFragment.ONLY_SHORTLISTED_KEY, true)
-                        putBoolean(PropertiesListFragment.HIDE_TOOLBAR_KEY, true)
+                        putBoolean(BundleKeys.ONLY_SHORTLISTED, true)
+                        putBoolean(BundleKeys.HIDE_TOOLBAR, true)
                     }
                     programmaticNavSelection?.let {
                          if (it.extraArgs != null) destination.arguments?.putAll(it.extraArgs)

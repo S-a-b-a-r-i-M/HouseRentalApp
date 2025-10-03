@@ -1,6 +1,5 @@
 package com.example.houserentalapp.presentation.ui.listings
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -11,7 +10,7 @@ import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.databinding.FragmentListingsBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModel
 import com.example.houserentalapp.presentation.ui.listings.viewmodel.LeadsViewModelFactory
@@ -33,7 +32,7 @@ class ListingsFragment : BaseFragment(R.layout.fragment_listings) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         childFragmentName = ChildFragmentName.valueOf(
-            arguments?.getString(FragmentArgKey.CHILD_FRAGMENT_NAME)
+            arguments?.getString(BundleKeys.CHILD_FRAGMENT_NAME)
                 ?: childFragmentName.name
         )
     }

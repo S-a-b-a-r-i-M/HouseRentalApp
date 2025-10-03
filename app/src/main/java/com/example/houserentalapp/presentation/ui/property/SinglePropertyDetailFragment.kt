@@ -30,7 +30,8 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyUI
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
+import com.example.houserentalapp.presentation.ui.FragmentRequestKeys
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
@@ -75,13 +76,13 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     override fun onCreate(savedInstanceState: Bundle?) {
         logDebug("<-------- onCreate (Fragment instance is created) ---------->")
         super.onCreate(savedInstanceState)
-        propertyId = arguments?.getLong(FragmentArgKey.PROPERTY_ID) ?: run {
+        propertyId = arguments?.getLong(BundleKeys.PROPERTY_ID) ?: run {
             logError("Selected property id is not found in bundle")
             parentFragmentManager.popBackStack()
             return
         }
-        isTenantView = arguments?.getBoolean(FragmentArgKey.IS_TENANT_VIEW) ?: false
-        hideAndShowBottomNav = arguments?.getBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV) ?: false
+        isTenantView = arguments?.getBoolean(BundleKeys.IS_TENANT_VIEW) ?: false
+        hideAndShowBottomNav = arguments?.getBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV) ?: false
 
         logDebug("Received arguments \n" +
                 " PROPERTY_ID_KEY: $propertyId" +
@@ -115,9 +116,11 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
 
         // Initial Fetch
         if (savedInstanceState == null) {
-            if (isTenantView)
-                viewModel.loadPropertyWithActions(propertyId)
-            else
+            if (isTenantView) {
+                if (viewModel.propertyUIResult.value !is ResultUI.Success)
+                    viewModel.loadPropertyWithActions(propertyId)
+            }
+            else if (viewModel.propertyResult.value !is ResultUI.Success)
                 viewModel.loadProperty(propertyId)
         }
     }
@@ -186,8 +189,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
             compoundDrawablePadding = drawablePadding
         }
         binding.tvLabelEmail.apply {
-            setDrawable(
-                R.drawable.baseline_email_24,
+            setDrawable(R.drawable.baseline_email_24,
                 16,
                 16,
                 DrawablePosition.LEFT
@@ -201,7 +203,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         binding.fragmentContainerRecommendation.visibility = View.VISIBLE
 
         val destination = RecommendationFragment()
-        destination.arguments = Bundle().apply { putLong(FragmentArgKey.PROPERTY_ID, propertyId) }
+        destination.arguments = Bundle().apply { putLong(BundleKeys.PROPERTY_ID, propertyId) }
         childFragmentManager.beginTransaction()
             .replace(binding.fragmentContainerRecommendation.id, destination)
             .commit()
@@ -221,10 +223,29 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
 
     fun onEditIconClick() {
         val bundle = Bundle().apply {
-            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
-            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, false)
+            putLong(BundleKeys.PROPERTY_ID, propertyId)
+            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, false)
         }
+        setFragmentResultListener()
         navigateTo(NavigationDestination.CreateProperty(bundle))
+    }
+
+    private fun setFragmentResultListener() {
+        parentFragmentManager.setFragmentResultListener(
+            FragmentRequestKeys.IS_PROPERTY_MODIFIED, this
+        ) { requestKey, result ->
+            logInfo(requestKey)
+            if (isTenantView) {
+                logWarning("A Tenant Should not edit the property.")
+                return@setFragmentResultListener
+            }
+            val isModified = result.getBoolean(BundleKeys.IS_PROPERTY_MODIFIED)
+            if (isModified) {
+                // Reload Property Details
+                viewModel.loadProperty(propertyId)
+                logInfo("Reloading modified property($propertyId) details")
+            }
+        }
     }
 
     fun setListeners() {
@@ -517,7 +538,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                     }
                 }
             else
-                viewModel.onlyPropertyDetailsRes.observe(viewLifecycleOwner) { result ->
+                viewModel.propertyResult.observe(viewLifecycleOwner) { result ->
                     when(result) {
                         is ResultUI.Success<Property> -> {
                             bindPropertyDetails(result.data)
@@ -578,11 +599,5 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         super.onDetach()
         if (hideAndShowBottomNav)
             bottomNavController.showBottomNav()
-    }
-
-    companion object {
-        const val PROPERTY_ID_KEY = "propertyId"
-        const val IS_TENANT_VIEW_KEY = "isTenantView"
-        const val HIDE_AND_SHOW_BOTTOM_NAV_KEY = "hideAndShow"
     }
 }

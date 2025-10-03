@@ -30,7 +30,8 @@ import com.example.houserentalapp.domain.model.enums.TenantType
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.model.PropertyDataUI
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
+import com.example.houserentalapp.presentation.ui.FragmentRequestKeys
 import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
@@ -90,9 +91,9 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        propertyIdToEdit = arguments?.getLong(FragmentArgKey.PROPERTY_ID)
+        propertyIdToEdit = arguments?.getLong(BundleKeys.PROPERTY_ID)
         if (propertyIdToEdit == 0L)  propertyIdToEdit = null
-        hideAndShowBottomNav = arguments?.getBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV)
+        hideAndShowBottomNav = arguments?.getBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV)
             ?: hideAndShowBottomNav
         // Take Current User
         currentUser = sharedDataViewModel.currentUserData
@@ -538,6 +539,10 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         var message = "Property posted successfully"
                         propertyIdToEdit?.let{
                             sharedDataViewModel.setUpdatedPropertyId(it) // Set Updated Property ID
+                            parentFragmentManager.setFragmentResult(
+                                FragmentRequestKeys.IS_PROPERTY_MODIFIED,
+                                Bundle().apply { putBoolean(BundleKeys.IS_PROPERTY_MODIFIED, true) }
+                            )
                             message = "Property updated successfully"
                         }
                         _context.showToast(message)

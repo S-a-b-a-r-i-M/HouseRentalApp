@@ -15,7 +15,7 @@ import com.example.houserentalapp.domain.model.PropertySummary
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
-import com.example.houserentalapp.presentation.ui.FragmentArgKey
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
@@ -83,9 +83,9 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
 
     private fun handleOnPropertyClick(propertyId: Long) {
         val bundle = Bundle().apply {
-            putLong(FragmentArgKey.PROPERTY_ID, propertyId)
-            putBoolean(FragmentArgKey.IS_TENANT_VIEW, false)
-            putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
+            putLong(BundleKeys.PROPERTY_ID, propertyId)
+            putBoolean(BundleKeys.IS_TENANT_VIEW, false)
+            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
         }
         navigateTo(NavigationDestination.SinglePropertyDetail(bundle))
     }
@@ -119,8 +119,8 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
         when(action) {
             PropertyLandlordAction.EDIT -> {
                 val bundle = Bundle().apply {
-                    putLong(FragmentArgKey.PROPERTY_ID, summary.id)
-                    putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                    putLong(BundleKeys.PROPERTY_ID, summary.id)
+                    putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
                 navigateTo(NavigationDestination.EditProperty(bundle))
             }
@@ -160,7 +160,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     fun setupListeners() {
         binding.fabAddProperty.setOnClickListener {
             val bundle = Bundle().apply {
-                putBoolean(FragmentArgKey.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
             }
             navigateTo(NavigationDestination.CreateProperty(bundle))
         }

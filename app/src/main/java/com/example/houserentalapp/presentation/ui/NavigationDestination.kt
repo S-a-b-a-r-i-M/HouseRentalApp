@@ -83,7 +83,7 @@ sealed class NavigationDestination(
         fragmentClass = ListingsFragment::class.java,
         args = (bundle ?: Bundle()).apply {
             putString(
-                FragmentArgKey.CHILD_FRAGMENT_NAME,
+                BundleKeys.CHILD_FRAGMENT_NAME,
                 ListingsFragment.ChildFragmentName.LEADS.name
             )
         },
@@ -94,7 +94,7 @@ sealed class NavigationDestination(
         fragmentClass = ListingsFragment::class.java,
         args = (bundle ?: Bundle()).apply {
             putString(
-                FragmentArgKey.CHILD_FRAGMENT_NAME,
+                BundleKeys.CHILD_FRAGMENT_NAME,
                 ListingsFragment.ChildFragmentName.MY_PROPERTIES.name
             )
         },
