@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.FragmentResultOwner
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
@@ -538,8 +539,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
 
                         var message = "Property posted successfully"
                         propertyIdToEdit?.let{
-                            sharedDataViewModel.setUpdatedPropertyId(it) // Set Updated Property ID
-                            parentFragmentManager.setFragmentResult(
+                            sharedDataViewModel.setUpdatedPropertyId(it) // Using Shared View Model
+                            parentFragmentManager.setFragmentResult( // Using Fragment Result API
                                 FragmentRequestKeys.IS_PROPERTY_MODIFIED,
                                 Bundle().apply { putBoolean(BundleKeys.IS_PROPERTY_MODIFIED, true) }
                             )

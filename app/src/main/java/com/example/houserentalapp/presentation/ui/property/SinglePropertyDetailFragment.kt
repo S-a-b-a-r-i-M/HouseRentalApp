@@ -218,7 +218,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
             userPropertyUC,
             currentUser
         )
-        viewModel = ViewModelProvider(this, factory).get(SinglePropertyDetailViewModel::class.java)
+        viewModel = ViewModelProvider(this, factory)[SinglePropertyDetailViewModel::class.java]
     }
 
     fun onEditIconClick() {
@@ -234,13 +234,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
         parentFragmentManager.setFragmentResultListener(
             FragmentRequestKeys.IS_PROPERTY_MODIFIED, this
         ) { requestKey, result ->
-            logInfo(requestKey)
-            if (isTenantView) {
-                logWarning("A Tenant Should not edit the property.")
-                return@setFragmentResultListener
-            }
-            val isModified = result.getBoolean(BundleKeys.IS_PROPERTY_MODIFIED)
-            if (isModified) {
+            if (result.getBoolean(BundleKeys.IS_PROPERTY_MODIFIED)) {
                 // Reload Property Details
                 viewModel.loadProperty(propertyId)
                 logInfo("Reloading modified property($propertyId) details")
@@ -251,9 +245,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     fun setListeners() {
         with(binding) {
           // ToolBar Listeners
-            toolbar.setNavigationOnClickListener {
-                navigationHandler.navigateBack()
-            }
+            toolbar.setNavigationOnClickListener { navigationHandler.navigateBack() }
 
             toolbar.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
@@ -269,9 +261,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                 true
             }
 
-            btnViewContactDetails.setOnClickListener {
-                viewModel.storeUserInterest(propertyId)
-            }
+            btnViewContactDetails.setOnClickListener { viewModel.storeUserInterest(propertyId) }
         }
     }
     private fun handleShortlistToggle(propertyId: Long) {
