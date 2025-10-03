@@ -128,16 +128,17 @@ class PropertiesListViewModel(
     }
 
     fun loadUpdatedPropertySummary(propertyId: Long) {
+        val idx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
+        if (idx == -1) {
+            logWarning("Can't find updated property id in list")
+            return
+        }
+
         viewModelScope.launch {
             try {
                 val result = propertyUC.getPropertySummaryWithAction(currentUser.id, propertyId)
                 when (result) {
                     is Result.Success<Pair<PropertySummary, Boolean>> -> {
-                        val idx = propertySummaryUIList.indexOfFirst { it.summary.id == propertyId }
-                        if (idx == -1) {
-                            logWarning("Can't find updated property id in list")
-                            return@launch
-                        }
                         propertySummaryUIList[idx] = PropertySummaryUI(
                             result.data.first, result.data.second
                         )

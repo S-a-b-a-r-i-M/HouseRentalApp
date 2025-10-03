@@ -275,7 +275,7 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
                 Toast.makeText(_context, message, Toast.LENGTH_SHORT).show()
 
                 // Trigger Update Event In SharedViewModel
-                sharedDataViewModel.setUpdatedPropertyId(propertyId)
+                 sharedDataViewModel.setUpdatedPropertyId(propertyId)
             },
             {
                 Toast.makeText(_context, "Retry later", Toast.LENGTH_SHORT).show()
