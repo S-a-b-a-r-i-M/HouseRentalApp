@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="search_property"
+        android:enabled="true"
+        android:icon="@drawable/baseline_search_24"
+        android:shortcutShortLabel="@string/search_shortcut">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.houserentalapp"
+            android:targetClass="com.example.houserentalapp.presentation.ui.auth.AuthActivity" >
+            <extra android:name="destinationPage" android:value="searchProperty" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="create_property"
+        android:enabled="true"
+        android:icon="@drawable/outline_add_24"
+        android:shortcutShortLabel="@string/create_property_shortcut">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.houserentalapp"
+            android:targetClass="com.example.houserentalapp.presentation.ui.auth.AuthActivity" >
+            <extra android:name="destinationPage" android:value="createProperty" />
+        </intent>
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="leads"
+        android:enabled="true"
+        android:icon="@drawable/baseline_person_24"
+        android:shortcutShortLabel="@string/leads_shortcut">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.example.houserentalapp"
+            android:targetClass="com.example.houserentalapp.presentation.ui.auth.AuthActivity" >
+            <extra android:name="destinationPage" android:value="leads" />
+        </intent>
+    </shortcut>
+</shortcuts>

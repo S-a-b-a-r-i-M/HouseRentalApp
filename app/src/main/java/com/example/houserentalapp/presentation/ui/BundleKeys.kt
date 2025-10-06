@@ -17,8 +17,10 @@ object BundleKeys {
     const val CHILD_FRAGMENT_NAME = "CHILD_FRAGMENT_NAME"
 
     const val IS_PROPERTY_MODIFIED = "IS_PROPERTY_MODIFIED"
+    const val BUNDLE = "BUNDLE"
+    const val DESTINATION_PAGE = "destinationPage" // NOTE: same as shortcuts.xml
 }
 
-object FragmentRequestKeys {
+object ResultRequestKeys {
     const val IS_PROPERTY_MODIFIED = "IS_PROPERTY_MODIFIED"
 }

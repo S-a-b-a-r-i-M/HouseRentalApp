@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.setMargins
 import androidx.core.view.setPadding
 import androidx.core.widget.addTextChangedListener
-import androidx.fragment.app.FragmentResultOwner
 import androidx.fragment.app.activityViewModels
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentCreatePropertyBinding
@@ -32,7 +31,7 @@ import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePrope
 import com.example.houserentalapp.presentation.enums.PropertyFormField
 import com.example.houserentalapp.presentation.model.PropertyDataUI
 import com.example.houserentalapp.presentation.ui.BundleKeys
-import com.example.houserentalapp.presentation.ui.FragmentRequestKeys
+import com.example.houserentalapp.presentation.ui.ResultRequestKeys
 import com.example.houserentalapp.presentation.ui.common.CounterView
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
@@ -541,7 +540,7 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                         propertyIdToEdit?.let{
                             sharedDataViewModel.setUpdatedPropertyId(it) // Using Shared View Model
                             parentFragmentManager.setFragmentResult( // Using Fragment Result API
-                                FragmentRequestKeys.IS_PROPERTY_MODIFIED,
+                                ResultRequestKeys.IS_PROPERTY_MODIFIED,
                                 Bundle().apply { putBoolean(BundleKeys.IS_PROPERTY_MODIFIED, true) }
                             )
                             message = "Property updated successfully"

@@ -159,10 +159,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
 
     fun setupListeners() {
         binding.fabAddProperty.setOnClickListener {
-            val bundle = Bundle().apply {
-                putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
-            }
-            navigateTo(NavigationDestination.CreateProperty(bundle))
+            navigateTo(NavigationDestination.CreateProperty())
         }
     }
 

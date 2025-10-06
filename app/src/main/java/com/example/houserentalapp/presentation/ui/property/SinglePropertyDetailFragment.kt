@@ -31,7 +31,7 @@ import com.example.houserentalapp.domain.usecase.PropertyUseCase
 import com.example.houserentalapp.domain.usecase.UserPropertyUseCase
 import com.example.houserentalapp.presentation.model.PropertyUI
 import com.example.houserentalapp.presentation.ui.BundleKeys
-import com.example.houserentalapp.presentation.ui.FragmentRequestKeys
+import com.example.houserentalapp.presentation.ui.ResultRequestKeys
 import com.example.houserentalapp.presentation.utils.helpers.fromEpoch
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
@@ -222,17 +222,14 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     }
 
     fun onEditIconClick() {
-        val bundle = Bundle().apply {
-            putLong(BundleKeys.PROPERTY_ID, propertyId)
-            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, false)
-        }
+        val bundle = Bundle().apply { putLong(BundleKeys.PROPERTY_ID, propertyId) }
         setFragmentResultListener()
         navigateTo(NavigationDestination.CreateProperty(bundle))
     }
 
     private fun setFragmentResultListener() {
         parentFragmentManager.setFragmentResultListener(
-            FragmentRequestKeys.IS_PROPERTY_MODIFIED, this
+            ResultRequestKeys.IS_PROPERTY_MODIFIED, this
         ) { requestKey, result ->
             if (result.getBoolean(BundleKeys.IS_PROPERTY_MODIFIED)) {
                 // Reload Property Details

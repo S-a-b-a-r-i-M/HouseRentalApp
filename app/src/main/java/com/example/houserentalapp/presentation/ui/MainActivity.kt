@@ -2,11 +2,14 @@ package com.example.houserentalapp.presentation.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
-import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -24,8 +27,10 @@ import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredTheme
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.extensions.addFragment
 import com.example.houserentalapp.presentation.utils.extensions.loadFragment
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
+import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 
 /* TODO:
@@ -43,8 +48,8 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
 
     override fun onCreate(savedInstanceState: Bundle?) {
         preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
+
         super.onCreate(savedInstanceState)
-        logInfo("<-------- MainActivity onCreate ---------->")
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -55,15 +60,63 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         // Set Current User Into Shared ViewModel // TODO - ONLY RECEIVE USER ID
         val currentUser = intent.getParcelableExtra<User>(CURRENT_USER_KEY) ?: run {
             logError("Current User is not found in intent")
-            OnBackPressedDispatcher().onBackPressed()
+            startActivity(Intent(this, AuthActivity::class.java))
+            finish()
             return
         }
         sharedDataViewModel.setCurrentUser(currentUser)
 
         setBottomNavigation()
+        if (savedInstanceState == null) {
+            loadFragmentInternal(HomeFragment()) // Initial Render
+            isNavigationFromShortcuts(intent) // Further render if any
+        }
+    }
 
-        if (savedInstanceState == null)
-            loadFragmentInternal(HomeFragment())
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        isNavigationFromShortcuts(intent)
+    }
+
+    fun convertToBundle(persistable: PersistableBundle?): Bundle? {
+        if (persistable == null) return null
+        return Bundle().apply {
+            persistable.keySet()?.forEach { key ->
+                when (val value = persistable.get(key)) {
+                    is String -> putString(key, value)
+                    is Int -> putInt(key, value)
+                    is Long -> putLong(key, value)
+                    is Double -> putDouble(key, value)
+                    is Boolean -> putBoolean(key, value)
+                }
+            }
+        }
+    }
+
+    private fun isNavigationFromShortcuts(intent: Intent): Boolean {
+        val destinationPage = intent.getStringExtra(BundleKeys.DESTINATION_PAGE) ?: run {
+            logDebug("isNavigationFromShortcuts: No destinationPage found")
+            return false
+        }
+
+        when(destinationPage) {
+            "searchProperty" -> navigateTo(NavigationDestination.SeparateSearch())
+            "createProperty" -> navigateTo(NavigationDestination.CreateProperty())
+            "leads" -> navigateTo(NavigationDestination.MyLeads())
+            "singlePropertyDetail" -> {
+                val persistable = intent.getParcelableExtra<PersistableBundle>(BundleKeys.BUNDLE) ?: run {
+                    logWarning("no bundle found")
+                    return false
+                }
+                navigateTo(NavigationDestination.SinglePropertyDetail(convertToBundle(persistable)))
+            }
+            else -> {
+                logWarning("destinationPage: $destinationPage isn't matched with any pages")
+                return false
+            }
+        }
+
+        return true
     }
 
     private fun setWindowInsets() {
@@ -74,6 +127,40 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             v.setPadding(systemBars.left, 0, systemBars.right, imeInsets.bottom)
             insets
         }
+    }
+
+    private fun addDynamicShortCut(propertyName: String, bundle: Bundle?) {
+        val shortcutId = "lastSeenProperty"
+        val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(applicationContext)
+        // Check if already added
+        shortcuts.find { it.id == shortcutId }?.let {
+            logDebug("Shortcut already exists")
+            return
+        }
+
+        // Remove old dynamic shortcut
+        if (shortcuts.isNotEmpty())
+            ShortcutManagerCompat.removeDynamicShortcuts(
+                applicationContext, shortcuts.map { it.id }
+            )
+
+        // Add New ShortCut
+        val shortcut = ShortcutInfoCompat.Builder(applicationContext, shortcutId)
+            .setShortLabel(propertyName)
+            .setIcon(IconCompat.createWithResource(applicationContext, R.drawable.bottom_nav_home_icon))
+            .setIntent(
+                // Even if the NotesHomePage is active clicking on shortcut opening it again newly
+                Intent(applicationContext, MainActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                    putExtra(BundleKeys.BUNDLE, bundle)
+                    putExtra(BundleKeys.DESTINATION_PAGE, "singlePropertyDetail")
+                }
+            )
+            .build()
+
+        logInfo("New Dynamic Shortcut added.")
+        ShortcutManagerCompat.pushDynamicShortcut(applicationContext, shortcut)
     }
 
     data class ProgrammaticNavSelection(val extraArgs: Bundle? = null, val pushToBackStack: Boolean = false)
@@ -168,9 +255,7 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             is NavigationDestination.SeparateSearch,
             is NavigationDestination.RecommendedSinglePropertyDetail,
             is NavigationDestination.ProfileEdit, -> {
-                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
-                fragment.arguments = destination.args
-
+                val fragment = NavigationDestination.getFragmentInstance(destination)
                 loadFragmentInternal(
                     fragment,
                     destination.pushToBackStack,
@@ -179,10 +264,25 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             }
             is NavigationDestination.MultipleImages,
             is NavigationDestination.InPlaceSearch,
-            is NavigationDestination.SinglePropertyDetail,
             is NavigationDestination.EditProperty -> {
-                val fragment = destination.fragmentClass.getDeclaredConstructor().newInstance()
-                fragment.arguments = destination.args
+                val fragment = NavigationDestination.getFragmentInstance(destination)
+                addFragment(
+                    fragment,
+                    binding.pageFragmentContainer.id,
+                    destination.pushToBackStack,
+                    destination.removeExistingHistory,
+                )
+            }
+            is NavigationDestination.SinglePropertyDetail -> {
+                val fragment = NavigationDestination.getFragmentInstance(destination)
+                if (destination.args == null) {
+                    logWarning("To navigate SinglePropertyDetail arguments are mandatory")
+                    return
+                }
+
+                if (destination.args.getBoolean(BundleKeys.IS_TENANT_VIEW))
+                    // Add Dynamic Shortcut
+                    addDynamicShortCut("Last Seen Property", destination.args)
 
                 addFragment(
                     fragment,

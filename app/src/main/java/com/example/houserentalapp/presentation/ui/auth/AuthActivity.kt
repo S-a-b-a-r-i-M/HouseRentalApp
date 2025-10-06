@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
@@ -14,10 +15,12 @@ import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.ActivityAuthBinding
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
+import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModelFactory
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
+import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.simpleClassName
 import kotlin.getValue
 
@@ -28,13 +31,23 @@ class AuthActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
+        val splashScreen = installSplashScreen() // Install splash screen
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setupViewModel()
+
+        splashScreen.setKeepOnScreenCondition {
+            // This lambda called ~60 times per second (every frame)
+            logDebug("SplashScreen condition is invoked: ${authViewModel.isLoading}")
+            authViewModel.isLoading // NOTE: It doesn't have to be mutable live data
+        }
+
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setWindowInsets()
 
-        setupViewModel()
+
         if (savedInstanceState == null)
             authViewModel.loadUserIfAlreadyAuthenticated(::navigateToMain) {
                 loadFragment(SignInFragment())
@@ -45,7 +58,7 @@ class AuthActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.auth)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
-            binding.statusBarOverlayView.layoutParams.height = systemBars.top // ADD SYSTEM BAR PADSING
+            binding.statusBarOverlayView.layoutParams.height = systemBars.top // ADD SYSTEM BAR PADDING
             v.setPadding(systemBars.left, 0, systemBars.right, imeInsets.bottom)
             insets
         }
@@ -58,8 +71,10 @@ class AuthActivity : AppCompatActivity() {
     }
 
     fun navigateToMain(currentUser: User) {
+        val destinationPage = this.intent.getStringExtra(BundleKeys.DESTINATION_PAGE) // ShortCut Click
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra(MainActivity.Companion.CURRENT_USER_KEY, currentUser)
+        intent.putExtra(BundleKeys.DESTINATION_PAGE, destinationPage)
         startActivity(intent)
         finish()
     }

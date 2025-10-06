@@ -188,4 +188,10 @@
     <string name="menu_icon">Menu Icon</string>
     <string name="description">Description:</string>
     <string name="recommended_properties">Recommended Properties</string>
+
+    <!-- ShortCut ID & Label -->
+    <string name="search_shortcut">search property</string>
+    <string name="leads_shortcut">Leads</string>
+    <string name="create_property_shortcut">Create Property</string>
+
 </resources>

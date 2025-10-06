@@ -19,7 +19,7 @@ sealed class NavigationDestination(
 ) {
     data class SeparateSearch(val bundle: Bundle? = null) : NavigationDestination(
         fragmentClass = SearchViewFragment::class.java,
-        args = bundle,
+        args = (bundle ?: Bundle()).apply { putBoolean(BundleKeys.IS_NEW_SEARCH, true) },
         pushToBackStack = true
     )
 
@@ -39,7 +39,9 @@ sealed class NavigationDestination(
 
     data class CreateProperty(val bundle: Bundle? = null) : NavigationDestination(
         fragmentClass = CreatePropertyFragment::class.java,
-        args = bundle,
+        args = (bundle ?: Bundle()).apply {
+            putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
+        },
         pushToBackStack = true
     )
 
@@ -100,4 +102,11 @@ sealed class NavigationDestination(
         },
         pushToBackStack = true
     )
+
+    companion object {
+        fun getFragmentInstance(destination: NavigationDestination) = destination
+            .fragmentClass.getDeclaredConstructor().newInstance().apply {
+                arguments = destination.args
+            }
+    }
 }

@@ -82,6 +82,13 @@
         <item name="android:colorBackground">@color/white_green</item>
     </style>
 
+    <style name="AppTheme.MySplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/white</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/app_logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/black</item>
+<!--        <item name="postSplashScreenTheme">@style/AppTheme.Blue</item>-->
+    </style>
+
     <style name="Widget.App.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
         <item name="android:color">@color/white</item>
     </style>

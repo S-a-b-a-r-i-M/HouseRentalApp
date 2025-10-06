@@ -66,6 +66,8 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.15.1")
     // GSON
     implementation("com.google.code.gson:gson:2.10.1")
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

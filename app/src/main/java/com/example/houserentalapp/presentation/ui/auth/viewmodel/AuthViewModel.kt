@@ -10,7 +10,11 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
 
 class AuthViewModel(private val userUC: UserUseCase) : ViewModel() {
+    var isLoading = true
+        private set
+
     fun loadUserIfAlreadyAuthenticated(onSuccess: (User) -> Unit, onFailure: () -> Unit) {
+        isLoading = true
         viewModelScope.launch {
             when(val res = userUC.getUserFromSession()) {
                 is Result.Success<User?> -> {
@@ -24,6 +28,7 @@ class AuthViewModel(private val userUC: UserUseCase) : ViewModel() {
                     onFailure()
                 }
             }
+            isLoading = false
         }
     }
 }
