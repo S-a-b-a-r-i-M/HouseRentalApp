@@ -19,6 +19,7 @@ object BundleKeys {
     const val IS_PROPERTY_MODIFIED = "IS_PROPERTY_MODIFIED"
     const val BUNDLE = "BUNDLE"
     const val DESTINATION_PAGE = "destinationPage" // NOTE: same as shortcuts.xml
+    const val CURRENT_USER_ID = "CURRENT_USER_ID"
 }
 
 object ResultRequestKeys {

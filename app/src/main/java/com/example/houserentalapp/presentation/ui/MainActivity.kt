@@ -25,6 +25,7 @@ import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
+import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.addFragment
 import com.example.houserentalapp.presentation.utils.extensions.loadFragment
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
@@ -43,7 +44,9 @@ import com.example.houserentalapp.presentation.utils.extensions.showToast
 
 class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigationHandler {
     private lateinit var binding: ActivityMainBinding
-    val sharedDataViewModel: SharedDataViewModel by viewModels()
+    val sharedDataViewModel: SharedDataViewModel by viewModels(null) {
+        SharedDataViewModelFactory(this.applicationContext)
+    }
     val preferredThemeViewModel: PreferredThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,19 +61,30 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         observeViewModel()
 
         // Set Current User Into Shared ViewModel // TODO - ONLY RECEIVE USER ID
-        val currentUser = intent.getParcelableExtra<User>(CURRENT_USER_KEY) ?: run {
+        val currentUserID = intent.getLongExtra(BundleKeys.CURRENT_USER_ID, 0L)
+        if (currentUserID == 0L){
             logError("Current User is not found in intent")
-            startActivity(Intent(this, AuthActivity::class.java))
-            finish()
+            onUserLoadFailed()
             return
         }
-        sharedDataViewModel.setCurrentUser(currentUser)
 
         setBottomNavigation()
         if (savedInstanceState == null) {
-            loadFragmentInternal(HomeFragment()) // Initial Render
-            isNavigationFromShortcuts(intent) // Further render if any
+            sharedDataViewModel.loadCurrentUser(currentUserID) { isSuccess ->
+                if (!isSuccess) {
+                    onUserLoadFailed()
+                    return@loadCurrentUser
+                }
+                loadFragmentInternal(HomeFragment()) // Initial Render
+                isNavigationFromShortcuts(intent) // Further render if any
+            }
         }
+    }
+
+    private fun onUserLoadFailed() {
+        startActivity(Intent(this, AuthActivity::class.java))
+        showToast("Unknown error while fetching user data")
+        finish()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -339,9 +353,5 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                 binding.bottomNavigation.selectedItemId = R.id.bnav_home  // NAVIGATE TO HOME
             }
         }
-    }
-
-    companion object {
-        const val CURRENT_USER_KEY = "currentUser"
     }
 }
