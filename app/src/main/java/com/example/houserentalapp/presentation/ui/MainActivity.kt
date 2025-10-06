@@ -33,6 +33,7 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import com.example.houserentalapp.presentation.utils.helpers.convertToBundle
 
 /* TODO:
         Existing fix:
@@ -92,21 +93,6 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         isNavigationFromShortcuts(intent)
     }
 
-    fun convertToBundle(persistable: PersistableBundle?): Bundle? {
-        if (persistable == null) return null
-        return Bundle().apply {
-            persistable.keySet()?.forEach { key ->
-                when (val value = persistable.get(key)) {
-                    is String -> putString(key, value)
-                    is Int -> putInt(key, value)
-                    is Long -> putLong(key, value)
-                    is Double -> putDouble(key, value)
-                    is Boolean -> putBoolean(key, value)
-                }
-            }
-        }
-    }
-
     private fun isNavigationFromShortcuts(intent: Intent): Boolean {
         val destinationPage = intent.getStringExtra(BundleKeys.DESTINATION_PAGE) ?: run {
             logDebug("isNavigationFromShortcuts: No destinationPage found")
@@ -118,11 +104,14 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
             "createProperty" -> navigateTo(NavigationDestination.CreateProperty())
             "leads" -> navigateTo(NavigationDestination.MyLeads())
             "singlePropertyDetail" -> {
+                // NOTE: Android is converting the nested bundle into PersistableBundle
                 val persistable = intent.getParcelableExtra<PersistableBundle>(BundleKeys.BUNDLE) ?: run {
                     logWarning("no bundle found")
                     return false
                 }
-                navigateTo(NavigationDestination.SinglePropertyDetail(convertToBundle(persistable)))
+                navigateTo(NavigationDestination.SinglePropertyDetail(
+                    convertToBundle(persistable)
+                ))
             }
             else -> {
                 logWarning("destinationPage: $destinationPage isn't matched with any pages")

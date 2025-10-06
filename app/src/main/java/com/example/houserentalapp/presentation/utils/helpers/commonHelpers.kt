@@ -1,6 +1,8 @@
 package com.example.houserentalapp.presentation.utils.helpers
 
 import android.content.Context
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
@@ -69,3 +71,18 @@ fun getScrollListener(hasMore: () -> Boolean, onLoad: () -> Unit) =
             }
         }
     }
+
+fun convertToBundle(persistable: PersistableBundle?): Bundle? {
+    if (persistable == null) return null
+    return Bundle().apply {
+        persistable.keySet()?.forEach { key ->
+            when (val value = persistable.get(key)) {
+                is String -> putString(key, value)
+                is Int -> putInt(key, value)
+                is Long -> putLong(key, value)
+                is Double -> putDouble(key, value)
+                is Boolean -> putBoolean(key, value)
+            }
+        }
+    }
+}
