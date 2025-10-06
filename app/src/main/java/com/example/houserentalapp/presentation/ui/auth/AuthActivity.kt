@@ -73,7 +73,7 @@ class AuthActivity : AppCompatActivity() {
     fun navigateToMain(currentUser: User) {
         val destinationPage = this.intent.getStringExtra(BundleKeys.DESTINATION_PAGE) // ShortCut Click
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra(MainActivity.Companion.CURRENT_USER_KEY, currentUser)
+        intent.putExtra(BundleKeys.CURRENT_USER_ID, currentUser.id)
         intent.putExtra(BundleKeys.DESTINATION_PAGE, destinationPage)
         startActivity(intent)
         finish()
