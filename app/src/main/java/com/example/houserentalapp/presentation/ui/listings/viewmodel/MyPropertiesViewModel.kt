@@ -29,8 +29,10 @@ class MyPropertiesViewModel(
     private var offset: Int = 0
     private val limit: Int = 10
 
-    fun loadPropertySummaries(filters: PropertyFilters?) {
+    fun loadPropertySummaries(filters: PropertyFilters?, refresh: Boolean) {
         if (!hasMore) return
+        if (refresh) offset = 0
+
         _propertySummariesResult.value = ResultUI.Loading
         viewModelScope.launch {
             try {

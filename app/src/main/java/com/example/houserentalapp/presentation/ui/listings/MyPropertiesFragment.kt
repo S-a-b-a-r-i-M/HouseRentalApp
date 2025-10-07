@@ -120,7 +120,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
             PropertyLandlordAction.EDIT -> {
                 val bundle = Bundle().apply {
                     putLong(BundleKeys.PROPERTY_ID, summary.id)
-                    putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                     putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
                 }
                 navigateTo(NavigationDestination.EditProperty(bundle))
             }
@@ -152,9 +152,9 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
         }
     }
 
-    private fun loadProperties() {
+    private fun loadProperties(refresh: Boolean = false) {
         // Can add further more filters if needed
-        myPropertiesViewModel.loadPropertySummaries(propertyFilters)
+        myPropertiesViewModel.loadPropertySummaries(propertyFilters, refresh)
     }
 
     fun setupListeners() {
@@ -203,6 +203,13 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
             if (it != null) {
                 sharedDataViewModel.clearUpdatedPropertyId()
                 myPropertiesViewModel.loadUpdatedPropertySummary(it)
+            }
+        }
+
+        sharedDataViewModel.isPropertyCreated.observe(viewLifecycleOwner) {
+            if (it) {
+                loadProperties(true)
+                sharedDataViewModel.isPropertyCreated.value = false
             }
         }
     }

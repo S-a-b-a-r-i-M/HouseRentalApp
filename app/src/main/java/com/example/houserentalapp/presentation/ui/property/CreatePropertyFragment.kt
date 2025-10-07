@@ -544,6 +544,8 @@ class CreatePropertyFragment : Fragment(R.layout.fragment_create_property) {
                                 Bundle().apply { putBoolean(BundleKeys.IS_PROPERTY_MODIFIED, true) }
                             )
                             message = "Property updated successfully"
+                        } ?: run {
+                            sharedDataViewModel.isPropertyCreated.value = true
                         }
                         _context.showToast(message)
                         parentFragmentManager.popBackStack()
