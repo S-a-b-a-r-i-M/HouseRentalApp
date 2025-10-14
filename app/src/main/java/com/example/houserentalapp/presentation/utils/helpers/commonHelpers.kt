@@ -30,7 +30,7 @@ fun setSystemBarBottomPadding(view: View) {
     }
 }
 
-fun getRequiredStyleLabel(label: String, context: Context): SpannableString {
+fun getRequiredStyle(label: String, context: Context): SpannableString {
     val spannable = SpannableString("$label*")
     spannable.setSpan(
         ForegroundColorSpan(context.resources.getColor(R.color.red_error)),

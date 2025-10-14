@@ -28,8 +28,6 @@ class SharedDataViewModel(private val userUC: UserUseCase? = null) : ViewModel()
     private val _updatedPropertyId = MutableLiveData<Long?>(null)
     val updatedPropertyId: LiveData<Long?> = _updatedPropertyId
 
-    val isPropertyCreated = MutableLiveData<Boolean>()
-
     fun loadCurrentUser(userId: Long, onResult: (Boolean) -> Unit) {
         if (userUC == null) {
             logWarning("To loadCurrentUser UserUseCase is required.")

@@ -6,6 +6,4 @@ interface FragmentNavigationHandler {
     fun navigateTo(destination: NavigationDestination)
 
     fun navigateBack()
-
-    fun navigateToRoot()
 }

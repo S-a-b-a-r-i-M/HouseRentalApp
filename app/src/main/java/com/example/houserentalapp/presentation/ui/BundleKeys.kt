@@ -17,11 +17,14 @@ object BundleKeys {
     const val CHILD_FRAGMENT_NAME = "CHILD_FRAGMENT_NAME"
 
     const val IS_PROPERTY_MODIFIED = "IS_PROPERTY_MODIFIED"
+    const val IS_PROPERTY_CREATED = "IS_PROPERTY_CREATED"
     const val BUNDLE = "BUNDLE"
     const val DESTINATION_PAGE = "destinationPage" // NOTE: same as shortcuts.xml
     const val CURRENT_USER_ID = "CURRENT_USER_ID"
+    const val CURRENT_USER = "CURRENT_USER"
 }
 
 object ResultRequestKeys {
     const val IS_PROPERTY_MODIFIED = "IS_PROPERTY_MODIFIED"
+    const val PROPERTY_CREATED = "PROPERTY_CREATED"
 }

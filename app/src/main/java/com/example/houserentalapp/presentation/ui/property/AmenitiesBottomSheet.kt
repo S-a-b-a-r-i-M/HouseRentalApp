@@ -17,7 +17,7 @@ import com.example.houserentalapp.domain.model.enums.InternalAmenity
 import com.example.houserentalapp.domain.model.enums.SocialAmenity
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
 import com.example.houserentalapp.presentation.ui.common.CounterView
-import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
+import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.google.android.material.checkbox.MaterialCheckBox
 
@@ -28,8 +28,8 @@ import com.google.android.material.checkbox.MaterialCheckBox
 class AmenitiesBottomSheet : BottomSheetDialogFragment() {
     private var _binding: FragmentAmenitiesBottomSheetBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: CreatePropertyViewModel by activityViewModels {
-        createPropertyViewModelFactory()
+    private val viewModel: CreatePropertyViewModel by activityViewModels (null) {
+        CreatePropertyViewModelFactory(requireActivity().applicationContext)
     }
     private val countableIntAmenitiesViewMap = mutableMapOf<CountableInternalAmenity, CounterView>()
     private val internalAmenitiesViewMap = mutableMapOf<InternalAmenity, MaterialCheckBox>()

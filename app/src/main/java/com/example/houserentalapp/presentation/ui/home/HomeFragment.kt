@@ -97,6 +97,8 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     }
 
     private fun setListeners() {
+        bottomNavController.showBottomNav()
+
         with(binding) {
             searchBar.setOnClickListener {
                 // This is a new fresh search
@@ -104,7 +106,8 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
 
             btnPostProperty.setOnClickListener {
-                navigateTo(NavigationDestination.CreateProperty())
+                val bundle = Bundle().apply { putLong(BundleKeys.CURRENT_USER_ID, currentUser.id) }
+                navigateTo(NavigationDestination.CreateProperty(bundle))
             }
 
             // STATS CARD LISTENERS

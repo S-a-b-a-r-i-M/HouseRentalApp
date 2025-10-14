@@ -10,10 +10,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentPropertyImagesBottomSheetBinding
-import com.example.houserentalapp.presentation.ui.MainActivity
 import com.example.houserentalapp.presentation.ui.property.adapter.PropertyImagesEditAdapter
 import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModel
-import com.example.houserentalapp.presentation.utils.extensions.createPropertyViewModelFactory
+import com.example.houserentalapp.presentation.ui.property.viewmodel.CreatePropertyViewModelFactory
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.ImageUploadHelper
@@ -28,8 +27,8 @@ class PropertyImagesBottomSheet : BottomSheetDialogFragment(
 
     private val _context: Context get() = requireContext()
 
-    private val viewModel: CreatePropertyViewModel by activityViewModels {
-        createPropertyViewModelFactory()
+    private val viewModel: CreatePropertyViewModel by activityViewModels(null) {
+        CreatePropertyViewModelFactory(requireActivity().applicationContext)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
