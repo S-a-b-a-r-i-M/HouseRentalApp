@@ -91,6 +91,7 @@ class CreatePropertyActivity : AppCompatActivity(), FragmentNavigationHandler {
                 putExtra(BundleKeys.IS_PROPERTY_CREATED, isPropertyCreated)
             }
         )
-        finish()
+        // Finish & Remove from task(recents)
+        finishAndRemoveTask()
     }
 }

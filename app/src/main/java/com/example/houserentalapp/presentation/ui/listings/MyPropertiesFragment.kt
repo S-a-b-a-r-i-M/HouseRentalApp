@@ -17,6 +17,7 @@ import com.example.houserentalapp.presentation.enums.PropertyLandlordAction
 import com.example.houserentalapp.presentation.model.PropertySummaryUI
 import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
+import com.example.houserentalapp.presentation.ui.ResultRequestKeys
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.listings.adapter.MyPropertiesAdapter
@@ -56,6 +57,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
         setupListeners()
         setupObservers()
         onBackPressedNavigateBack()
+        addCreatePropertyResultListener()
 
         // Initial Load
         if (myPropertiesViewModel.propertySummariesResult.value !is ResultUI.Success)
@@ -63,6 +65,8 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     }
 
     fun setupUI() {
+        bottomNavController.showBottomNav()
+
         with(binding) {
             // RecyclerView
             myPropertiesAdapter = MyPropertiesAdapter(
@@ -120,7 +124,7 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
             PropertyLandlordAction.EDIT -> {
                 val bundle = Bundle().apply {
                     putLong(BundleKeys.PROPERTY_ID, summary.id)
-                     putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
+                    putLong(BundleKeys.CURRENT_USER_ID, currentUser.id)
                 }
                 navigateTo(NavigationDestination.EditProperty(bundle))
             }
@@ -160,6 +164,17 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
     fun setupListeners() {
         binding.fabAddProperty.setOnClickListener {
             navigateTo(NavigationDestination.CreateProperty())
+        }
+    }
+
+    private fun addCreatePropertyResultListener() {
+        parentFragmentManager.setFragmentResultListener(
+            ResultRequestKeys.PROPERTY_CREATED, viewLifecycleOwner
+        ) { requestKey, result ->
+            if (result.getBoolean(BundleKeys.IS_PROPERTY_CREATED)) {
+                logInfo("New property created. Hence, fetching fresh data.")
+                loadProperties(true)
+            }
         }
     }
 
@@ -203,13 +218,6 @@ class MyPropertyFragment : BaseFragment(R.layout.fragment_my_property) {
             if (it != null) {
                 sharedDataViewModel.clearUpdatedPropertyId()
                 myPropertiesViewModel.loadUpdatedPropertySummary(it)
-            }
-        }
-
-        sharedDataViewModel.isPropertyCreated.observe(viewLifecycleOwner) {
-            if (it) {
-                loadProperties(true)
-                sharedDataViewModel.isPropertyCreated.value = false
             }
         }
     }

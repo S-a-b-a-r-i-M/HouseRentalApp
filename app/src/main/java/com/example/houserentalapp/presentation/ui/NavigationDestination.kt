@@ -1,10 +1,12 @@
 package com.example.houserentalapp.presentation.ui
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.presentation.ui.common.SearchViewFragment
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileEditFragment
+import com.example.houserentalapp.presentation.ui.property.CreatePropertyActivity
 import com.example.houserentalapp.presentation.ui.property.CreatePropertyFragment
 import com.example.houserentalapp.presentation.ui.property.MultipleImagesFragment
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
@@ -12,8 +14,10 @@ import com.example.houserentalapp.presentation.ui.property.SinglePropertyDetailF
 
 // ONLY CLASS KNOWS ABOUT THE FRAGMENTS
 sealed class NavigationDestination(
-    val fragmentClass: Class<out Fragment>,
+    val fragmentClass: Class<out Fragment>? = null,
+    val activityClass: Class<out Activity>? = null,
     val args: Bundle? = null,
+    val resultCallBack: ((Boolean) -> Unit)? = null,
     val pushToBackStack: Boolean = false,
     val removeExistingHistory: Boolean = false,
 ) {
@@ -37,11 +41,14 @@ sealed class NavigationDestination(
         removeExistingHistory = true
     )
 
-    data class CreateProperty(val bundle: Bundle? = null) : NavigationDestination(
-        fragmentClass = CreatePropertyFragment::class.java,
+    data class CreateProperty(
+        val bundle: Bundle? = null, val onResult: ((Boolean) -> Unit)? = null
+    ) : NavigationDestination(
+        activityClass = CreatePropertyActivity::class.java,
         args = (bundle ?: Bundle()).apply {
             putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
         },
+        resultCallBack = onResult,
         pushToBackStack = true
     )
 
@@ -102,11 +109,4 @@ sealed class NavigationDestination(
         },
         pushToBackStack = true
     )
-
-    companion object {
-        fun getFragmentInstance(destination: NavigationDestination) = destination
-            .fragmentClass.getDeclaredConstructor().newInstance().apply {
-                arguments = destination.args
-            }
-    }
 }

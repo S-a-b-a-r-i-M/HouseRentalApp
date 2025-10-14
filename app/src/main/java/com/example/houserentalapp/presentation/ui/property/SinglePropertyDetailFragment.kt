@@ -222,9 +222,12 @@ class SinglePropertyDetailFragment : BaseFragment(R.layout.fragment_single_prope
     }
 
     fun onEditIconClick() {
-        val bundle = Bundle().apply { putLong(BundleKeys.PROPERTY_ID, propertyId) }
+        val bundle = Bundle().apply {
+            putLong(BundleKeys.PROPERTY_ID, propertyId)
+            putLong(BundleKeys.CURRENT_USER_ID, currentUser.id)
+        }
         setFragmentResultListener()
-        navigateTo(NavigationDestination.CreateProperty(bundle))
+        navigateTo(NavigationDestination.EditProperty(bundle))
     }
 
     private fun setFragmentResultListener() {

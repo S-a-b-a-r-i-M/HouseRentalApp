@@ -1,11 +1,13 @@
 package com.example.houserentalapp.presentation.ui.property.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.domain.model.AmenityDomain
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.domain.model.Property
@@ -692,14 +694,14 @@ class CreatePropertyViewModel(private val propertyUseCase: PropertyUseCase) : Vi
 }
 
 
-class CreatePropertyViewModelFactory(
-    private val propertyUseCase: PropertyUseCase
-) : ViewModelProvider.Factory {
+class CreatePropertyViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(CreatePropertyViewModel::class.java))
+        if (modelClass.isAssignableFrom(CreatePropertyViewModel::class.java)) {
+            val propertyUseCase = PropertyUseCase(PropertyRepoImpl(context))
             return CreatePropertyViewModel(propertyUseCase) as T
+        }
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

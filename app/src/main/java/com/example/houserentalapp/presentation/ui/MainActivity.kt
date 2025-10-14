@@ -12,16 +12,19 @@ import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.postDelayed
 import androidx.fragment.app.Fragment
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.ActivityMainBinding
 import com.example.houserentalapp.domain.model.User
+import com.example.houserentalapp.presentation.enums.FragmentAnimationType
 import com.example.houserentalapp.presentation.ui.auth.AuthActivity
 import com.example.houserentalapp.presentation.ui.home.HomeFragment
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.interfaces.FragmentNavigationHandler
 import com.example.houserentalapp.presentation.ui.listings.ListingsFragment
 import com.example.houserentalapp.presentation.ui.profile.ProfileFragment
+import com.example.houserentalapp.presentation.ui.property.CreatePropertyActivity
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
@@ -49,20 +52,21 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         SharedDataViewModelFactory(this.applicationContext)
     }
     val preferredThemeViewModel: PreferredThemeViewModel by viewModels()
+    private var currentUserID = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
 
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        enableEdgeToEdge()
         setWindowInsets()
         observeViewModel()
 
         // Set Current User Into Shared ViewModel // TODO - ONLY RECEIVE USER ID
-        val currentUserID = intent.getLongExtra(BundleKeys.CURRENT_USER_ID, 0L)
+        currentUserID = intent.getLongExtra(BundleKeys.CURRENT_USER_ID, 0L)
         if (currentUserID == 0L){
             logError("Current User is not found in intent")
             onUserLoadFailed()
@@ -220,7 +224,10 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
     }
 
     override fun hideBottomNav() {
-        binding.bottomNavigationContainer.visibility = View.GONE
+        binding.bottomNavigationContainer.postDelayed(
+            100,
+            {binding.bottomNavigationContainer.visibility = View.GONE}
+        )
     }
 
     private fun observeViewModel() {
@@ -246,53 +253,84 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
         fragment: Fragment,
         pushToBackStack: Boolean = false,
         removeHistory: Boolean = false,
-        containerId: Int = binding.pageFragmentContainer.id
+        containerId: Int = binding.pageFragmentContainer.id,
+        animationType: FragmentAnimationType? = null
     ) {
-        loadFragment(fragment, containerId, pushToBackStack, removeHistory)
+        loadFragment(fragment, containerId, pushToBackStack, removeHistory, animationType)
     }
 
     override fun navigateTo(destination: NavigationDestination) {
         when(destination) {
-            is NavigationDestination.CreateProperty,
+            is NavigationDestination.CreateProperty -> {
+                if (destination.activityClass != null) {
+                    val intent = Intent(this, destination.activityClass)
+                    intent.putExtra(BundleKeys.CURRENT_USER_ID, currentUserID)
+                    startActivity(intent)
+                }
+            }
+            is NavigationDestination.EditProperty -> {
+                if (destination.fragmentClass != null) {
+                    val fragment = destination.fragmentClass
+                        .getDeclaredConstructor()
+                        .newInstance().apply { arguments = destination.args }
+                    loadFragmentInternal(
+                        fragment,
+                        destination.pushToBackStack,
+                        destination.removeExistingHistory,
+                    )
+                    hideBottomNav()
+                }
+            }
             is NavigationDestination.PropertyList,
             is NavigationDestination.SeparateSearch,
             is NavigationDestination.RecommendedSinglePropertyDetail,
             is NavigationDestination.ProfileEdit, -> {
-                val fragment = NavigationDestination.getFragmentInstance(destination)
-                loadFragmentInternal(
-                    fragment,
-                    destination.pushToBackStack,
-                    destination.removeExistingHistory,
-                )
+                if (destination.fragmentClass != null) {
+                    val fragment = destination.fragmentClass
+                        .getDeclaredConstructor()
+                        .newInstance().apply { arguments = destination.args }
+                    loadFragmentInternal(
+                        fragment,
+                        destination.pushToBackStack,
+                        destination.removeExistingHistory,
+                    )
+                }
             }
             is NavigationDestination.MultipleImages,
-            is NavigationDestination.InPlaceSearch,
-            is NavigationDestination.EditProperty -> {
-                val fragment = NavigationDestination.getFragmentInstance(destination)
-                addFragment(
-                    fragment,
-                    binding.pageFragmentContainer.id,
-                    destination.pushToBackStack,
-                    destination.removeExistingHistory,
-                )
+            is NavigationDestination.InPlaceSearch -> {
+                if (destination.fragmentClass != null) {
+                    val fragment = destination.fragmentClass
+                        .getDeclaredConstructor()
+                        .newInstance().apply { arguments = destination.args }
+                    addFragment(
+                        fragment,
+                        binding.pageFragmentContainer.id,
+                        destination.pushToBackStack,
+                        destination.removeExistingHistory,
+                    )
+                }
             }
             is NavigationDestination.SinglePropertyDetail -> {
-                val fragment = NavigationDestination.getFragmentInstance(destination)
-                if (destination.args == null) {
-                    logWarning("To navigate SinglePropertyDetail arguments are mandatory")
-                    return
-                }
+                if (destination.fragmentClass != null) {
+                    val fragment = destination.fragmentClass
+                        .getDeclaredConstructor()
+                        .newInstance().apply { arguments = destination.args }
+                    if (destination.args == null) {
+                        logWarning("To navigate SinglePropertyDetail arguments are mandatory")
+                        return
+                    }
 
-                if (destination.args.getBoolean(BundleKeys.IS_TENANT_VIEW))
+                    if (destination.args.getBoolean(BundleKeys.IS_TENANT_VIEW))
                     // Add Dynamic Shortcut
-                    addDynamicShortCut("Last Seen Property", destination.args)
+                        addDynamicShortCut("Last Seen Property", destination.args)
 
-                addFragment(
-                    fragment,
-                    binding.pageFragmentContainer.id,
-                    destination.pushToBackStack,
-                    destination.removeExistingHistory,
-                )
+                    addFragment(
+                        fragment,
+                        binding.pageFragmentContainer.id,
+                        destination.pushToBackStack,
+                        destination.removeExistingHistory,
+                    )
+                }
             }
             is NavigationDestination.MyLeads,
             is NavigationDestination.MyProperties -> {
@@ -325,21 +363,6 @@ class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigatio
                     bottomNavigation.selectedItemId = R.id.bnav_home  // NAVIGATE TO HOME
                 }
 
-            }
-        }
-    }
-
-
-    override fun navigateToRoot() {
-        when (binding.bottomNavigation.selectedItemId) {
-            R.id.bnav_home -> {
-                finish() // FINISH THE CURRENT ACTIVITY
-            }
-            R.id.bnav_shortlists,
-            R.id.bnav_listings,
-            R.id.bnav_profile -> {
-                programmaticNavSelection = ProgrammaticNavSelection()
-                binding.bottomNavigation.selectedItemId = R.id.bnav_home  // NAVIGATE TO HOME
             }
         }
     }
