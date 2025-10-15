@@ -17,7 +17,6 @@ sealed class NavigationDestination(
     val fragmentClass: Class<out Fragment>? = null,
     val activityClass: Class<out Activity>? = null,
     val args: Bundle? = null,
-    val resultCallBack: ((Boolean) -> Unit)? = null,
     val pushToBackStack: Boolean = false,
     val removeExistingHistory: Boolean = false,
 ) {
@@ -48,7 +47,6 @@ sealed class NavigationDestination(
         args = (bundle ?: Bundle()).apply {
             putBoolean(BundleKeys.HIDE_AND_SHOW_BOTTOM_NAV, true)
         },
-        resultCallBack = onResult,
         pushToBackStack = true
     )
 

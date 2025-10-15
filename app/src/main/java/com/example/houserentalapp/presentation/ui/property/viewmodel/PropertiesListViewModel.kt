@@ -163,8 +163,7 @@ class PropertiesListViewModel(
 }
 
 class PropertiesListViewModelFactory(
-    private val context: Context,
-    private val currentUser: User
+    private val context: Context, private val currentUser: User
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

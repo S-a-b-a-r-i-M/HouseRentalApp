@@ -8,7 +8,6 @@ import com.example.houserentalapp.R
 import com.example.houserentalapp.domain.model.ImageSource
 import com.example.houserentalapp.presentation.utils.helpers.getFileBitMapFromAbsPath
 
-
 fun Context.showImageDialog(imageSource: ImageSource) {
     val dialog = Dialog(this)
     dialog.setContentView(R.layout.dialog_image)
