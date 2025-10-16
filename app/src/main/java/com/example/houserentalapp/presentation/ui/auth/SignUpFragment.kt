@@ -10,11 +10,10 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.FragmentSignUpBinding
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.model.NewUserUI
+import com.example.houserentalapp.presentation.ui.MyAppApplication
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.SignUpViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.SignUpViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
@@ -26,7 +25,7 @@ import com.example.houserentalapp.presentation.utils.helpers.validateUserName
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 
-class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
+class SignUpFragment() : Fragment(R.layout.fragment_sign_up) {
     private lateinit var binding: FragmentSignUpBinding
     private lateinit var authActivity: AuthActivity
     private lateinit var viewModel: SignUpViewModel
@@ -51,8 +50,8 @@ class SignUpFragment : Fragment(R.layout.fragment_sign_up) {
     }
 
     private fun setupViewModel() {
-        val repo = UserRepoImpl(authActivity)
-        val factory = SignUpViewModelFactory(UserUseCase(repo))
+        val dependencyStore = (requireActivity().application as MyAppApplication).authDependencyStore
+        val factory = SignUpViewModelFactory(dependencyStore)
         viewModel = ViewModelProvider(this, factory)[SignUpViewModel::class]
     }
 

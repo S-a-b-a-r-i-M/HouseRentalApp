@@ -12,9 +12,8 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import android.view.animation.AnimationUtils
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.UserUseCase
+import com.example.houserentalapp.presentation.ui.MyAppApplication
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.SignInViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.SignInViewModelFactory
 import com.example.houserentalapp.presentation.utils.ResultUI
@@ -49,8 +48,8 @@ class SignInFragment : Fragment(R.layout.fragment_sign_in) {
     }
 
     private fun setupViewModel() {
-        val repo = UserRepoImpl(authActivity)
-        val factory = SignInViewModelFactory(UserUseCase(repo))
+        val dependencyStore = (requireActivity().application as MyAppApplication).authDependencyStore
+        val factory = SignInViewModelFactory(dependencyStore)
         viewModel = ViewModelProvider(this, factory)[SignInViewModel::class]
     }
 

@@ -8,7 +8,14 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
 
+    <!--
+    This(android:name=".presentation.ui.MyApplication") tells Android:
+        "Use MyApplication class as the Application instance for this entire app"
+        The . prefix means it's relative to your package name (e.g., com.example.app.presentation.ui.MyApplication)
+        This class will be instantiated BEFORE any other components (Activities, Services, etc.)
+    -->
     <application
+        android:name=".presentation.ui.MyAppApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"

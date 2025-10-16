@@ -11,12 +11,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.houserentalapp.R
-import com.example.houserentalapp.data.repo.UserRepoImpl
 import com.example.houserentalapp.databinding.ActivityAuthBinding
 import com.example.houserentalapp.domain.model.User
-import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.MainActivity
+import com.example.houserentalapp.presentation.ui.MyAppApplication
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModel
 import com.example.houserentalapp.presentation.ui.auth.viewmodel.AuthViewModelFactory
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.PreferredThemeViewModel
@@ -65,8 +64,7 @@ class AuthActivity : AppCompatActivity() {
     }
 
     private fun setupViewModel() {
-        val repo = UserRepoImpl(this)
-        val factory = AuthViewModelFactory(UserUseCase(repo))
+        val factory = AuthViewModelFactory((application as MyAppApplication).authDependencyStore)
         authViewModel = ViewModelProvider(this, factory)[AuthViewModel::class]
     }
 

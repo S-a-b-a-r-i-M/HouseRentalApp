@@ -9,6 +9,7 @@ import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.domain.utils.Result
 import com.example.houserentalapp.presentation.model.NewUserUI
+import com.example.houserentalapp.presentation.ui.auth.AuthDependencyStore
 import com.example.houserentalapp.presentation.utils.ResultUI
 import kotlinx.coroutines.launch
 
@@ -32,10 +33,10 @@ class SignUpViewModel(private val userUC: UserUseCase) : ViewModel() {
 }
 
 
-class SignUpViewModelFactory(private val userUC: UserUseCase) : ViewModelProvider.Factory {
+class SignUpViewModelFactory(private val dependencyStore: AuthDependencyStore) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SignUpViewModel::class.java))
-            return SignUpViewModel(userUC) as T
+            return SignUpViewModel(dependencyStore.userUC) as T
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

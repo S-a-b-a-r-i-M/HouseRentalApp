@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.domain.utils.Result
+import com.example.houserentalapp.presentation.ui.auth.AuthDependencyStore
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import kotlinx.coroutines.launch
 
@@ -34,10 +35,10 @@ class AuthViewModel(private val userUC: UserUseCase) : ViewModel() {
 }
 
 
-class AuthViewModelFactory(private val userUC: UserUseCase) : ViewModelProvider.Factory {
+class AuthViewModelFactory(private val dependencyStore: AuthDependencyStore) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java))
-            return AuthViewModel(userUC) as T
+            return AuthViewModel(dependencyStore.userUC) as T
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }

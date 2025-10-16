@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.houserentalapp.domain.model.User
 import com.example.houserentalapp.domain.usecase.UserUseCase
 import com.example.houserentalapp.domain.utils.Result
+import com.example.houserentalapp.presentation.ui.auth.AuthDependencyStore
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
@@ -34,10 +35,10 @@ class SignInViewModel(private val userUC: UserUseCase) : ViewModel() {
     }
 }
 
-class SignInViewModelFactory(private val userUC: UserUseCase) : ViewModelProvider.Factory {
+class SignInViewModelFactory(private val dependencyStore: AuthDependencyStore) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(SignInViewModel::class.java))
-            return SignInViewModel(userUC) as T
+            return SignInViewModel(dependencyStore.userUC) as T
 
         throw IllegalArgumentException("Unknown ViewModel class")
     }
