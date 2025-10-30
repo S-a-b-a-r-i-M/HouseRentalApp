@@ -1,13 +1,13 @@
 package com.example.houserentalapp.data.local.db.dao
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.entity.SearchHistoryEntity
 import com.example.houserentalapp.data.local.db.tables.SearchHistoryTable
+import javax.inject.Inject
 
-class SearchHistoryDao(private val dbHelper: DatabaseHelper) {
+class SearchHistoryDao @Inject constructor(private val dbHelper: DatabaseHelper) {
     private val writableDB: SQLiteDatabase
         get() = dbHelper.writableDatabase
 

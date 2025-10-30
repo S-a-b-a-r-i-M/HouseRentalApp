@@ -57,8 +57,7 @@ class ListingsFragment : BaseFragment(R.layout.fragment_listings) {
     }
 
     private fun setupViewModel() {
-        val propertyUC = PropertyUseCase(PropertyRepoImpl(requireActivity()))
-        val factory1 = MyPropertiesViewModelFactory(propertyUC, currentUser)
+        val factory1 = MyPropertiesViewModelFactory(_context.applicationContext, currentUser)
         myPropertiesViewModel = ViewModelProvider(this, factory1)[MyPropertiesViewModel::class]
 
         val factory2 = LeadsViewModelFactory(_context.applicationContext, currentUser)

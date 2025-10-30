@@ -8,6 +8,7 @@ plugins {
         Dependency: Runtime libraries
         Parcelize generates Parcelable implementation code during compilation, so it's a build-time tool
     */
+    alias(libs.plugins.dagger.hilt)
     kotlin("kapt") /*
         kotlin("kapt") enables Kotlin’s annotation processing tool in your Gradle build,
         letting libraries like Room, Dagger/Hilt, Glide generate code at compile time.
@@ -69,6 +70,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.1")
+    // Hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

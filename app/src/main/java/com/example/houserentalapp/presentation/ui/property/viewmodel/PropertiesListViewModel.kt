@@ -6,6 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.houserentalapp.data.local.db.DatabaseHelper
+import com.example.houserentalapp.data.local.db.dao.SearchHistoryDao
 import com.example.houserentalapp.data.repo.PropertyRepoImpl
 import com.example.houserentalapp.data.repo.SearchHistoryRepoImpl
 import com.example.houserentalapp.data.repo.UserPropertyRepoImpl
@@ -170,7 +172,9 @@ class PropertiesListViewModelFactory(
         if (modelClass.isAssignableFrom(PropertiesListViewModel::class.java)) {
             val propertyUC = PropertyUseCase(PropertyRepoImpl(context))
             val propertyUserActionUC = UserPropertyUseCase(UserPropertyRepoImpl(context))
-            val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(context))
+            val searchHistoryUC = SearchHistoryUseCase(SearchHistoryRepoImpl(
+                SearchHistoryDao(DatabaseHelper.getInstance(context))
+            ))
 
             return PropertiesListViewModel(
                 propertyUC,

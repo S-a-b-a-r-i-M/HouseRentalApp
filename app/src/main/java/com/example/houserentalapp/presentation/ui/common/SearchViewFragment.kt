@@ -6,7 +6,7 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.houserentalapp.R
 import com.example.houserentalapp.databinding.FragmentFiltersBinding
@@ -17,7 +17,6 @@ import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.adapter.SearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
-import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModelFactory
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
 import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.property.viewmodel.FiltersViewModel
@@ -26,12 +25,14 @@ import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.logDebug
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.setSystemBarBottomPadding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     private lateinit var binding: FragmentFiltersBinding
     private lateinit var bottomNavController: BottomNavController
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
-    private lateinit var searchHistoryViewModel : SearchHistoryViewModel
+    private val searchHistoryViewModel : SearchHistoryViewModel by viewModels()
     private lateinit var currentUser: User
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
     private val filtersViewModel: FiltersViewModel by activityViewModels()
@@ -109,8 +110,8 @@ class SearchViewFragment : BaseFragment(R.layout.fragment_filters) {
     }
 
     private fun setupViewModel() {
-        val factory = SearchHistoryViewModelFactory(_context.applicationContext)
-        searchHistoryViewModel=ViewModelProvider(this, factory)[SearchHistoryViewModel::class]
+        // val factory = SearchHistoryViewModelFactory(_context.applicationContext)
+        // searchHistoryViewModel = ViewModelProvider(this)[SearchHistoryViewModel::class]
     }
 
     private fun onHistoryClick(filters: PropertyFilters) {

@@ -1,7 +1,5 @@
 package com.example.houserentalapp.data.repo
 
-import android.content.Context
-import com.example.houserentalapp.data.local.db.DatabaseHelper
 import com.example.houserentalapp.data.local.db.dao.SearchHistoryDao
 import com.example.houserentalapp.data.mapper.SearchHistoryMapper
 import com.example.houserentalapp.domain.model.PropertyFilters
@@ -11,9 +9,10 @@ import com.example.houserentalapp.presentation.utils.extensions.logError
 import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class SearchHistoryRepoImpl(context: Context) : SearchHistoryRepo {
-    private val dao = SearchHistoryDao(DatabaseHelper.getInstance(context))
+class SearchHistoryRepoImpl @Inject constructor(private val dao: SearchHistoryDao) : SearchHistoryRepo {
+    // private val dao = SearchHistoryDao(DatabaseHelper.getInstance(context))
 
     override suspend fun storeSearchHistory(userId: Long, filters: PropertyFilters): Result<Boolean> {
         return try {

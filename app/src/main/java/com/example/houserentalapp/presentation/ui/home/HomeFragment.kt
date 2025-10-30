@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,16 +17,16 @@ import com.example.houserentalapp.presentation.ui.BundleKeys
 import com.example.houserentalapp.presentation.ui.NavigationDestination
 import com.example.houserentalapp.presentation.ui.base.BaseFragment
 import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModel
-import com.example.houserentalapp.presentation.ui.common.viewmodel.SearchHistoryViewModelFactory
 import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModel
 import com.example.houserentalapp.presentation.ui.home.adapter.HomeViewModelFactory
 import com.example.houserentalapp.presentation.ui.home.adapter.RecentSearchHistoryAdapter
 import com.example.houserentalapp.presentation.ui.interfaces.BottomNavController
-import com.example.houserentalapp.presentation.ui.property.PropertiesListFragment
 import com.example.houserentalapp.presentation.ui.sharedviewmodel.SharedDataViewModel
 import com.example.houserentalapp.presentation.utils.ResultUI
 import com.example.houserentalapp.presentation.utils.extensions.showToast
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private var _binding: FragmentHomeBinding? = null
     private val binding: FragmentHomeBinding get() = _binding!!
@@ -34,7 +35,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private lateinit var currentUser: User
     // VIEW MODELS
     private lateinit var homeViewModel: HomeViewModel
-    private lateinit var searchHistoryViewModel : SearchHistoryViewModel
+    private val searchHistoryViewModel : SearchHistoryViewModel by viewModels()
     private val sharedDataViewModel: SharedDataViewModel by activityViewModels()
 
     override fun onAttach(context: Context) {
@@ -81,8 +82,8 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     }
 
     private fun setupViewModel() {
-        val factory1 = SearchHistoryViewModelFactory(_context.applicationContext)
-        searchHistoryViewModel=ViewModelProvider(this,factory1)[SearchHistoryViewModel::class]
+        // val factory1 = SearchHistoryViewModelFactory(_context.applicationContext)
+        // searchHistoryViewModel = ViewModelProvider(this)[SearchHistoryViewModel::class]
 
         val factory2 = HomeViewModelFactory(_context.applicationContext)
         homeViewModel = ViewModelProvider(this,factory2)[HomeViewModel::class]

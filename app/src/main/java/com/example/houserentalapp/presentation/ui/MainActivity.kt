@@ -37,15 +37,13 @@ import com.example.houserentalapp.presentation.utils.extensions.logInfo
 import com.example.houserentalapp.presentation.utils.extensions.logWarning
 import com.example.houserentalapp.presentation.utils.extensions.showToast
 import com.example.houserentalapp.presentation.utils.helpers.convertToBundle
+import dagger.hilt.android.AndroidEntryPoint
 
 /* TODO:
-        Existing fix:
-         7. Fix Fonts in every place
-         8. Improve alert dialog design
-        New:
-         1. Favourites page -> move and remove properties
+        1. Favourites page -> move and remove properties
 */
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), BottomNavController, FragmentNavigationHandler {
     private lateinit var binding: ActivityMainBinding
     val sharedDataViewModel: SharedDataViewModel by viewModels(null) {
