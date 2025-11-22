@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_home_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.MySplashScreen">
+        android:theme="@style/BaseAppTheme">
         <activity
             android:name=".presentation.ui.property.CreatePropertyActivity"
             android:exported="false"

@@ -74,7 +74,7 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.junit) // testImplementation adds dependencies for local tests
+    androidTestImplementation(libs.androidx.junit) // androidTestImplementation adds dependencies for Instrumented tests.
     androidTestImplementation(libs.androidx.espresso.core)
 }

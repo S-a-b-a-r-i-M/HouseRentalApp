@@ -29,23 +29,22 @@ class AuthActivity : AppCompatActivity() {
     val preferredThemeViewModel: PreferredThemeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
-        val splashScreen = installSplashScreen() // Install splash screen
+         preferredThemeViewModel.getTheme()?.let { setTheme(it.theme) } // Set Theme
+//         val splashScreen = installSplashScreen() // Install splash screen
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setupViewModel()
-
+        /*
         splashScreen.setKeepOnScreenCondition {
             // This lambda called ~60 times per second (every frame)
             logDebug("SplashScreen condition is invoked: ${authViewModel.isLoading}")
             authViewModel.isLoading // NOTE: It doesn't have to be mutable live data
-        }
+        }*/
 
         binding = ActivityAuthBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setWindowInsets()
-
 
         if (savedInstanceState == null)
             authViewModel.loadUserIfAlreadyAuthenticated(::navigateToMain) {
