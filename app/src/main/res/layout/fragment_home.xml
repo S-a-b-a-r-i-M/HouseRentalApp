@@ -43,7 +43,9 @@
                     style="@style/Widget.App.TextButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/post_property" />
+                    android:text="@string/post_property"
+                    android:contentDescription="Click this post property button to post a new property"
+                    />
             </LinearLayout>
 
         </com.google.android.material.appbar.MaterialToolbar>

@@ -74,7 +74,21 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
-    testImplementation(libs.junit) // testImplementation adds dependencies for local tests
+    // Unit Testing
+    testImplementation(libs.junit) // testImplementation adds dependencies for local tests(Unit Tests)
+
+    // Instrument Testing
     androidTestImplementation(libs.androidx.junit) // androidTestImplementation adds dependencies for Instrumented tests.
-    androidTestImplementation(libs.androidx.espresso.core)
+
+    androidTestImplementation(libs.androidx.espresso.core) /*
+        espresso-core (androidTestImplementation)
+        Why: Main Espresso library - basic UI interactions
+        When: Always needed for UI tests - provides onView(), click(), typeText(), etc.
+    */
+    androidTestImplementation(libs.androidx.espresso.contrib) /*
+        espresso-contrib (androidTestImplementation)
+        Why: Extra UI components support (RecyclerView, DrawerLayout, DatePicker)
+        When: Testing lists, navigation drawers, or complex widgets
+    */
+    androidTestImplementation(libs.androidx.espresso.intents)
 }

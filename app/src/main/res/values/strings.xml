@@ -193,5 +193,6 @@
     <string name="search_shortcut">search property</string>
     <string name="leads_shortcut">Leads</string>
     <string name="create_property_shortcut">Create Property</string>
+    <string name="welcome_msg">welcome user</string>
 
 </resources>

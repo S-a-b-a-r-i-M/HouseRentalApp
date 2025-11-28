@@ -890,7 +890,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:src="@drawable/take_picture"
-                    android:contentDescription="@string/upload_from_gallery"/>
+                    android:contentDescription="Take live photo and upload"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnTakeImages"

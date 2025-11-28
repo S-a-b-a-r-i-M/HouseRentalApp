@@ -77,7 +77,11 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 )
             }
 
-            titleTV.text = getString(R.string.hi, currentUser.name)
+            titleTV.apply {
+                text = getString(R.string.hi, currentUser.name)
+                // contentDescription = "welcome-message"
+                contentDescription = getString(R.string.welcome_msg)
+            }
         }
     }
 
