@@ -1,12 +1,18 @@
 package com.example.houserentalapp.instrumenttest
 
 import android.view.View
+import android.widget.TextView
+import androidx.annotation.ColorInt
+import androidx.core.view.isVisible
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.BoundedMatcher
+import androidx.test.espresso.matcher.RootMatchers.isDialog
+import androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -18,6 +24,8 @@ import com.example.houserentalapp.presentation.ui.auth.AuthActivity
 import com.google.android.material.textfield.TextInputLayout
 import org.hamcrest.Description
 import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.matchesPattern
 import org.hamcrest.TypeSafeMatcher
 import org.junit.Before
 import org.junit.Rule
@@ -120,9 +128,20 @@ class LoginPageTest {
 
         // Check The Phone Number Matches
         onView(withId(R.id.tvUserPhone))
-            .check(matches( withText(validUser1.getValue("password")) ))
+            .check(matches( withText(validUser1.getValue("phone")) ))
 
+        // Click Log Out -- Opens Dialog
+        onView(allOf(
+            withContentDescription("Log Out"),
+            isDescendantOfA(withId(R.id.toolbar))
+        )).perform(click())
+            .inRoot(isDialog())
 
+        // Click Log out Option -- Redirects to Login Page
+        onView(allOf(withText("Logout"), withId(android.R.id.button1)))
+            .perform(click())
+        onView(withText(matchesPattern("(?i)sign.*in")))  // case-insensitive regex
+            .check(matches(isDisplayed()))
     }
 
     /*
@@ -152,6 +171,52 @@ class LoginPageTest {
             override fun matchesSafely(view: View): Boolean {
                 if (view !is TextInputLayout) return false
                 return view.error == expectedError
+            }
+        }
+    }
+
+    // TODO: Try with SignUp text
+    fun withTextColor(@ColorInt expectedColor: Int): Matcher<View> {
+        return object : BoundedMatcher<View, TextView>(TextView::class.java) {
+            // This is where the actual matching logic happens
+            override fun matchesSafely(item: TextView?): Boolean {
+                return item?.currentTextColor == expectedColor
+            }
+
+            // This describes what the matcher is looking for (used in error messages)
+            override fun describeTo(description: Description?) {
+                description?.appendText("textview with expected color: $expectedColor")
+            }
+        }
+    }
+
+    fun isVisibleAndInteractable(minAlpha: Float = 1.0f): Matcher<View> {
+        return object : BoundedMatcher<View, View>(View::class.java) {
+            override fun matchesSafely(item: View?): Boolean {
+                return if (item != null) {
+                    val hasEnoughAlpha = item.alpha >= minAlpha
+
+                    return item.isVisible && hasEnoughAlpha && item.isEnabled
+                }
+                else
+                    false
+            }
+
+            override fun describeTo(description: Description?) {
+                description?.appendText("is visible, enabled, minAlpha >= $minAlpha")
+            }
+
+            /*The describeMismatch method is optional but incredibly valuable.
+              When your test fails, it tells you exactly why the matcher didn't match, making debugging much faster.*/
+            override fun describeMismatch(item: Any?, description: Description?) {
+                if (item is View && description != null) {
+                    description.appendText("was ")
+                    when {
+                        !item.isVisible -> description.appendText("not visible")
+                        !item.isEnabled -> description.appendText("not enabled")
+                        item.alpha < minAlpha -> description.appendText("not having min alpha")
+                    }
+                }
             }
         }
     }
