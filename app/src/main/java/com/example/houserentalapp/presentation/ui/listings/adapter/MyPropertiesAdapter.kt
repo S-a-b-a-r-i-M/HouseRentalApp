@@ -196,7 +196,6 @@ class MyPropertiesAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
         return when(viewType) {
             HEADER_VIEW_TYPE -> onCreateHeaderViewHolder(parent)
             DATA_VIEW_TYPE -> onCreateDataViewHolder(parent)

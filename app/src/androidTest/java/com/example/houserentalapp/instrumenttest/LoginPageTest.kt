@@ -195,7 +195,6 @@ class LoginPageTest {
             override fun matchesSafely(item: View?): Boolean {
                 return if (item != null) {
                     val hasEnoughAlpha = item.alpha >= minAlpha
-
                     return item.isVisible && hasEnoughAlpha && item.isEnabled
                 }
                 else
