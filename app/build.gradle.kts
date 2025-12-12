@@ -78,6 +78,7 @@ dependencies {
     testImplementation(libs.junit) // testImplementation adds dependencies for local tests(Unit Tests)
 
     // Instrument Testing
+        // Espresso
     androidTestImplementation(libs.androidx.junit) // androidTestImplementation adds dependencies for Instrumented tests.
 
     androidTestImplementation(libs.androidx.espresso.core) /*
@@ -91,4 +92,6 @@ dependencies {
         When: Testing lists, navigation drawers, or complex widgets
     */
     androidTestImplementation(libs.androidx.espresso.intents)
+        // UiAutomator
+    androidTestImplementation(libs.androidx.uiautomator)
 }
